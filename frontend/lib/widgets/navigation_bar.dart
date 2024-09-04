@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/themes/main_theme.dart';
 
-class NavBar extends StatelessWidget{
+class NavBar extends StatelessWidget {
   const NavBar({super.key});
 
   @override
@@ -9,15 +9,36 @@ class NavBar extends StatelessWidget{
     return Container(
       color: MainTheme.giRed,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Image.asset('lib/assets/images/butterfly.png', height: 60,),
-          const Text('Home', style: MainTheme.headerText,),
-          const Text('About us', style: MainTheme.headerText,),
-          const Text('Military', style: MainTheme.headerText,),
-          const Text('Space', style: MainTheme.headerText,),
-          const Text('Careers', style: MainTheme.headerText,),
-          const Text('Contact us', style: MainTheme.headerText,),
+          Image.asset(
+            'lib/assets/images/butterfly.png',
+            height: 60,
+          ),
+          const Text(
+            'Home',
+            style: MainTheme.bodyText,
+          ),
+          const Text(
+            'About us',
+            style: MainTheme.bodyText,
+          ),
+          const Text(
+            'Military',
+            style: MainTheme.bodyText,
+          ),
+          const Text(
+            'Space',
+            style: MainTheme.bodyText,
+          ),
+          const Text(
+            'Careers',
+            style: MainTheme.bodyText,
+          ),
+          const Text(
+            'Contact us',
+            style: MainTheme.bodyText,
+          ),
         ],
       ),
     );

@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Static Website',
+      title: 'GI Healthcare',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

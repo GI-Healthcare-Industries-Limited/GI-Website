@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/navigation_bar.dart';
+import 'package:frontend/widgets/background_video_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -8,15 +9,17 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          NavBar(),
-          Expanded(
-            child: Container(),
-          ),
-          // Footer snaps to the bottom
-          Footer(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const NavBar(),
+            AspectRatio(
+              aspectRatio: 16 / 9, 
+              child: BackgroundVideoPage(),
+            ),
+            Footer(),
+          ],
+        ),
       ),
     );
   }

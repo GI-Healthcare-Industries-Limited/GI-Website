@@ -14,7 +14,7 @@ class NavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Image.asset(
-            'lib/assets/images/butterfly.png',
+            'assets/images/butterfly.png',
             height: 60,
           ),
           InkWell(

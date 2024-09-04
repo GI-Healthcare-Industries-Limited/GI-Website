@@ -30,8 +30,8 @@ class _LinkedImageState extends State<LinkedImage> {
         });
       },
       child: Container(
-        height: 120,  // Define the height here based on your needs
-        width: 200,   // Define the width if necessary
+        height: 180,  // Define the height here based on your needs
+        width: 260,   // Define the width if necessary
         decoration: BoxDecoration(
             boxShadow: [
               if (_isHovering)
@@ -53,7 +53,7 @@ class _LinkedImageState extends State<LinkedImage> {
                 onTap: () => Helpers.SendToUrl(widget.url),
                 child: Image.asset(
                   widget.imagePath,
-                  height: 115,
+                  height: 180,
                 ),
               ),
             ),

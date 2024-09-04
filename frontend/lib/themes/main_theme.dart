@@ -14,8 +14,5 @@ class MainTheme {
 
   static const TextStyle linkText = TextStyle(
       color: Colors.white,
-      fontSize: 14,
-      decoration: TextDecoration.underline,
-      decorationColor: Colors.white,
-      decorationThickness: 2.0);
+      fontSize: 14,);
 }

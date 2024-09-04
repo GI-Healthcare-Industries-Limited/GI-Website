@@ -7,12 +7,17 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        NavBar(),
-        SizedBox(height: 500,), //spacer for now
-        Footer(),
-      ],
+    return Scaffold(
+      body: Column(
+        children: [
+          NavBar(),
+          Expanded(
+            child: Container(),
+          ),
+          // Footer snaps to the bottom
+          Footer(),
+        ],
+      ),
     );
   }
 }

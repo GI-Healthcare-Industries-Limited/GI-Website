@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/about_page.dart';
+import 'package:frontend/pages/careers_page.dart';
 import 'package:frontend/pages/contact_page.dart';
 import 'package:frontend/pages/home_page.dart';
+import 'package:frontend/pages/military_page.dart';
+import 'package:frontend/pages/space_page.dart';
 
 class NavigationProvider with ChangeNotifier {
   int _currentIndex = 0;
@@ -10,6 +13,9 @@ class NavigationProvider with ChangeNotifier {
   final List<Widget> _pages = [
     HomePage(),
     AboutPage(),
+    MilitaryPage(),
+    SpacePage(),
+    CareersPage(),
     ContactPage(),
   ];
 

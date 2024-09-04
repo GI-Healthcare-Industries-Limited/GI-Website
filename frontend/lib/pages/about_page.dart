@@ -6,7 +6,7 @@ class AboutPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    throw UnimplementedError();
+    throw UnimplementedError('AboutPage has not been made yet');
   }
 
 }

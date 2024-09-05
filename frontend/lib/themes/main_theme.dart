@@ -15,4 +15,26 @@ class MainTheme {
   static const TextStyle linkText = TextStyle(
       color: Colors.white,
       fontSize: 14,);
+
+  static const TextStyle numberText = TextStyle(
+    color: giRed,
+    fontSize: 36,
+    fontWeight: FontWeight.bold,
+  );
+
+  static const TextStyle problemText = TextStyle(
+    color: giRed,
+    fontSize: 28,
+  );
+
+  static BoxDecoration tileDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(12),
+    boxShadow: [BoxShadow(
+      color: Colors.black.withOpacity(0.1),
+      blurRadius: 10,
+      spreadRadius: 2,
+      offset: const Offset(0,1),
+    )]
+  );
 }

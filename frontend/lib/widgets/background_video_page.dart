@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/themes/main_theme.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 
 class BackgroundVideoPage extends StatefulWidget {

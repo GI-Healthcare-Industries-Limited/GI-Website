@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/navigation_bar.dart';
 import 'package:frontend/widgets/background_video_page.dart';
+import 'package:frontend/widgets/problem_section.dart';
+import 'package:frontend/widgets/solution_section.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -17,6 +19,8 @@ class HomePage extends StatelessWidget {
               aspectRatio: 16 / 9, 
               child: BackgroundVideoPage(),
             ),
+            const ProblemSection(),
+            const SolutionSection(),
             Footer(),
           ],
         ),

@@ -42,10 +42,13 @@ class Footer extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.email,
-                          size: 20,
-                          color: Colors.white,
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.email,
+                            size: 20,
+                            color: Colors.white,
+                          ),
                         ),
                         InkWell(
                           onTap: () => Helpers.SendToUrl(
@@ -62,10 +65,13 @@ class Footer extends StatelessWidget {
                     padding: EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.phone_rounded,
-                          size: 20,
-                          color: Colors.white,
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.phone_rounded,
+                            size: 20,
+                            color: Colors.white,
+                          ),
                         ),
                         Text(
                           '+44 131 392 8881',
@@ -78,10 +84,9 @@ class Footer extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.apple,
-                          size: 20,
-                          color: Colors.white,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset('assets/images/linkedin.png', height: 20,),
                         ),
                         InkWell(
                           onTap: () => Helpers.SendToUrl(

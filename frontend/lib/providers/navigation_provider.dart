@@ -9,7 +9,6 @@ import 'package:frontend/pages/space_page.dart';
 class NavigationProvider with ChangeNotifier {
   int _currentIndex = 0;
 
-  // This list can be customized based on your app's pages
   final List<Widget> _pages = [
     HomePage(),
     AboutPage(),

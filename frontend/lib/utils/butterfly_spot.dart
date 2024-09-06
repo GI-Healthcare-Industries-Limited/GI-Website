@@ -30,13 +30,42 @@ class _ButterflySpotState extends State<ButterflySpot> {
         child: Stack(
           children: [
             AnimatedContainer(
-              duration: const Duration(milliseconds: 190),
-              width: _isHovered ? 300 : 60,
+              duration: const Duration(milliseconds: 180),
+              width: _isHovered ? 360 : 60,
               height: _isHovered ? 200 : 60,
               decoration: BoxDecoration(
-                color: MainTheme.giRed,
-                borderRadius: BorderRadius.circular(_isHovered ? 12 : 30),
-              ),
+                  color: MainTheme.giRed,
+                  borderRadius: BorderRadius.circular(_isHovered ? 12 : 30),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 1),
+                    )
+                  ]),
+              child: _isHovered
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          textAlign: TextAlign.center,
+                          widget.title,
+                          style: MainTheme.headerText,
+                        ),
+                        Text(
+                          textAlign: TextAlign.center,
+                          widget.text,
+                          style: MainTheme.bodyText,
+                        ),
+                      ],
+                    )
+                  : Container(),
             ),
             Positioned(
               top: 10,
@@ -47,13 +76,7 @@ class _ButterflySpotState extends State<ButterflySpot> {
                 width: 40,
               ),
             ),
-            _isHovered ? Column(
-              children: [
-                Text(widget.title, style: MainTheme.headerText,),
-                Text(widget.text, style: MainTheme.smallPrint,),
-              ],
-            ) : Container(),
           ],
-        ) );
+        ));
   }
 }

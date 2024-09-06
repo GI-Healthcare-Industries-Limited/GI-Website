@@ -11,11 +11,11 @@ class ProblemSection extends StatelessWidget {
       color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
             child: Container(
-              padding: const EdgeInsets.fromLTRB(60, 40, 60, 60),
+              padding: const EdgeInsets.fromLTRB(60, 40, 60, 0),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(60, 40, 60, 60),
                 decoration: MainTheme.tileDecoration,
@@ -53,7 +53,7 @@ class ProblemSection extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.fromLTRB(60, 40, 60, 60),
+              padding: const EdgeInsets.fromLTRB(60, 40, 60, 0),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(60, 40, 60, 60),
                 decoration: MainTheme.tileDecoration,
@@ -92,7 +92,7 @@ class ProblemSection extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.fromLTRB(60, 40, 60, 60),
+              padding: const EdgeInsets.fromLTRB(60, 40, 60, 0),
               child: Container(
                 padding: const EdgeInsets.fromLTRB(60, 40, 60, 60),
                 decoration: MainTheme.tileDecoration,

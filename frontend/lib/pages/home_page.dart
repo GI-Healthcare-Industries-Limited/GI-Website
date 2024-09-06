@@ -1,33 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/widgets/background_video_page.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/machine_map_section.dart';
 import 'package:frontend/widgets/navigation_bar.dart';
-import 'package:frontend/widgets/background_video_page.dart';
 import 'package:frontend/widgets/problem_section.dart';
 import 'package:frontend/widgets/solution_section.dart';
 import 'package:frontend/widgets/supporters.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isAtTop = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels == 0 && !_isAtTop) {
+      setState(() {
+        _isAtTop = true;
+      });
+    } else if (_scrollController.position.pixels > 0 && _isAtTop) {
+      setState(() {
+        _isAtTop = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const NavBar(),
-            AspectRatio(
-              aspectRatio: 16 / 9, 
-              child: BackgroundVideoPage(),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: BackgroundVideoPage(),
+                  ),
+                  const ProblemSection(),
+                  Image.asset('assets/images/arrows.png'),
+                  const SolutionSection(),
+                  const MachineMapSection(),
+                  Supporters(),
+                  Footer(),
+                ],
+              ),
             ),
-            const ProblemSection(),
-            const SolutionSection(),
-            const MachineMapSection(),
-            Supporters(),
-            Footer(),
-          ],
-        ),
+          ),
+          NavBar(isTransparent: _isAtTop),
+        ],
       ),
     );
   }

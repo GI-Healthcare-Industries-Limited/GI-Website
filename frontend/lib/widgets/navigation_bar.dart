@@ -4,18 +4,27 @@ import 'package:frontend/providers/navigation_provider.dart';
 import 'package:frontend/themes/main_theme.dart';
 
 class NavBar extends StatelessWidget {
-  const NavBar({super.key});
+  final bool isTransparent;
+
+  const NavBar({super.key, required this.isTransparent});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: MainTheme.giRed,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 700),
+      decoration: BoxDecoration(
+        color: isTransparent ? Colors.transparent : MainTheme.giRed,
+        border: const Border(bottom: BorderSide(color: Colors.white)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Image.asset(
-            'assets/images/butterfly.png',
-            height: 60,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+              'assets/images/white_butterfly.png',
+              height: 50,
+            ),
           ),
           InkWell(
             onTap: () {

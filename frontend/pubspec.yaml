@@ -91,7 +91,8 @@ flutter:
    - assets/images/bailey.png
    - assets/images/tuan.png
    - assets/images/link.png
-
+   - assets/images/mission.png
+   - assets/images/vision.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

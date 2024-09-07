@@ -26,61 +26,96 @@ class NavBar extends StatelessWidget {
               height: 50,
             ),
           ),
-          InkWell(
+          HoverUnderlineText(
+            text: 'Home',
             onTap: () {
               context.read<NavigationProvider>().updateIndex(0);
             },
-            child: const Text(
-              'Home',
-              style: MainTheme.bodyText,
-            ),
+            style: MainTheme.bodyText,
           ),
-          InkWell(
+          HoverUnderlineText(
+            text: 'About us',
             onTap: () {
               context.read<NavigationProvider>().updateIndex(1);
             },
-            child: const Text(
-              'About us',
-              style: MainTheme.bodyText,
-            ),
+            style: MainTheme.bodyText,
           ),
-          InkWell(
+          HoverUnderlineText(
+            text: 'Military',
             onTap: () {
               context.read<NavigationProvider>().updateIndex(2);
             },
-            child: const Text(
-              'Military',
-              style: MainTheme.bodyText,
-            ),
+            style: MainTheme.bodyText,
           ),
-          InkWell(
+          HoverUnderlineText(
+            text: 'Space',
             onTap: () {
               context.read<NavigationProvider>().updateIndex(3);
             },
-            child: const Text(
-              'Space',
-              style: MainTheme.bodyText,
-            ),
+            style: MainTheme.bodyText,
           ),
-          InkWell(
+          HoverUnderlineText(
+            text: 'Careers',
             onTap: () {
               context.read<NavigationProvider>().updateIndex(4);
             },
-            child: const Text(
-              'Careers',
-              style: MainTheme.bodyText,
-            ),
+            style: MainTheme.bodyText,
           ),
-          InkWell(
+          HoverUnderlineText(
+            text: 'Contact us',
             onTap: () {
               context.read<NavigationProvider>().updateIndex(5);
             },
-            child: const Text(
-              'Contact us',
-              style: MainTheme.bodyText,
-            ),
+            style: MainTheme.bodyText,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class HoverUnderlineText extends StatefulWidget {
+  final String text;
+  final VoidCallback onTap;
+  final TextStyle style;
+
+  const HoverUnderlineText({
+    Key? key,
+    required this.text,
+    required this.onTap,
+    required this.style,
+  }) : super(key: key);
+
+  @override
+  _HoverUnderlineTextState createState() => _HoverUnderlineTextState();
+}
+
+class _HoverUnderlineTextState extends State<HoverUnderlineText> {
+  bool _isHovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) {
+        setState(() {
+          _isHovering = true;
+        });
+      },
+      onExit: (_) {
+        setState(() {
+          _isHovering = false;
+        });
+      },
+      child: InkWell(
+        onTap: widget.onTap,
+        child: Text(
+          '${widget.text} ${_isHovering ? '+' : '-'}',
+          style: widget.style.copyWith(
+            decoration: _isHovering ? TextDecoration.underline : TextDecoration.none,
+            decorationColor: Colors.white,
+            decorationThickness: 2,
+          ),
+        ),
       ),
     );
   }

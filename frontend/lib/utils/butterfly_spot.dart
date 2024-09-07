@@ -49,22 +49,25 @@ class _ButterflySpotState extends State<ButterflySpot> {
                     )
                   ]),
               child: _isHovered
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          widget.title,
-                          style: MainTheme.headerText,
-                        ),
-                        Text(
-                          textAlign: TextAlign.center,
-                          widget.text,
-                          style: MainTheme.bodyText,
-                        ),
-                      ],
-                    )
+                  ? Padding(
+                    padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            widget.title,
+                            style: MainTheme.headerText,
+                          ),
+                          Text(
+                            textAlign: TextAlign.center,
+                            widget.text,
+                            style: MainTheme.bodyText,
+                          ),
+                        ],
+                      ),
+                  )
                   : Container(),
             ),
             Positioned(

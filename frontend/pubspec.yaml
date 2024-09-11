@@ -94,6 +94,12 @@ flutter:
    - assets/images/mission.png
    - assets/images/vision.png
    - assets/images/mod_small.png
+   - assets/images/red_linkedin.png
+   - assets/images/red_mail.png
+   - assets/images/red_map_pin.png
+   - assets/images/red_phone.png
+   - assets/images/red_x.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

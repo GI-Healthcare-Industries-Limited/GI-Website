@@ -20,36 +20,42 @@ class ContactPage extends StatelessWidget {
                     maxWidth: 1600), // Limit the content width
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    if (constraints.maxWidth > 600) {
-                      return const Row(
-                        mainAxisAlignment: MainAxisAlignment
-                            .center, // Center the row horizontally
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Enquiries Box on the left
-                          SizedBox(
-                            width: 500, // Give it a fixed width
-                            child: EnquiriesBox(),
-                          ),
-                          SizedBox(width: 30),
-                          // Get in Touch and Visit Us on the right
-                          SizedBox(
-                            width: 500, // Give it a fixed width
-                            child: GetInTouchBox(),
-                          ),
-                        ],
+                    if (constraints.maxWidth > 1030) {
+                      return const Padding(
+                        padding: EdgeInsets.only(top: 80),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .center, // Center the row horizontally
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Enquiries Box on the left
+                            SizedBox(
+                              width: 500, // Give it a fixed width
+                              child: EnquiriesBox(),
+                            ),
+                            SizedBox(width: 30),
+                            // Get in Touch and Visit Us on the right
+                            SizedBox(
+                              width: 500, // Give it a fixed width
+                              child: GetInTouchBox(),
+                            ),
+                          ],
+                        ),
                       );
                     } else {
                       // Stack the sections vertically for mobile
-                      return const Column(
-                        children: [
-                          // Get in Touch and Visit Us on top
-                          GetInTouchBox(),
-                          // Spacer
-                          SizedBox(height: 30),
-                          // Enquiries Box on bottom
-                          EnquiriesBox(),
-                        ],
+                      return const Padding(
+                        padding: EdgeInsets.only(top: 20),
+                        child: Column(
+                          children: [
+                            // Get in Touch and Visit Us on top
+                            GetInTouchBox(),
+                            // Spacer
+                            SizedBox(height: 30),
+                            // Enquiries Box on bottom
+                            EnquiriesBox(),
+                          ],
+                        ),
                       );
                     }
                   },
@@ -207,12 +213,18 @@ class GetInTouchBox extends StatelessWidget {
               title: const Text('Find us on LinkedIn'),
             ),
           ),
-          ListTile(
-            leading: Image.asset(
-              'assets/images/red_x.png',
-              height: 30,
+          InkWell(
+            onTap: () => Helpers.SendToUrl('https://www.crunchbase.com/organization/gi-healthcare-industries'),
+            child: ListTile(
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 2),
+                child: Image.asset(
+                  'assets/images/cb.png',
+                  height: 25,
+                ),
+              ),
+              title: const Text('Find us on Crunchbase'),
             ),
-            title: const Text('Follow us on X'),
           ),
           const SizedBox(height: 30),
           // Visit Us Section
@@ -225,20 +237,7 @@ class GetInTouchBox extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          InkWell(
-            onTap: () =>
-                Helpers.SendToUrl('https://maps.app.goo.gl/7Xtk2bhCXDban21n7'),
-            child: ListTile(
-              leading: Image.asset(
-                'assets/images/red_map_pin.png',
-                height: 30,
-              ),
-              title: const Text(
-                'The National Robotarium, Edinburgh, EH14 4AS',
-                style: TextStyle(fontSize: 14),
-              ),
-            ),
-          ),
+          const Text('Visit our HQ', style: TextStyle(color: Colors.grey),),
           InkWell(
             onTap: () =>
                 Helpers.SendToUrl('https://maps.app.goo.gl/7Xtk2bhCXDban21n7'),
@@ -249,6 +248,22 @@ class GetInTouchBox extends StatelessWidget {
               ),
               title: const Text(
                 '1F23 Student Ventures, Bristol, BS16 1QY',
+                style: TextStyle(fontSize: 14),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10,),
+          const Text('Visit our R&D Lab', style: TextStyle(color: Colors.grey),),
+          InkWell(
+            onTap: () =>
+                Helpers.SendToUrl('https://maps.app.goo.gl/7Xtk2bhCXDban21n7'),
+            child: ListTile(
+              leading: Image.asset(
+                'assets/images/red_map_pin.png',
+                height: 30,
+              ),
+              title: const Text(
+                'The National Robotarium, Edinburgh, EH14 4AS',
                 style: TextStyle(fontSize: 14),
               ),
             ),

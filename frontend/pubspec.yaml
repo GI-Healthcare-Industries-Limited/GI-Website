@@ -99,6 +99,7 @@ flutter:
    - assets/images/red_map_pin.png
    - assets/images/red_phone.png
    - assets/images/red_x.png
+   - assets/images/cb.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

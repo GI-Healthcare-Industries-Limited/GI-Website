@@ -22,7 +22,7 @@ class ProblemSection extends StatelessWidget {
   Widget _buildDesktopLayout() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(child: _buildProblemTile('Over-Consumption', _buildOverConsumptionContent())),
         Expanded(child: _buildProblemTile('Labour Shortage', _buildLabourShortageContent())),

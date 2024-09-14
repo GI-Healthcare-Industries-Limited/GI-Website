@@ -44,7 +44,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     final screenWidth = MediaQuery.of(context).size.width;
     final bool isMobile = screenWidth < 1000;
 
@@ -62,7 +61,12 @@ class _HomePageState extends State<HomePage> {
                     child: BackgroundVideoPage(),
                   ),
                   const ProblemSection(),
-                  isMobile? Image.asset('assets/images/arrow.png') : Image.asset('assets/images/arrows.png', width: screenWidth - 200,),
+                  isMobile
+                      ? Image.asset('assets/images/arrow.png')
+                      : Image.asset(
+                          'assets/images/arrows.png',
+                          width: screenWidth - 200,
+                        ),
                   const SolutionSection(),
                   const MachineMapSection(),
                   Supporters(),
@@ -70,6 +74,38 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+          ),
+          NavBar(isTransparent: _isAtTop),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStepScroll(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 1000;
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          PageView(
+            children: [
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: BackgroundVideoPage(),
+              ),
+              const ProblemSection(),
+              isMobile
+                  ? Image.asset('assets/images/arrow.png')
+                  : Image.asset(
+                      'assets/images/arrows.png',
+                      width: screenWidth - 200,
+                    ),
+              const SolutionSection(),
+              const MachineMapSection(),
+              Supporters(),
+              Footer(),
+            ],
           ),
           NavBar(isTransparent: _isAtTop),
         ],

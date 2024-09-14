@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/themes/main_theme.dart';
 import 'package:frontend/widgets/navigation_bar.dart';
 
 class SpacePage extends StatefulWidget {
@@ -38,18 +39,19 @@ class _SpacePageState extends State<SpacePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Stack(
         children: [
           SingleChildScrollView(
             controller: _scrollController,
-            child: Container(
-              color: Colors.white,
-              child: const Text('Space content coming soon'),
+            child: const Center(
+              child: Text(
+                'Space content coming soon',
+                style: MainTheme.problemText,
+              ),
             ),
           ),
-          NavBar(isTransparent: _isAtTop),
+          const NavBar(isTransparent: false),
         ],
       ),
     );

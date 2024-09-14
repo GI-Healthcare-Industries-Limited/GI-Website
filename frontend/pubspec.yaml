@@ -84,7 +84,18 @@ flutter:
    - assets/images/nr.png
    - assets/images/arrows.png
    - assets/images/linkedin.png
+   - assets/images/ash.png
+   - assets/images/adip.png
+   - assets/images/jake.png
+   - assets/images/chris.png
+   - assets/images/bailey.png
+   - assets/images/tuan.png
+   - assets/images/link.png
+   - assets/images/mission.png
+   - assets/images/vision.png
+   - assets/images/mod_small.png
    - assets/images/arrow.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/widgets/hamburger_button.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/providers/navigation_provider.dart';
 import 'package:frontend/themes/main_theme.dart';
@@ -10,6 +11,40 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.of(context).size.width < 800) {
+      return buildMobile(context);
+    } else {
+      return buildDesktop(context);
+    }
+  }
+
+  Widget buildMobile(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 700),
+      decoration: BoxDecoration(
+        color: isTransparent ? Colors.transparent : MainTheme.giRed,
+        border: const Border(bottom: BorderSide(color: Colors.white)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.asset(
+              'assets/images/white_butterfly.png',
+              height: 50,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: const HamburgerButton(),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildDesktop(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 700),
       decoration: BoxDecoration(
@@ -74,6 +109,7 @@ class NavBar extends StatelessWidget {
   }
 }
 
+//TODO: extract
 class HoverUnderlineText extends StatefulWidget {
   final String text;
   final VoidCallback onTap;
@@ -111,7 +147,8 @@ class _HoverUnderlineTextState extends State<HoverUnderlineText> {
         child: Text(
           '${widget.text} ${_isHovering ? '+' : '-'}',
           style: widget.style.copyWith(
-            decoration: _isHovering ? TextDecoration.underline : TextDecoration.none,
+            decoration:
+                _isHovering ? TextDecoration.underline : TextDecoration.none,
             decorationColor: Colors.white,
             decorationThickness: 2,
           ),

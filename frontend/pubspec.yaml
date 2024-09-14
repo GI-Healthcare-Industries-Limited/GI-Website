@@ -94,6 +94,12 @@ flutter:
    - assets/images/mission.png
    - assets/images/vision.png
    - assets/images/mod_small.png
+   - assets/images/red_linkedin.png
+   - assets/images/red_mail.png
+   - assets/images/red_map_pin.png
+   - assets/images/red_phone.png
+   - assets/images/red_x.png
+   - assets/images/cb.png
    - assets/images/arrow.png
 
 

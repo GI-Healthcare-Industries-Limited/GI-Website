@@ -23,7 +23,6 @@ class NavBar extends StatelessWidget {
       duration: const Duration(milliseconds: 700),
       decoration: BoxDecoration(
         color: isTransparent ? Colors.transparent : MainTheme.giRed,
-        border: const Border(bottom: BorderSide(color: Colors.white)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,9 +34,9 @@ class NavBar extends StatelessWidget {
               height: 50,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: const HamburgerButton(),
+          const Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: HamburgerButton(),
           )
         ],
       ),

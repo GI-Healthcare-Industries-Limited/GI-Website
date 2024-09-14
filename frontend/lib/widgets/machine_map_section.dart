@@ -6,6 +6,10 @@ class MachineMapSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 1000;
+
     return Center(
       child: AspectRatio(
         aspectRatio: 16 / 9,
@@ -14,7 +18,7 @@ class MachineMapSection extends StatelessWidget {
             final mapWidth = constraints.maxWidth;
             final mapHeight = constraints.maxHeight;
 
-            return Stack(
+            return !isMobile ? Stack(
               children: [
                 Positioned.fill(
                   child: Image.asset(
@@ -158,7 +162,7 @@ class MachineMapSection extends StatelessWidget {
                   ),
                 ),
               ],
-            );
+            ): Image.asset('assets/images/machine_map.png');
           },
         ),
       ),

@@ -44,6 +44,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 1000;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -58,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                     child: BackgroundVideoPage(),
                   ),
                   const ProblemSection(),
-                  Image.asset('assets/images/arrows.png'),
+                  isMobile? Image.asset('assets/images/arrow.png') : Image.asset('assets/images/arrows.png', width: screenWidth - 200,),
                   const SolutionSection(),
                   const MachineMapSection(),
                   Supporters(),

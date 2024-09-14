@@ -4,8 +4,13 @@ import 'package:frontend/utils/helpers.dart';
 import 'package:frontend/widgets/linked_image.dart';
 
 class Footer extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+
+  final screenWidth = MediaQuery.of(context).size.width;
+  final isMobile = screenWidth < 1600;
+
     return Container(
       color: MainTheme.giRed,
       child: Column(
@@ -28,7 +33,7 @@ class Footer extends StatelessWidget {
                       ),
                     ]),
               ),
-              Column(
+              if(!isMobile) Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
@@ -101,7 +106,7 @@ class Footer extends StatelessWidget {
                   ),
                 ],
               ),
-              const Row(
+              if(!isMobile) const Row(
                 children: [
                   Padding(
                     padding: EdgeInsets.fromLTRB(16, 32, 16, 32),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/themes/main_theme.dart';
 import 'package:video_player/video_player.dart';
 
 class BackgroundVideoPage extends StatefulWidget {
@@ -33,6 +32,10 @@ class _BackgroundVideoPageState extends State<BackgroundVideoPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the screen size
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 1100;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -51,83 +54,120 @@ class _BackgroundVideoPageState extends State<BackgroundVideoPage> {
               }
             },
           ),
+          // Semi-transparent overlay
           Container(
             width: double.infinity,
             height: double.infinity,
             color: Colors.black.withOpacity(0.7),
           ),
           Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Row(children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    child: Image.asset(
-                      'assets/images/white_butterfly.png',
-                      height: 250,
-                    ),
-                  ),
-                  const Text(
-                    'GI Healthcare',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 48,
-                    ),
-                  ),
-                ]),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/divider.png',
-                          width: 200,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Image.asset(
-                            'assets/images/white_butterfly.png',
-                            height: 30,
-                          ),
-                        ),
-                        Image.asset(
-                          'assets/images/divider.png',
-                          width: 200,
-                        ),
-                      ],
-                    ),
-                    const Text(
-                      'We develop new technologies that provide\nfreshly cooked healthy food to\nanyone, any time, anywhere.',
-                      style: MainTheme.headerText,
-                    ),
-                    Row(
-                      children: [
-                        Image.asset(
-                          'assets/images/divider.png',
-                          width: 200,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                          child: Image.asset(
-                            'assets/images/white_butterfly.png',
-                            height: 30,
-                          ),
-                        ),
-                        Image.asset(
-                          'assets/images/divider.png',
-                          width: 200,
-                        ),
-                      ],
-                    )
-                  ],
-                )
-              ],
+            child: Padding(
+              padding: const EdgeInsets.all(16.0), // Added padding for responsiveness
+              child: isMobile
+                  ? _buildMobileLayout()
+                  : _buildDesktopLayout(),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  // Mobile layout (stacked vertically)
+  Widget _buildMobileLayout() {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Column(
+          children: [
+            Text(
+              'GI Healthcare',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 36,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 30),
+        SizedBox(height: 20),
+        Text(
+          'We develop new technologies that provide\nfreshly cooked healthy food to\nanyone, any time, anywhere.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18, // Smaller text for mobile
+          ),
+        ),
+        SizedBox(height: 20),
+      ],
+    );
+  }
+
+  // Desktop layout (horizontal row layout)
+  Widget _buildDesktopLayout() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        // Butterfly image and title on the left
+        Row(
+          children: [
+            Image.asset(
+              'assets/images/white_butterfly.png',
+              height: 250,
+            ),
+            const SizedBox(width: 16),
+            const Text(
+              'GI Healthcare',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 48,
+              ),
+            ),
+          ],
+        ),
+        // Divider, text, and another divider on the right
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildDividerSection(),
+            const SizedBox(height: 20),
+            const Text(
+              'We develop new technologies that provide\nfreshly cooked healthy food to\nanyone, any time, anywhere.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _buildDividerSection(),
+          ],
+        )
+      ],
+    );
+  }
+
+  // Divider and butterfly row
+  Widget _buildDividerSection() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/images/divider.png',
+          width: 100,
+        ),
+        const SizedBox(width: 8),
+        Image.asset(
+          'assets/images/white_butterfly.png',
+          height: 30,
+        ),
+        const SizedBox(width: 8),
+        Image.asset(
+          'assets/images/divider.png',
+          width: 100,
+        ),
+      ],
     );
   }
 }

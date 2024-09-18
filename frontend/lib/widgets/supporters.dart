@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:frontend/themes/main_theme.dart';
 
 class Supporters extends StatelessWidget {
+  const Supporters({super.key});
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final imageSize;
+    final double imageSize;
     screenWidth < 800 ? imageSize = 130 : imageSize = 200;
 
     return Padding(

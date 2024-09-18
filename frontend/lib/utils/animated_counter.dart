@@ -3,6 +3,8 @@ import 'package:frontend/themes/main_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+
+///A counter which graphically counts from 0, to the given target number
 class AnimatedCounter extends StatefulWidget {
   final int targetNumber;
   final bool money;

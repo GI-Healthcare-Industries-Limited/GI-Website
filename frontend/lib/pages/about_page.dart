@@ -59,7 +59,7 @@ class _AboutPageState extends State<AboutPage> {
                     ),
                     child: Column(
                       children: [
-                        SizedBox(height: 60,),
+                        const SizedBox(height: 60,),
                         Text(
                           'About Us',
                           style: MainTheme.problemText.copyWith(

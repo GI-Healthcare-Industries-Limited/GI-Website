@@ -108,7 +108,6 @@ class NavBar extends StatelessWidget {
   }
 }
 
-//TODO: extract
 class HoverUnderlineText extends StatefulWidget {
   final String text;
   final VoidCallback onTap;

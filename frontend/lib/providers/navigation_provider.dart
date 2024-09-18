@@ -10,12 +10,12 @@ class NavigationProvider with ChangeNotifier {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    HomePage(),
-    AboutPage(),
-    MilitaryPage(),
-    SpacePage(),
-    CareersPage(),
-    ContactPage(),
+    const HomePage(),
+    const AboutPage(),
+    const MilitaryPage(),
+    const SpacePage(),
+    const CareersPage(),
+    const ContactPage(),
   ];
 
   // Get the current index

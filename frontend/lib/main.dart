@@ -8,12 +8,14 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

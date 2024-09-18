@@ -24,6 +24,7 @@ class _HomePageState extends State<HomePage> {
     _scrollController.addListener(_onScroll);
   }
 
+  //controlling _isAtTop variable for navbar
   void _onScroll() {
     if (_scrollController.position.pixels == 0 && !_isAtTop) {
       setState(() {
@@ -69,7 +70,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                   const SolutionSection(),
                   const MachineMapSection(),
-                  Supporters(),
+                  const Supporters(),
                   Footer(),
                 ],
               ),
@@ -103,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                     ),
               const SolutionSection(),
               const MachineMapSection(),
-              Supporters(),
+              const Supporters(),
               Footer(),
             ],
           ),

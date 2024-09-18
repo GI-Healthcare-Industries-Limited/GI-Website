@@ -16,43 +16,35 @@ class ContactPage extends StatelessWidget {
             const NavBar(isTransparent: false),
             Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                    maxWidth: 1600), // Limit the content width
+                constraints: const BoxConstraints(maxWidth: 1600),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     if (constraints.maxWidth > 1030) {
                       return const Padding(
                         padding: EdgeInsets.only(top: 80),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment
-                              .center, // Center the row horizontally
+                          mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Enquiries Box on the left
                             SizedBox(
-                              width: 500, // Give it a fixed width
+                              width: 500,
                               child: EnquiriesBox(),
                             ),
                             SizedBox(width: 30),
-                            // Get in Touch and Visit Us on the right
                             SizedBox(
-                              width: 500, // Give it a fixed width
+                              width: 500,
                               child: GetInTouchBox(),
                             ),
                           ],
                         ),
                       );
                     } else {
-                      // Stack the sections vertically for mobile
                       return const Padding(
                         padding: EdgeInsets.only(top: 20),
                         child: Column(
                           children: [
-                            // Get in Touch and Visit Us on top
                             GetInTouchBox(),
-                            // Spacer
                             SizedBox(height: 30),
-                            // Enquiries Box on bottom
                             EnquiriesBox(),
                           ],
                         ),
@@ -214,7 +206,8 @@ class GetInTouchBox extends StatelessWidget {
             ),
           ),
           InkWell(
-            onTap: () => Helpers.SendToUrl('https://www.crunchbase.com/organization/gi-healthcare-industries'),
+            onTap: () => Helpers.SendToUrl(
+                'https://www.crunchbase.com/organization/gi-healthcare-industries'),
             child: ListTile(
               leading: Padding(
                 padding: const EdgeInsets.only(left: 2),
@@ -237,7 +230,10 @@ class GetInTouchBox extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text('Visit our HQ', style: TextStyle(color: Colors.grey),),
+          const Text(
+            'Visit our HQ',
+            style: TextStyle(color: Colors.grey),
+          ),
           InkWell(
             onTap: () =>
                 Helpers.SendToUrl('https://maps.app.goo.gl/7Xtk2bhCXDban21n7'),
@@ -252,8 +248,13 @@ class GetInTouchBox extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 10,),
-          const Text('Visit our R&D Lab', style: TextStyle(color: Colors.grey),),
+          const SizedBox(
+            height: 10,
+          ),
+          const Text(
+            'Visit our R&D Lab',
+            style: TextStyle(color: Colors.grey),
+          ),
           InkWell(
             onTap: () =>
                 Helpers.SendToUrl('https://maps.app.goo.gl/7Xtk2bhCXDban21n7'),

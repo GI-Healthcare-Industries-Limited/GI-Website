@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/web_scroll_behaviour.dart';
 import 'package:provider/provider.dart';
 import 'providers/navigation_provider.dart';
 
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scrollBehavior: WebScrollBehavior(),
       title: 'GI Healthcare',
       home: Scaffold(
         body: Consumer<NavigationProvider>(

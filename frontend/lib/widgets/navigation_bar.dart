@@ -34,9 +34,9 @@ class NavBar extends StatelessWidget {
               height: 50,
             ),
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.only(right: 16),
-            child: HamburgerButton(),
+            child: HamburgerButton(isTransparent: isTransparent,),
           )
         ],
       ),

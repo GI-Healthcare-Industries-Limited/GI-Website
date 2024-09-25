@@ -55,9 +55,12 @@ class NavBar extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/images/white_butterfly.webp',
-              height: 50,
+            child: InkWell(
+              onTap: () => context.read<NavigationProvider>().updateIndex(0),
+              child: Image.asset(
+                'assets/images/white_butterfly.webp',
+                height: 50,
+              ),
             ),
           ),
           HoverUnderlineText(

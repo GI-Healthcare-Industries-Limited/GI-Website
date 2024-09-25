@@ -24,7 +24,7 @@ class Footer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Image.asset(
-                        'assets/images/logo.png',
+                        'assets/images/logo.webp',
                         height: 80,
                       ),
                       const Text(
@@ -91,7 +91,7 @@ class Footer extends StatelessWidget {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Image.asset('assets/images/linkedin.png', height: 20,),
+                          child: Image.asset('assets/images/linkedin.webp', height: 20,),
                         ),
                         InkWell(
                           onTap: () => Helpers.SendToUrl(
@@ -133,7 +133,7 @@ class Footer extends StatelessWidget {
                         LinkedImage(
                             url:
                                 'https://www.google.co.uk/maps/place/Student+Ventures+Incubator/@51.4991367,-2.5494476,17z/data=!3m1!5s0x48719032f1b74bbb:0x474c8d872ad9970c!4m6!3m5!1s0x4871912b7d4f0e85:0x89210e44641bfadb!8m2!3d51.5002995!4d-2.5475728!16s%2Fg%2F11h80fxjft?entry=ttu&g_ep=EgoyMDI0MDgyOC4wIKXMDSoASAFQAw%3D%3D',
-                            imagePath: 'assets/images/hq_address.png')
+                            imagePath: 'assets/images/hq_address.webp')
                       ],
                     ),
                   ),
@@ -167,7 +167,7 @@ class Footer extends StatelessWidget {
                         LinkedImage(
                             url:
                                 'https://www.google.co.uk/maps/place/The+National+Robotarium/@55.9127033,-3.3270417,17z/data=!4m6!3m5!1s0x4887c5688c2f288f:0x29e1dbe3022d32cc!8m2!3d55.9127033!4d-3.3248765!16s%2Fg%2F11rt_bz8jz?entry=ttu&g_ep=EgoyMDI0MDgyOC4wIKXMDSoASAFQAw%3D%3D',
-                            imagePath: 'assets/images/rd_address.png'),
+                            imagePath: 'assets/images/rd_address.webp'),
                         SizedBox(
                           width: 50,
                         ),

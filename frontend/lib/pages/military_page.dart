@@ -24,7 +24,7 @@ class MilitaryPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center, 
                   children: [
-                    Image.asset('assets/images/mod_small.png', height: 200),
+                    Image.asset('assets/images/mod_small.webp', height: 200),
                     const SizedBox(height: 20),
                     const Text(
                       'For Access to our military portal,\nplease verify a valid mod.uk address using the box below.',

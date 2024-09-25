@@ -19,7 +19,7 @@ class AboutCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Image.asset('assets/images/$title.png', height: 60,),
+              Image.asset('assets/images/$title.webp', height: 60,),
               const SizedBox(width: 8.0),
               Text(
                 title,

@@ -22,7 +22,7 @@ class MachineMapSection extends StatelessWidget {
               children: [
                 Positioned.fill(
                   child: Image.asset(
-                    'assets/images/machine_map.png',
+                    'assets/images/machine_map.webp',
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -162,7 +162,7 @@ class MachineMapSection extends StatelessWidget {
                   ),
                 ),
               ],
-            ): Image.asset('assets/images/machine_map.png');
+            ): Image.asset('assets/images/machine_map.webp');
           },
         ),
       ),

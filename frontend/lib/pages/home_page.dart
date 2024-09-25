@@ -63,9 +63,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const ProblemSection(),
                   isMobile
-                      ? Image.asset('assets/images/arrow.png')
+                      ? Image.asset('assets/images/arrow.webp')
                       : Image.asset(
-                          'assets/images/arrows.png',
+                          'assets/images/arrows.webp',
                           width: screenWidth - 200,
                         ),
                   const SolutionSection(),
@@ -97,9 +97,9 @@ class _HomePageState extends State<HomePage> {
               ),
               const ProblemSection(),
               isMobile
-                  ? Image.asset('assets/images/arrow.png')
+                  ? Image.asset('assets/images/arrow.webp')
                   : Image.asset(
-                      'assets/images/arrows.png',
+                      'assets/images/arrows.webp',
                       width: screenWidth - 200,
                     ),
               const SolutionSection(),

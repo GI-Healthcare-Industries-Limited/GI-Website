@@ -177,7 +177,7 @@ class GetInTouchBox extends StatelessWidget {
             onTap: () => Helpers.SendToUrl('tel:+441313928881'),
             child: ListTile(
               leading: Image.asset(
-                'assets/images/red_phone.png',
+                'assets/images/red_phone.webp',
                 height: 30,
               ),
               title: const Text('+44 131 392 8881'),
@@ -188,7 +188,7 @@ class GetInTouchBox extends StatelessWidget {
                 Helpers.SendToUrl('mailto:enquiries@gihealthcare.co.uk'),
             child: ListTile(
               leading: Image.asset(
-                'assets/images/red_mail.png',
+                'assets/images/red_mail.webp',
                 height: 30,
               ),
               title: const Text('Send us an email'),
@@ -199,7 +199,7 @@ class GetInTouchBox extends StatelessWidget {
                 Helpers.SendToUrl('https://www.linkedin.com/company/gihil/'),
             child: ListTile(
               leading: Image.asset(
-                'assets/images/red_linkedin.png',
+                'assets/images/red_linkedin.webp',
                 height: 30,
               ),
               title: const Text('Find us on LinkedIn'),
@@ -212,7 +212,7 @@ class GetInTouchBox extends StatelessWidget {
               leading: Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Image.asset(
-                  'assets/images/cb.png',
+                  'assets/images/cb.webp',
                   height: 25,
                 ),
               ),
@@ -239,7 +239,7 @@ class GetInTouchBox extends StatelessWidget {
                 Helpers.SendToUrl('https://maps.app.goo.gl/7Xtk2bhCXDban21n7'),
             child: ListTile(
               leading: Image.asset(
-                'assets/images/red_map_pin.png',
+                'assets/images/red_map_pin.webp',
                 height: 30,
               ),
               title: const Text(
@@ -260,7 +260,7 @@ class GetInTouchBox extends StatelessWidget {
                 Helpers.SendToUrl('https://maps.app.goo.gl/7Xtk2bhCXDban21n7'),
             child: ListTile(
               leading: Image.asset(
-                'assets/images/red_map_pin.png',
+                'assets/images/red_map_pin.webp',
                 height: 30,
               ),
               title: const Text(

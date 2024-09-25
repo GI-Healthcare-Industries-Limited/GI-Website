@@ -74,7 +74,7 @@ class _ButterflySpotState extends State<ButterflySpot> {
               top: 10,
               left: 10,
               child: Image.asset(
-                'assets/images/white_butterfly.png',
+                'assets/images/white_butterfly.webp',
                 height: 40,
                 width: 40,
               ),

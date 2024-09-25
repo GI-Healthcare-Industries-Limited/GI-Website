@@ -65,42 +65,42 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - assets/images/butterfly.png
-   - assets/images/logo.png
-   - assets/images/hq_address.png
-   - assets/images/rd_address.png
+   - assets/images/butterfly.webp
+   - assets/images/logo.webp
+   - assets/images/hq_address.webp
+   - assets/images/rd_address.webp
    - assets/videos/bg_video.mp4
-   - assets/images/white_butterfly.png
-   - assets/images/divider.png
-   - assets/images/machine_map.png
-   - assets/images/hwu.png
-   - assets/images/eagle_labs.png
-   - assets/images/innovate_uk.png
-   - assets/images/uksa.png
-   - assets/images/uwe.png
-   - assets/images/uob.png
-   - assets/images/santander.png
-   - assets/images/mod.png
-   - assets/images/nr.png
-   - assets/images/arrows.png
-   - assets/images/linkedin.png
-   - assets/images/ash.png
-   - assets/images/adip.png
-   - assets/images/jake.png
-   - assets/images/chris.png
-   - assets/images/bailey.png
-   - assets/images/tuan.png
-   - assets/images/link.png
-   - assets/images/mission.png
-   - assets/images/vision.png
-   - assets/images/mod_small.png
-   - assets/images/red_linkedin.png
-   - assets/images/red_mail.png
-   - assets/images/red_map_pin.png
-   - assets/images/red_phone.png
-   - assets/images/red_x.png
-   - assets/images/cb.png
-   - assets/images/arrow.png
+   - assets/images/white_butterfly.webp
+   - assets/images/divider.webp
+   - assets/images/machine_map.webp
+   - assets/images/hwu.webp
+   - assets/images/eagle_labs.webp
+   - assets/images/innovate_uk.webp
+   - assets/images/uksa.webp
+   - assets/images/uwe.webp
+   - assets/images/uob.webp
+   - assets/images/santander.webp
+   - assets/images/mod.webp
+   - assets/images/nr.webp
+   - assets/images/arrows.webp
+   - assets/images/linkedin.webp
+   - assets/images/ash.webp
+   - assets/images/adip.webp
+   - assets/images/jake.webp
+   - assets/images/chris.webp
+   - assets/images/bailey.webp
+   - assets/images/tuan.webp
+   - assets/images/link.webp
+   - assets/images/mission.webp
+   - assets/images/vision.webp
+   - assets/images/mod_small.webp
+   - assets/images/red_linkedin.webp
+   - assets/images/red_mail.webp
+   - assets/images/red_map_pin.webp
+   - assets/images/red_phone.webp
+   - assets/images/red_x.webp
+   - assets/images/cb.webp
+   - assets/images/arrow.webp
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -30,7 +30,7 @@ class NavBar extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(
-              'assets/images/white_butterfly.png',
+              'assets/images/white_butterfly.webp',
               height: 50,
             ),
           ),
@@ -56,7 +56,7 @@ class NavBar extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(
-              'assets/images/white_butterfly.png',
+              'assets/images/white_butterfly.webp',
               height: 50,
             ),
           ),

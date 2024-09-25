@@ -103,32 +103,32 @@ class _AboutPageState extends State<AboutPage> {
                             runSpacing: 16,
                             children: [
                               PersonCard(
-                                imagePath: 'assets/images/ash.png',
+                                imagePath: 'assets/images/ash.webp',
                                 name: 'Aswath GI',
                                 jobRole: 'CEO',
                               ),
                               PersonCard(
-                                imagePath: 'assets/images/adip.png',
+                                imagePath: 'assets/images/adip.webp',
                                 name: 'Adip Das',
                                 jobRole: 'CTO',
                               ),
                               PersonCard(
-                                imagePath: 'assets/images/tuan.png',
+                                imagePath: 'assets/images/tuan.webp',
                                 name: 'Tuan Nguyen',
                                 jobRole: 'Software Engineer',
                               ),
                               PersonCard(
-                                imagePath: 'assets/images/chris.png',
+                                imagePath: 'assets/images/chris.webp',
                                 name: 'Chris Mitchell',
                                 jobRole: 'Robotics Engineer',
                               ),
                               PersonCard(
-                                imagePath: 'assets/images/jake.png',
+                                imagePath: 'assets/images/jake.webp',
                                 name: 'Jake Callcut',
                                 jobRole: 'Software Developer',
                               ),
                               PersonCard(
-                                imagePath: 'assets/images/bailey.png',
+                                imagePath: 'assets/images/bailey.webp',
                                 name: 'Bailey Tuddenham',
                                 jobRole: 'Design Engineer',
                               ),

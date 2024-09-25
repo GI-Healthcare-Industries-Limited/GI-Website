@@ -113,7 +113,7 @@ class _BackgroundVideoPageState extends State<BackgroundVideoPage> {
         Row(
           children: [
             Image.asset(
-              'assets/images/white_butterfly.png',
+              'assets/images/white_butterfly.webp',
               height: 250,
             ),
             const SizedBox(width: 16),
@@ -154,17 +154,17 @@ class _BackgroundVideoPageState extends State<BackgroundVideoPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset(
-          'assets/images/divider.png',
+          'assets/images/divider.webp',
           width: 100,
         ),
         const SizedBox(width: 8),
         Image.asset(
-          'assets/images/white_butterfly.png',
+          'assets/images/white_butterfly.webp',
           height: 30,
         ),
         const SizedBox(width: 8),
         Image.asset(
-          'assets/images/divider.png',
+          'assets/images/divider.webp',
           width: 100,
         ),
       ],

@@ -105,7 +105,7 @@ class _PersonCardState extends State<PersonCard> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Image.asset('assets/images/link.png'),
+                        child: Image.asset('assets/images/link.webp'),
                       ),
                     ],
                   ),

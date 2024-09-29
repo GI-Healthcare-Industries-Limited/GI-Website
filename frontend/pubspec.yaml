@@ -101,6 +101,15 @@ flutter:
    - assets/images/red_x.webp
    - assets/images/cb.webp
    - assets/images/arrow.webp
+   - assets/images/apollo_10.webp
+   - assets/images/astronauts.webp
+   - assets/images/earth.webp
+   - assets/images/mars.webp
+   - assets/images/neptune.webp
+   - assets/images/moon.webp
+   - assets/images/space_garden.webp
+
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

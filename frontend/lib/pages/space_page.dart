@@ -48,31 +48,22 @@ class _SpacePageState extends State<SpacePage> {
             controller: _scrollController,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: const Row(
+              child: Column(
                 children: [
-                  SpaceTextImage(
-                    text:
-                        'Recent advancements in growing vegetables in space offer '
-                        'an exciting opportunity to improve astronauts\' diets. NASA '
-                        'and other space agencies have successfully cultivated crops '
-                        'like lettuce, radishes, and even peppers on the International '
-                        'Space Station, providing a valuable source of fresh, nutritious '
-                        'food. While this is a significant step forward, the lack of cooking '
-                        'facilities in space means astronauts are still limited to raw produce. '
-                        'This is where our company sees tremendous potential. We are dedicated '
-                        'to expanding our fresh cooking technology into space, overcoming the '
-                        'challenges of a zero-gravity environment, and bringing freshly prepared '
-                        'meals to astronauts, ultimately enhancing their health and well-being on '
-                        'long missions.',
-                    imagePath: 'assets/images/astronauts.webp',
-                    imageFirst: true,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 100),
+                    child: SpaceTextImage(
+                      text:
+                          'Astronauts currently have limited food options in space, relying primarily on prepackaged, processed meals and a few raw vegetables. While these meals are carefully designed to meet nutritional needs, the lack of variety and freshness can make it challenging to maintain a balanced diet over long missions. This limited food selection can also impact astronauts\' overall health and morale. With no ability to cook or prepare fresh food in space, staying healthy over extended periods becomes increasingly difficult, highlighting the need for innovative solutions to expand their food options.',
+                      imagePath: 'assets/images/astronauts.webp',
+                      imageFirst: true,
+                    ),
                   ),
                   SpaceTextImage(
-                    text:
-                        'Recent advancements in growing vegetables in space offer an exciting opportunity to improve astronauts\' diets. NASA and other space agencies have successfully cultivated crops like lettuce, radishes, and even peppers on the International Space Station, providing a valuable source of fresh, nutritious food. While this is a significant step forward, the lack of cooking facilities in space means astronauts are still limited to raw produce. This is where our company sees tremendous potential. We are dedicated to expanding our fresh cooking technology into space, overcoming the challenges of a zero-gravity environment, and bringing freshly prepared meals to astronauts, ultimately enhancing their health and well-being on long missions.',
-                    imagePath: 'assets/images/space_garden.webp',
-                    imageFirst: true,
-                  ),
+                      text:
+                          'Recent advancements in growing vegetables in space offer an exciting opportunity to improve astronauts\' diets. NASA and other space agencies have successfully cultivated crops like lettuce, radishes, and even peppers on the International Space Station, providing a valuable source of fresh, nutritious food. While this is a significant step forward, the lack of cooking facilities in space means astronauts are still limited to raw produce. This is where our company sees tremendous potential. We are dedicated to expanding our fresh cooking technology into space, overcoming the challenges of a zero-gravity environment, and bringing freshly prepared meals to astronauts, ultimately enhancing their health and well-being on long missions.',
+                      imagePath: 'assets/images/space_garden.webp',
+                      imageFirst: false)
                 ],
               ),
             ),

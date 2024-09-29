@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/themes/main_theme.dart';
-import 'package:frontend/widgets/linked_image.dart';
 
 class Supporters extends StatelessWidget {
   const Supporters({super.key});

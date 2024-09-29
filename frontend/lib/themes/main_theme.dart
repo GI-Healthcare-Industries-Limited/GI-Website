@@ -27,6 +27,11 @@ class MainTheme {
     fontSize: 28,
   );
 
+  static const TextStyle quoteText = TextStyle(
+    color: Colors.white,
+    fontSize: 28
+  );
+
   static BoxDecoration tileDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.circular(12),

@@ -13,7 +13,7 @@ class ContactPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const NavBar(isTransparent: false),
+            const NavBar(isTransparent: false, color: MainTheme.giRed,),
             Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1600),

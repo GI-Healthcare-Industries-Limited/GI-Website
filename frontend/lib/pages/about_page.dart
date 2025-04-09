@@ -74,7 +74,7 @@ class _AboutPageState extends State<AboutPage> {
                           child: const AboutCard(
                             title: 'Vision',
                             text:
-                                'At GI Healthcare, our vision is to revolutionize the future of food by making freshly cooked, nutritious meals accessible in every corner of the world and beyond. Through cutting-edge autonomous cooking technology, we strive to empower individuals and organizations in even the most extreme environments—from bustling urban centers to remote military bases and space missions—by providing healthy, reliable, and sustainable food solutions.',
+                                'At GI Healthcare, our vision is to revolutionise the future of food by making freshly cooked, nutritious meals accessible in every corner of the world and beyond. Through cutting-edge autonomous cooking technology, we strive to empower individuals and organisations in even the most extreme environments—from bustling urban centres to remote military bases and space missions—by providing healthy, reliable, and sustainable food solutions.',
                           ),
                         ),
                         Padding(
@@ -114,8 +114,8 @@ class _AboutPageState extends State<AboutPage> {
                               ),
                               PersonCard(
                                 imagePath: 'assets/images/tuan.webp',
-                                name: 'Tuan Nguyen',
-                                jobRole: 'Software Engineer',
+                                name: 'Rafi Irvana',
+                                jobRole: 'Technical Coordinator',
                               ),
                               PersonCard(
                                 imagePath: 'assets/images/chris.webp',
@@ -125,7 +125,7 @@ class _AboutPageState extends State<AboutPage> {
                               PersonCard(
                                 imagePath: 'assets/images/jake.webp',
                                 name: 'Jake Callcut',
-                                jobRole: 'Software Developer',
+                                jobRole: 'Software Engineer',
                               ),
                               PersonCard(
                                 imagePath: 'assets/images/bailey.webp',

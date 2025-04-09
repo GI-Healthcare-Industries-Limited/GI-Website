@@ -104,7 +104,7 @@ class MilitaryPage extends StatelessWidget {
               ),
             ),
           ),
-          const NavBar(isTransparent: true),
+          const NavBar(isTransparent: true, color: Color(0xFF252625),),
         ],
       ),
     );

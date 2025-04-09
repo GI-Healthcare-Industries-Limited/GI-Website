@@ -13,15 +13,15 @@ class ContactPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const NavBar(isTransparent: false),
+            const NavBar(isTransparent: false, color: MainTheme.giRed,),
             Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1600),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     if (constraints.maxWidth > 1030) {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 80),
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 80),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,8 +30,8 @@ class ContactPage extends StatelessWidget {
                               width: 500,
                               child: EnquiriesBox(),
                             ),
-                            SizedBox(width: 30),
-                            SizedBox(
+                            const SizedBox(width: 30),
+                            const SizedBox(
                               width: 500,
                               child: GetInTouchBox(),
                             ),
@@ -39,12 +39,12 @@ class ContactPage extends StatelessWidget {
                         ),
                       );
                     } else {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 20),
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 20),
                         child: Column(
                           children: [
-                            GetInTouchBox(),
-                            SizedBox(height: 30),
+                            const GetInTouchBox(),
+                            const SizedBox(height: 30),
                             EnquiriesBox(),
                           ],
                         ),
@@ -63,7 +63,13 @@ class ContactPage extends StatelessWidget {
 
 // Enquiries Box Widget
 class EnquiriesBox extends StatelessWidget {
-  const EnquiriesBox({super.key});
+  EnquiriesBox({super.key});
+
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _messageController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,28 +90,32 @@ class EnquiriesBox extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
                 labelText: 'Name',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
                 labelText: 'Email Address',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _phoneController,
+              decoration: const InputDecoration(
                 labelText: 'Phone Number',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 10),
-            const TextField(
+            TextField(
+              controller: _messageController,
               maxLines: 5,
               decoration: InputDecoration(
                 labelText: 'Message',
@@ -115,7 +125,20 @@ class EnquiriesBox extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Submit logic here
+                final name = _nameController.text;
+                final email = _emailController.text;
+                final phone = _phoneController.text;
+                final message = _messageController.text;
+
+                print('Name: $name');
+                print('Email: $email');
+                print('Phone: $phone');
+                print('Message: $message');
+
+                _nameController.clear();
+                _emailController.clear();
+                _phoneController.clear();
+                _messageController.clear();
               },
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.resolveWith<Color>(
@@ -152,9 +175,19 @@ class EnquiriesBox extends StatelessWidget {
   }
 }
 
-// Get In Touch and Visit Us Widget
-class GetInTouchBox extends StatelessWidget {
+class GetInTouchBox extends StatefulWidget {
   const GetInTouchBox({super.key});
+
+  @override
+  State<GetInTouchBox> createState() => _GetInTouchBoxState();
+}
+
+class _GetInTouchBoxState extends State<GetInTouchBox> {
+  @override
+  void dispose() {
+    // Add any controller or resource disposal here if needed in the future
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -248,9 +281,7 @@ class GetInTouchBox extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           const Text(
             'Visit our R&D Lab',
             style: TextStyle(color: Colors.grey),
@@ -274,3 +305,4 @@ class GetInTouchBox extends StatelessWidget {
     );
   }
 }
+

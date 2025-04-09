@@ -48,7 +48,7 @@ class _CareersPageState extends State<CareersPage> {
               child: Text('Careers content coming soon', style: MainTheme.problemText,),
             ),
           ),
-          const NavBar(isTransparent: false),
+          const NavBar(isTransparent: false, color: MainTheme.giRed,),
         ],
       ),
     );

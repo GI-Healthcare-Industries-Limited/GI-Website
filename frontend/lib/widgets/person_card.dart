@@ -31,8 +31,8 @@ class _PersonCardState extends State<PersonCard> {
       case 'Adip Das':
         profilePath = 'https://www.linkedin.com/in/adip-das1998/';
         break;
-      case 'Tuan Nguyen':
-        profilePath = 'https://www.linkedin.com/in/nctune2808/';
+      case 'Rafi Irvana':
+        profilePath = 'https://www.linkedin.com/in/rafiirvana/';
         break;
       case 'Chris Mitchell':
         profilePath =

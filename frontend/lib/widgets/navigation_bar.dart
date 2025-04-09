@@ -6,8 +6,9 @@ import 'package:frontend/themes/main_theme.dart';
 
 class NavBar extends StatelessWidget {
   final bool isTransparent;
+  final Color color;
 
-  const NavBar({super.key, required this.isTransparent});
+  const NavBar({super.key, required this.isTransparent, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,7 @@ class NavBar extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 700),
       decoration: BoxDecoration(
-        color: isTransparent ? Colors.transparent : MainTheme.giRed,
+        color: isTransparent ? Colors.transparent : color,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -47,7 +48,7 @@ class NavBar extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 700),
       decoration: BoxDecoration(
-        color: isTransparent ? Colors.transparent : MainTheme.giRed,
+        color: isTransparent ? Colors.transparent : color,
         border: const Border(bottom: BorderSide(color: Colors.white)),
       ),
       child: Row(

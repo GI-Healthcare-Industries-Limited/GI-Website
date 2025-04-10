@@ -113,7 +113,7 @@ class _AboutPageState extends State<AboutPage> {
                                 jobRole: 'CTO',
                               ),
                               PersonCard(
-                                imagePath: 'assets/images/tuan.webp',
+                                imagePath: 'assets/images/rafi.webp',
                                 name: 'Rafi Irvana',
                                 jobRole: 'Technical Coordinator',
                               ),

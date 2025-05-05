@@ -35,3 +35,5 @@ jobs:
           app_location: frontend
           api_location: ''
           output_location: build/web
+	  skip_api_build: true
+	  production_branch: master

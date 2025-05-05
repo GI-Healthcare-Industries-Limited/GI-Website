@@ -15,22 +15,23 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0' # or your specific version
+          flutter-version: 'stable'
 
       - name: Install dependencies
-        run: flutter pub get
         working-directory: frontend
+        run: flutter pub get
 
       - name: Build Flutter Web
-        run: flutter build web
         working-directory: frontend
+        run: flutter build web --release
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
+        id: builddeploy
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GENTLE-GROUND-0D353971E }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: "frontend"
-          output_location: "frontend/build/web"
-
+          action: upload
+          app_location: frontend
+          api_location: ''
+          output_location: build/web

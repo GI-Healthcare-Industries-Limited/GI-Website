@@ -179,7 +179,7 @@ class Footer extends StatelessWidget {
             ],
           ),
           const Text(
-            'Copyright © 2024 GI Healthcare Industries Ltd.',
+            'Copyright © 2025 GI Healthcare Industries Ltd.',
             style: MainTheme.smallPrint,
           )
         ],

@@ -40593,7 +40593,7 @@ A.t3.prototype={
 F(){return"_CornerId."+this.b}}
 A.kh.prototype={}
 A.qz.prototype={
-jM(){var s,r,q=this,p=A.aFE(B.Gi,new A.a2E(q,q.b.gba().V(0,q.a.gba()))),o=q.a
+jM(){var s,r,q=this,p=A.aFE(B.Gj,new A.a2E(q,q.b.gba().V(0,q.a.gba()))),o=q.a
 o.toString
 s=p.a
 o=q.nB(o,s)
@@ -73930,7 +73930,7 @@ if(r>0&&s.e)s.ab(new A.aar(s))}},
 l(){this.d.l()
 this.aC()},
 I(a){var s=null,r=A.bq(a,s,t.w).w.a.a,q=r*0.1,p=r<1200,o=A.co("About Us",s,s,s,B.dw.Pf(p?24:32),s,s),n=p?16:200,m=p?16:200,l=t.p
-return A.oq(B.i,A.ex(B.aQ,A.b([A.ro(A.ij(A.cO(A.b([new A.aU(new A.a8(q,60,q,60),A.cO(A.b([B.N3,o,new A.aU(new A.a8(n,16,n,16),B.yA,s),new A.aU(new A.a8(m,16,m,16),B.yz,s),B.xF,A.co("Meet the Team",s,s,s,B.dw.Pf(p?24:32),s,s),B.JE],l),B.A,B.D,B.r),s)],l),B.A,B.D,B.r),s,s),this.d,s),B.j7],l),B.T,B.aO))}}
+return A.oq(B.i,A.ex(B.aQ,A.b([A.ro(A.ij(A.cO(A.b([new A.aU(new A.a8(q,60,q,60),A.cO(A.b([B.N3,o,new A.aU(new A.a8(n,16,n,16),B.yA,s),new A.aU(new A.a8(m,16,m,16),B.yz,s),B.xF,A.co("Meet the Team",s,s,s,B.dw.Pf(p?24:32),s,s),B.JB],l),B.A,B.D,B.r),s)],l),B.A,B.D,B.r),s,s),this.d,s),B.j7],l),B.T,B.aO))}}
 A.aaq.prototype={
 $0(){this.a.e=!0},
 $S:0}
@@ -74213,7 +74213,7 @@ $S:466}
 A.Go.prototype={
 I(a){var s=null,r=A.bq(a,s,t.w).w,q=t.p,p=A.b([new A.aU(B.CS,A.cO(A.b([A.bx("assets/images/logo.webp",s,80,s),B.RW],q),B.A,B.da,B.r),s)],q)
 r=!(r.a.a<1600)
-if(r)p.push(A.cO(A.b([B.JB,new A.aU(B.b7,A.ft(A.b([B.Jz,A.fS(!1,s,!0,B.Sg,s,!0,s,s,s,s,s,s,s,s,s,new A.Yu(),s,s,s,s,s)],q),B.A,B.D,B.r),s),B.JF,new A.aU(B.b7,A.ft(A.b([new A.aU(B.b7,A.bx("assets/images/linkedin.webp",s,20,s),s),A.fS(!1,s,!0,B.Ry,s,!0,s,s,s,s,s,s,s,s,s,new A.Yv(),s,s,s,s,s)],q),B.A,B.D,B.r),s)],q),B.aq,B.D,B.r))
+if(r)p.push(A.cO(A.b([B.JC,new A.aU(B.b7,A.ft(A.b([B.Jz,A.fS(!1,s,!0,B.Sg,s,!0,s,s,s,s,s,s,s,s,s,new A.Yu(),s,s,s,s,s)],q),B.A,B.D,B.r),s),B.JF,new A.aU(B.b7,A.ft(A.b([new A.aU(B.b7,A.bx("assets/images/linkedin.webp",s,20,s),s),A.fS(!1,s,!0,B.Ry,s,!0,s,s,s,s,s,s,s,s,s,new A.Yv(),s,s,s,s,s)],q),B.A,B.D,B.r),s)],q),B.aq,B.D,B.r))
 if(r)p.push(B.KY)
 return A.ds(s,A.cO(A.b([A.ft(p,B.A,B.da,B.r),B.S9],q),B.A,B.D,B.r),B.u,B.bh,s,s,s,s,s,s,s,s,s)}}
 A.Yu.prototype={
@@ -80009,7 +80009,7 @@ B.yh=new A.t3(1,"topRight")
 B.yi=new A.t3(2,"bottomLeft")
 B.Uc=new A.kh(B.yh,B.yi)
 B.Ud=new A.kh(B.yi,B.yh)
-B.Gi=A.b(s([B.Ub,B.Ue,B.Uc,B.Ud]),A.ar("w<kh>"))
+B.Gj=A.b(s([B.Ub,B.Ue,B.Uc,B.Ud]),A.ar("w<kh>"))
 B.dc=new A.fo(0,"controlModifier")
 B.dd=new A.fo(1,"shiftModifier")
 B.de=new A.fo(2,"altModifier")
@@ -81045,28 +81045,28 @@ B.Jy=new A.xy(null)
 B.DA=new A.l_(57898,!1)
 B.DG=new A.np(B.DA,20,B.i,null)
 B.Jz=new A.aU(B.b7,B.DG,null)
-B.eE=new A.l(!0,B.i,null,null,null,null,22,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.RH=new A.aX("Contact Us",null,B.eE,null,null,null,null,null,null)
-B.JB=new A.aU(B.b7,B.RH,null)
 B.CL=new A.a8(0,16,0,16)
 B.k9=new A.m0(2,"center")
 B.eI=new A.m0(0,"start")
 B.ka=new A.A2(0,"start")
 B.JM=new A.iD("assets/images/ash.webp","Aswath GI","CEO",null)
 B.JP=new A.iD("assets/images/adip.webp","Adip Das","CTO",null)
-B.JL=new A.iD("assets/images/rafi.webp","Rafi Irvana","Technical Coordinator",null)
 B.JO=new A.iD("assets/images/chris.webp","Chris Mitchell","Robotics Engineer",null)
 B.JN=new A.iD("assets/images/jake.webp","Jake Callcut","Software Engineer",null)
 B.JQ=new A.iD("assets/images/bailey.webp","Bailey Tuddenham","Design Engineer",null)
-B.Gj=A.b(s([B.JM,B.JP,B.JL,B.JO,B.JN,B.JQ]),t.p)
-B.U4=new A.A1(B.k9,16,16,B.Gj,null)
-B.JE=new A.aU(B.CL,B.U4,null)
+B.JL=new A.iD("assets/images/rafi.webp","Rafi Irvana","Technical Coordinator",null)
+B.Gi=A.b(s([B.JM,B.JP,B.JO,B.JN,B.JQ,B.JL]),t.p)
+B.U4=new A.A1(B.k9,16,16,B.Gi,null)
+B.JB=new A.aU(B.CL,B.U4,null)
+B.eE=new A.l(!0,B.i,null,null,null,null,22,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
+B.RH=new A.aX("Contact Us",null,B.eE,null,null,null,null,null,null)
+B.JC=new A.aU(B.b7,B.RH,null)
 B.DD=new A.l_(983171,!1)
 B.DH=new A.np(B.DD,20,B.i,null)
-B.JD=new A.aU(B.b7,B.DH,null)
+B.JE=new A.aU(B.b7,B.DH,null)
 B.aZ=new A.l(!0,B.i,null,null,null,null,14,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.Rz=new A.aX("+44 131 392 8881",null,B.aZ,null,null,null,null,null,null)
-B.FS=A.b(s([B.JD,B.Rz]),t.p)
+B.FS=A.b(s([B.JE,B.Rz]),t.p)
 B.L0=new A.lH(B.aE,B.D,B.r,B.A,null,B.aA,null,0,B.FS,null)
 B.JF=new A.aU(B.b7,B.L0,null)
 B.cB=new A.I1(0,"fill")
@@ -81158,7 +81158,7 @@ B.JH=new A.aU(B.CJ,B.BF,null)
 B.Eq=new A.qs("https://www.google.co.uk/maps/place/Student+Ventures+Incubator/@51.4991367,-2.5494476,17z/data=!3m1!5s0x48719032f1b74bbb:0x474c8d872ad9970c!4m6!3m5!1s0x4871912b7d4f0e85:0x89210e44641bfadb!8m2!3d51.5002995!4d-2.5475728!16s%2Fg%2F11h80fxjft?entry=ttu&g_ep=EgoyMDI0MDgyOC4wIKXMDSoASAFQAw%3D%3D","assets/images/hq_address.webp",null)
 B.FR=A.b(s([B.JH,B.Eq]),t.p)
 B.KZ=new A.lH(B.aE,B.D,B.r,B.A,null,B.aA,null,0,B.FR,null)
-B.JC=new A.aU(B.CW,B.KZ,null)
+B.JD=new A.aU(B.CW,B.KZ,null)
 B.xE=new A.dk(50,null,null,null)
 B.CI=new A.a8(0,0,16,0)
 B.S3=new A.aX("R&D Address:",null,B.eE,B.bU,null,null,null,null,null)
@@ -81170,7 +81170,7 @@ B.Er=new A.qs("https://www.google.co.uk/maps/place/The+National+Robotarium/@55.9
 B.FA=A.b(s([B.JA,B.Er,B.xE]),t.p)
 B.L_=new A.lH(B.aE,B.D,B.r,B.A,null,B.aA,null,0,B.FA,null)
 B.JG=new A.aU(B.bj,B.L_,null)
-B.Fl=A.b(s([B.JC,B.xE,B.JG]),t.p)
+B.Fl=A.b(s([B.JD,B.xE,B.JG]),t.p)
 B.KY=new A.lH(B.aE,B.D,B.r,B.A,null,B.aA,null,0,B.Fl,null)
 B.L1=new A.yq(1333)
 B.jj=new A.yq(2222)
@@ -81740,7 +81740,7 @@ B.RY=new A.aX("For Access to our military portal,\nplease verify a valid mod.uk 
 B.RZ=new A.aX("Visit Us",null,B.jY,null,null,null,null,null,null)
 B.S5=new A.aX("Get in Touch",null,null,null,null,null,null,null,null)
 B.S6=new A.aX("Visit our HQ",null,B.y_,null,null,null,null,null,null)
-B.S9=new A.aX("Copyright \xa9 2024 GI Healthcare Industries Ltd.",null,B.ho,null,null,null,null,null,null)
+B.S9=new A.aX("Copyright \xa9 2025 GI Healthcare Industries Ltd.",null,B.ho,null,null,null,null,null,null)
 B.Se=new A.aX("Find us on LinkedIn",null,null,null,null,null,null,null,null)
 B.Sf=new A.aX("Enquiries",null,B.jY,null,null,null,null,null,null)
 B.Sg=new A.aX("info@gihealthcare.co.uk",null,B.aZ,null,null,null,null,null,null)

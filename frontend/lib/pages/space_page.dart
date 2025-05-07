@@ -30,8 +30,6 @@ class _SpacePageState extends State<SpacePage> {
       } else if (_scrollController.position.pixels > 0 && _isAtTop) {
         _isAtTop = false;
       }
-      // You can print the scroll offset for debugging
-      // print('Scroll Offset: ${_scrollController.position.pixels}');
     });
   }
 
@@ -43,8 +41,14 @@ class _SpacePageState extends State<SpacePage> {
 
   @override
   Widget build(BuildContext context) {
-    double scrollOffset =
-        _scrollController.hasClients ? _scrollController.offset : 0.0;
+    // Calculate values based on screen size.
+    double screenWidth = MediaQuery.of(context).size.width;
+    double horizontalPadding = screenWidth * 0.05; // 5% of screen width
+    horizontalPadding = horizontalPadding < 16 ? 16 : horizontalPadding;
+
+    // Adjust top spacing and bottom spacing based on screen size.
+    double topPadding = screenWidth < 600 ? 100.0 : 150.0;
+    double extraBottomSpace = screenWidth < 600 ? 500.0 : 1500.0;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -53,28 +57,37 @@ class _SpacePageState extends State<SpacePage> {
           AnimatedBuilder(
             animation: _scrollController,
             builder: (context, child) {
+              double scrollOffset = _scrollController.hasClients
+                  ? _scrollController.offset
+                  : 0.0;
               return SpaceBackdrop(scrollOffset: scrollOffset);
             },
           ),
           SingleChildScrollView(
             controller: _scrollController,
             child: Padding(
-              padding: const EdgeInsets.only(top: 100.0),
+              padding: EdgeInsets.only(top: topPadding),
               child: Column(
                 children: [
-                  // Your existing content here
+                  // Quote Section
                   Padding(
                     padding: const EdgeInsets.only(top: 30.0, bottom: 30.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
-                          '\"Food is much more than just fuel for Astronauts\"',
-                          style: MainTheme.quoteText,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Text(
+                            '\"Food is much more than just fuel for Astronauts\"',
+                            style: MainTheme.quoteText,
+                          ),
                         ),
-                        Text(
-                          '- Dr. Scott M. Smith, NASA',
-                          style: MainTheme.smallPrint,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Text(
+                            '- Dr. Scott M. Smith, NASA',
+                            style: MainTheme.smallPrint,
+                          ),
                         ),
                       ],
                     ),
@@ -85,6 +98,7 @@ class _SpacePageState extends State<SpacePage> {
                     imagePath: 'assets/images/astronauts.webp',
                     imageFirst: true,
                   ),
+                  // Second Quote Section
                   Padding(
                     padding: const EdgeInsets.only(top: 30.0, bottom: 30.0),
                     child: Column(
@@ -107,8 +121,10 @@ class _SpacePageState extends State<SpacePage> {
                     imagePath: 'assets/images/space_garden.webp',
                     imageFirst: false,
                   ),
+                  // Call-to-Action Section
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 200, 0, 20),
+                    padding: EdgeInsets.fromLTRB(
+                        horizontalPadding, screenWidth < 600 ? 150.0 : 200.0, horizontalPadding, 20.0),
                     child: Text(
                       'Partner with Us to Shape the Future of Space Nutrition',
                       textAlign: TextAlign.center,
@@ -116,7 +132,8 @@ class _SpacePageState extends State<SpacePage> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(400, 0, 400, 10),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: horizontalPadding, vertical: 10.0),
                     child: Text(
                       'We\'re looking for visionary partners to bring fresh cooking technology into space. If you\'re part of a space agency, research institution, or commercial venture, we want to hear from you and explore how we can collaborate to make space missions healthier and more sustainable.',
                       textAlign: TextAlign.center,
@@ -130,30 +147,32 @@ class _SpacePageState extends State<SpacePage> {
                         context.read<NavigationProvider>().updateIndex(5);
                       },
                       style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
                           (states) {
-                            if (states.contains(WidgetState.hovered)) {
+                            if (states.contains(MaterialState.hovered)) {
                               return Colors.white;
                             }
                             return Colors.black;
                           },
                         ),
-                        foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                        foregroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
                           (states) {
-                            if (states.contains(WidgetState.hovered)) {
+                            if (states.contains(MaterialState.hovered)) {
                               return Colors.black;
                             }
                             return Colors.white;
                           },
                         ),
-                        padding: WidgetStateProperty.all<EdgeInsets>(
+                        padding: MaterialStateProperty.all<EdgeInsets>(
                           const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
                         ),
-                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
-                            side: BorderSide(
+                            side: const BorderSide(
                               color: Colors.white,
                               width: 2.0,
                             ),
@@ -163,8 +182,8 @@ class _SpacePageState extends State<SpacePage> {
                       child: const Text('Get in Touch'),
                     ),
                   ),
-                  // Added extra space to enable scrolling
-                  SizedBox(height: 1500),
+                  // Extra space for scrolling
+                  SizedBox(height: extraBottomSpace),
                 ],
               ),
             ),

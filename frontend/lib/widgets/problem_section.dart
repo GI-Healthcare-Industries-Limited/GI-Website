@@ -20,14 +20,15 @@ class ProblemSection extends StatelessWidget {
 
   // Desktop layout with three columns
   Widget _buildDesktopLayout() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(child: _buildProblemTile('Over-Consumption', _buildOverConsumptionContent())),
-        Expanded(child: _buildProblemTile('Labour Shortage', _buildLabourShortageContent())),
-        Expanded(child: _buildProblemTile('Price Increase', _buildPriceIncreaseContent())),
-      ],
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: _buildProblemTile('Over-Consumption', _buildOverConsumptionContent())),
+          Expanded(child: _buildProblemTile('Labour Shortage', _buildLabourShortageContent())),
+          Expanded(child: _buildProblemTile('Price Increase', _buildPriceIncreaseContent())),
+        ],
+      ),
     );
   }
 
@@ -47,14 +48,14 @@ class ProblemSection extends StatelessWidget {
   // Widget to build each problem tile
   Widget _buildProblemTile(String title, Widget content) {
     return Container(
-      margin: const EdgeInsets.all(16.0), // Add some margin for spacing
+      margin: const EdgeInsets.all(16.0),
       padding: const EdgeInsets.all(32.0),
       decoration: MainTheme.tileDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: MainTheme.problemText),
-          const SizedBox(height: 16), // Spacing between title and content
+          const SizedBox(height: 16),
           content,
         ],
       ),

@@ -62,10 +62,9 @@ class _BackgroundVideoPageState extends State<BackgroundVideoPage> {
           ),
           Center(
             child: Padding(
-              padding: const EdgeInsets.all(16.0), // Added padding for responsiveness
-              child: isMobile
-                  ? _buildMobileLayout()
-                  : _buildDesktopLayout(),
+              padding: const EdgeInsets.all(
+                  16.0), // Added padding for responsiveness
+              child: isMobile ? _buildMobileLayout() : _buildDesktopLayout(),
             ),
           ),
         ],
@@ -92,7 +91,7 @@ class _BackgroundVideoPageState extends State<BackgroundVideoPage> {
         SizedBox(height: 30),
         SizedBox(height: 20),
         Text(
-          'We develop new technologies that provide\nfreshly cooked healthy food to\nanyone, any time, anywhere.',
+          'On a mission to develop advanced food tech products\nto make freshly cooked healthy food easily accessible and\naffordable to anyone, anytime, anywhere\n(beyond planet Earth!) ',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
@@ -133,7 +132,7 @@ class _BackgroundVideoPageState extends State<BackgroundVideoPage> {
             _buildDividerSection(),
             const SizedBox(height: 20),
             const Text(
-              'We develop new technologies that provide\nfreshly cooked healthy food to\nanyone, any time, anywhere.',
+              'On a mission to develop advanced food tech\nproducts to make freshly cooked healthy food easily\naccessible and affordable to anyone,\nanytime, anywhere (beyond planet Earth!) ',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,

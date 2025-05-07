@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/themes/main_theme.dart';
+import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/navigation_bar.dart';
 import 'package:frontend/widgets/person_card.dart';
 import 'package:frontend/widgets/about_card.dart';
@@ -138,6 +139,7 @@ class _AboutPageState extends State<AboutPage> {
                       ],
                     ),
                   ),
+                  Footer(),
                 ],
               ),
             ),

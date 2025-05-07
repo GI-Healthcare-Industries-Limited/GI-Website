@@ -12,7 +12,7 @@ class SolutionSection extends StatelessWidget {
 
     return Container(
       color: Colors.white,
-      padding: isMobile? EdgeInsets.fromLTRB(screenWidth/5, 200, screenWidth/5, 200): EdgeInsets.fromLTRB(screenWidth/3, 200, screenWidth/3, 200),
+      padding: isMobile? EdgeInsets.fromLTRB(screenWidth/5, 200, screenWidth/5, 200): EdgeInsets.fromLTRB(screenWidth/8, 200, screenWidth/8, 200),
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

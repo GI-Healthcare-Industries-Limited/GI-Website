@@ -147,7 +147,7 @@ class _CareersPageState extends State<CareersPage> {
                         SizedBox(
                           height: 50, 
                         ),
-                        Text('if you are interested in any of the above positions, please send your CV and cover letter to careers@gihealthcare.co.uk')
+                        Text('if you are interested in any of the above positions, please send your CV and cover letter to info@gihealthcare.co.uk')
 
                       ],
                     ),

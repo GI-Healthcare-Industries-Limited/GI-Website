@@ -74107,7 +74107,7 @@ if(r>0&&s.e)s.aa(new A.ac5(s))}},
 l(){this.d.l()
 this.aC()},
 I(a){var s=null,r="Edinburgh",q="Internship",p=A.e1(s,80,s),o=A.b([new A.cC(5,B.bt,A.ai(B.c.ai(127.5),B.en.gm()>>>16&255,B.en.gm()>>>8&255,B.en.gm()&255),B.J8,7)],t.G),n=t.w,m=t.p
-return A.oq(B.i,A.ey(B.aR,A.b([A.oF(new A.aJ(B.CY,A.fI(A.cm(A.b([B.Lc,p,B.S6,B.aJ,A.cQ(s,A.bx("assets/images/robo_tile.webp",B.zv,s,A.bd(a,s,n).w.a.a*2/3),B.r,s,s,new A.c7(s,s,s,s,o,s,B.a_),s,s,s,s,s,s,s),B.aJ,A.e1(B.Su,s,A.bd(a,s,n).w.a.a*0.5),B.jV,B.RM,B.aJ,A.cm(A.b([new A.wJ("Technician Intern",r,q,"Join our team to maintain and repair complex systems.",s),new A.wJ("Junior Software Developer",r,q,"Join our team to develop innovative software solutions.",s),A.e1(s,50,s),A.bO("if you are interested in any of the above positions, please send your CV and cover letter to careers@gihealthcare.co.uk",s,s,s,s,s,s,s)],m),B.x,B.rG,B.q),B.jV,new A.qc(s)],m),B.x,B.by,B.q),s,s),s),this.d,s),B.jd],m),B.S,B.aP))}}
+return A.oq(B.i,A.ey(B.aR,A.b([A.oF(new A.aJ(B.CY,A.fI(A.cm(A.b([B.Lc,p,B.S6,B.aJ,A.cQ(s,A.bx("assets/images/robo_tile.webp",B.zv,s,A.bd(a,s,n).w.a.a*2/3),B.r,s,s,new A.c7(s,s,s,s,o,s,B.a_),s,s,s,s,s,s,s),B.aJ,A.e1(B.Su,s,A.bd(a,s,n).w.a.a*0.5),B.jV,B.RM,B.aJ,A.cm(A.b([new A.wJ("Technician Intern",r,q,"Join our team to maintain and repair complex systems.",s),new A.wJ("Junior Software Developer",r,q,"Join our team to develop innovative software solutions.",s),A.e1(s,50,s),A.bO("if you are interested in any of the above positions, please send your CV and cover letter to info@gihealthcare.co.uk",s,s,s,s,s,s,s)],m),B.x,B.rG,B.q),B.jV,new A.qc(s)],m),B.x,B.by,B.q),s,s),s),this.d,s),B.jd],m),B.S,B.aP))}}
 A.ac4.prototype={
 $0(){this.a.e=!0},
 $S:0}

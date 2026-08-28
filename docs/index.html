@@ -42,25 +42,27 @@
   
     <!-- Flutter -->
     <script>
-      const serviceWorkerVersion = "3116220575";
-    </script>
-    <script src="flutter.js" defer></script>
-  </head>
-<body>
-  <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
+      // The previous GitHub Pages build used Flutter's service worker and could
+      // keep serving an old website after a deployment. Remove that legacy
+      // registration before starting the application.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          registrations.forEach(function(registration) {
+            registration.unregister();
+          });
+        });
+        if ('caches' in window) {
+          caches.keys().then(function(keys) {
+            keys.filter(function(key) {
+              return key.startsWith('flutter-');
+            }).forEach(function(key) {
+              caches.delete(key);
+            });
           });
         }
-      });
-    });
-  </script>
-</body>
+      }
+    </script>
+    <script src="flutter_bootstrap.js" async></script>
+  </head>
+<body></body>
 </html>

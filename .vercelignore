@@ -1,0 +1,8 @@
+.git/
+.next/
+.vercel/
+node_modules/
+public/
+frontend/
+*.DS_Store
+docs/.DS_Store

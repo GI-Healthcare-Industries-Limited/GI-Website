@@ -4,8 +4,15 @@ class Helpers {
   static void SendToUrl(String url) async {
     if (await canLaunchUrlString(url)) {
       await launchUrlString(url);
+    } else {
+      throw 'Could not launch $url';
     }
-    else{
+  }
+
+  static void SendToSameTab(String url) async {
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url, webOnlyWindowName: '_self');
+    } else {
       throw 'Could not launch $url';
     }
   }

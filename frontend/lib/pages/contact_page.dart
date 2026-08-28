@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/themes/main_theme.dart';
 import 'package:frontend/utils/helpers.dart';
 import 'package:frontend/widgets/navigation_bar.dart';
+import 'package:http/http.dart' as http;
 
 class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
@@ -13,7 +16,10 @@ class ContactPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const NavBar(isTransparent: false, color: MainTheme.giRed,),
+            const NavBar(
+              isTransparent: false,
+              color: MainTheme.giRed,
+            ),
             Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1600),
@@ -62,14 +68,104 @@ class ContactPage extends StatelessWidget {
 }
 
 // Enquiries Box Widget
-class EnquiriesBox extends StatelessWidget {
-  EnquiriesBox({super.key});
+class EnquiriesBox extends StatefulWidget {
+  const EnquiriesBox({super.key});
 
+  @override
+  State<EnquiriesBox> createState() => _EnquiriesBoxState();
+}
+
+class _EnquiriesBoxState extends State<EnquiriesBox> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _messageController = TextEditingController();
+  bool _isSubmitting = false;
+  bool _submissionSucceeded = false;
+  String? _statusMessage;
 
+  Future<void> _submitEnquiry() async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final message = _messageController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || message.isEmpty) {
+      setState(() {
+        _submissionSucceeded = false;
+        _statusMessage = 'Please enter your name, email address and message.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+      _statusMessage = null;
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('/api/contact'),
+        headers: const {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': name,
+          'email': email,
+          'phone': phone,
+          'message': message,
+        }),
+      );
+
+      if (!mounted) return;
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        _nameController.clear();
+        _emailController.clear();
+        _phoneController.clear();
+        _messageController.clear();
+        setState(() {
+          _submissionSucceeded = true;
+          _statusMessage = 'Thank you. Your message has been sent.';
+        });
+      } else {
+        String errorMessage =
+            'We could not send your message. Please try again.';
+        try {
+          final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+          if (decoded['error'] is String) {
+            errorMessage = decoded['error'] as String;
+          }
+        } catch (_) {
+          // Keep the safe fallback message when the server response is not JSON.
+        }
+        setState(() {
+          _submissionSucceeded = false;
+          _statusMessage = errorMessage;
+        });
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _submissionSucceeded = false;
+        _statusMessage =
+            'We could not send your message. Please check your connection and try again.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +188,7 @@ class EnquiriesBox extends StatelessWidget {
             const SizedBox(height: 20),
             TextField(
               controller: _nameController,
+              autofillHints: const [AutofillHints.name],
               decoration: const InputDecoration(
                 labelText: 'Name',
                 border: OutlineInputBorder(),
@@ -100,6 +197,8 @@ class EnquiriesBox extends StatelessWidget {
             const SizedBox(height: 10),
             TextField(
               controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
               decoration: const InputDecoration(
                 labelText: 'Email Address',
                 border: OutlineInputBorder(),
@@ -108,6 +207,8 @@ class EnquiriesBox extends StatelessWidget {
             const SizedBox(height: 10),
             TextField(
               controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              autofillHints: const [AutofillHints.telephoneNumber],
               decoration: const InputDecoration(
                 labelText: 'Phone Number',
                 border: OutlineInputBorder(),
@@ -124,22 +225,7 @@ class EnquiriesBox extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                final name = _nameController.text;
-                final email = _emailController.text;
-                final phone = _phoneController.text;
-                final message = _messageController.text;
-
-                print('Name: $name');
-                print('Email: $email');
-                print('Phone: $phone');
-                print('Message: $message');
-
-                _nameController.clear();
-                _emailController.clear();
-                _phoneController.clear();
-                _messageController.clear();
-              },
+              onPressed: _isSubmitting ? null : _submitEnquiry,
               style: ButtonStyle(
                 backgroundColor: WidgetStateProperty.resolveWith<Color>(
                   (Set<WidgetState> states) {
@@ -166,8 +252,23 @@ class EnquiriesBox extends StatelessWidget {
                   },
                 ),
               ),
-              child: const Text('Submit'),
+              child: Text(_isSubmitting ? 'Sending…' : 'Submit'),
             ),
+            if (_statusMessage != null) ...[
+              const SizedBox(height: 12),
+              Semantics(
+                liveRegion: true,
+                child: Text(
+                  _statusMessage!,
+                  style: TextStyle(
+                    color: _submissionSucceeded
+                        ? Colors.green[700]
+                        : MainTheme.giRed,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -305,4 +406,3 @@ class _GetInTouchBoxState extends State<GetInTouchBox> {
     );
   }
 }
-

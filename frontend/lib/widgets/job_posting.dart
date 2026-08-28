@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/helpers.dart';
 
 class JobPosting extends StatelessWidget {
   final String title;
@@ -48,19 +49,36 @@ class JobPosting extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(description),
-              Row(
-                children: [
-                  Text(
-                    'Apply',
-                    style: TextStyle(
-                      //decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[500]
+              Semantics(
+                button: true,
+                label: 'Apply for $title',
+                child: InkWell(
+                  onTap: () => Helpers.SendToSameTab(
+                    Uri.base
+                        .resolve(
+                            '/apply?role=${Uri.encodeQueryComponent(title)}')
+                        .toString(),
+                  ),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Apply',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[700]),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.link,
+                          color: Colors.grey[700],
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(width: 4),
-                  Icon(Icons.link, color: Colors.grey[500],),
-                ],
+                ),
               ),
             ],
           ),

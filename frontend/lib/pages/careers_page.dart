@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/providers/navigation_provider.dart';
 import 'package:frontend/themes/main_theme.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/job_posting.dart';
 import 'package:frontend/widgets/navigation_bar.dart';
-import 'package:provider/provider.dart';
 
 class CareersPage extends StatefulWidget {
   const CareersPage({super.key});
@@ -95,19 +93,19 @@ class _CareersPageState extends State<CareersPage> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                        ),
-                      ],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
                       child: Image.asset(
-                      'assets/images/robo_tile.webp',
-                      width: MediaQuery.of(context).size.width * 2 / 3,
-                      fit: BoxFit.contain,
+                        'assets/images/robo_tile.webp',
+                        width: MediaQuery.of(context).size.width * 2 / 3,
+                        fit: BoxFit.contain,
                       ),
                     ),
                     const SizedBox(
@@ -142,13 +140,11 @@ class _CareersPageState extends State<CareersPage> {
                             jobType: "Internship",
                             description:
                                 "Join our team to develop innovative software solutions."),
-
-
                         SizedBox(
-                          height: 50, 
+                          height: 50,
                         ),
-                        Text('if you are interested in any of the above positions, please send your CV and cover letter to info@gihealthcare.co.uk')
-
+                        Text(
+                            'Select Apply to send us your details and CV. For other enquiries, email info@gihealthcare.co.uk.')
                       ],
                     ),
                     const SizedBox(height: 60),

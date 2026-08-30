@@ -7,3 +7,5 @@ public/
 *.tsbuildinfo
 npm-debug.log*
 .vercel
+.env*.local
+supabase/.temp/

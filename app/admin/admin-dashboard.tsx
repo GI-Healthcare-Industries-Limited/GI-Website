@@ -41,6 +41,8 @@ export function AdminDashboard() {
   const [items, setItems] = useState<Submission[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null)
+  const [changingPassword, setChangingPassword] = useState(false)
 
   useEffect(() => {
     if (!supabase) {
@@ -108,6 +110,40 @@ export function AdminDashboard() {
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, status: previousStatus } : entry))
       setError('Could not update the submission status.')
     }
+  }
+
+  async function changePassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!supabase) return
+
+    const form = event.currentTarget
+    const formData = new FormData(form)
+    const password = String(formData.get('newPassword') || '')
+    const confirmation = String(formData.get('confirmPassword') || '')
+
+    setError(null)
+    setPasswordMessage(null)
+
+    if (password.length < 12) {
+      setError('Your new password must contain at least 12 characters.')
+      return
+    }
+    if (password !== confirmation) {
+      setError('The new passwords do not match.')
+      return
+    }
+
+    setChangingPassword(true)
+    const { error: passwordError } = await supabase.auth.updateUser({ password })
+    setChangingPassword(false)
+
+    if (passwordError) {
+      setError(passwordError.message)
+      return
+    }
+
+    form.reset()
+    setPasswordMessage('Your admin password has been changed.')
   }
 
   async function openCv(item: Submission) {
@@ -179,6 +215,27 @@ export function AdminDashboard() {
       </div>
 
       {error && <p aria-live="polite" className="status-message error">{error}</p>}
+
+      <details className="panel password-panel">
+        <summary>Change admin password</summary>
+        <form className="password-form" onSubmit={changePassword}>
+          <p>Use at least 12 characters and keep this password private.</p>
+          <div className="field-grid">
+            <div className="field">
+              <label htmlFor="new-admin-password">New password</label>
+              <input autoComplete="new-password" id="new-admin-password" minLength={12} name="newPassword" required type="password" />
+            </div>
+            <div className="field">
+              <label htmlFor="confirm-admin-password">Confirm new password</label>
+              <input autoComplete="new-password" id="confirm-admin-password" minLength={12} name="confirmPassword" required type="password" />
+            </div>
+          </div>
+          <button className="button primary-button" disabled={changingPassword} type="submit">
+            {changingPassword ? 'Changing password…' : 'Change password'}
+          </button>
+          {passwordMessage && <p aria-live="polite" className="status-message success">{passwordMessage}</p>}
+        </form>
+      </details>
 
       <section className="submission-list">
         {!loading && items.length === 0 && <div className="panel empty-state">No {kind === 'contact' ? 'messages' : 'applications'} yet.</div>}

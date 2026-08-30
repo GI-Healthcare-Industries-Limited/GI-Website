@@ -331,6 +331,33 @@ h1 {
   gap: 8px;
 }
 
+.password-panel {
+  margin: 0 0 20px;
+  padding: 18px 22px;
+}
+
+.password-panel summary {
+  cursor: pointer;
+  font-weight: 760;
+}
+
+.password-form {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+.password-form > p:first-child {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.password-form .status-message {
+  display: inline-block;
+  margin-left: 12px;
+}
+
 .submission-list {
   display: grid;
   gap: 14px;

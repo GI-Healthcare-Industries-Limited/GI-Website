@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 
-import { SiteHeader } from '@/app/_components/site-header'
 import { AdminDashboard } from '@/app/admin/admin-dashboard'
 
 export const metadata: Metadata = {
@@ -9,10 +8,5 @@ export const metadata: Metadata = {
 }
 
 export default function AdminPage() {
-  return (
-    <main className="shell admin-page">
-      <SiteHeader />
-      <AdminDashboard />
-    </main>
-  )
+  return <AdminDashboard />
 }

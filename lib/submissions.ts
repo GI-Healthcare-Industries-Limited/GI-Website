@@ -20,7 +20,16 @@ export const applicationSchema = z.object({
   name: z.string().trim().min(2, 'Please enter your name.').max(120),
   email: z.string().trim().email('Please enter a valid email address.').max(254),
   phone: z.string().trim().max(50).optional().default(''),
-  coverLetter: z.string().trim().min(30, 'Please add a short cover letter.').max(7000),
+  portfolioUrl: z.string().trim().url('Please enter a valid portfolio or project URL.').max(2048)
+    .refine((value) => ['http:', 'https:'].includes(new URL(value).protocol), {
+      message: 'Your portfolio link must start with http:// or https://.',
+    }),
+  projectSummary: z.string().trim()
+    .min(80, 'Please tell us a little more about the project.')
+    .max(800, 'Please keep your project summary to 800 characters or fewer.'),
+  rightToWork: z.string().refine((value) => value === 'yes', {
+    message: 'You must already have the right to work in the UK to apply.',
+  }),
   consent: z.literal('yes'),
   company: z.string().max(0).optional().default(''),
 })

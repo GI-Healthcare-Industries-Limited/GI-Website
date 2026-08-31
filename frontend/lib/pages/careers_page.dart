@@ -129,22 +129,22 @@ class _CareersPageState extends State<CareersPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         JobPosting(
-                            title: "Technician Intern",
+                            title: "Embedded Systems Engineer",
                             location: "Edinburgh",
-                            jobType: "Internship",
+                            jobType: "Full-time",
                             description:
-                                "Join our team to maintain and repair complex systems."),
+                                "Build reliable embedded technology for healthcare."),
                         JobPosting(
-                            title: "Junior Software Developer",
+                            title: "Business Development and Operations Manager",
                             location: "Edinburgh",
-                            jobType: "Internship",
+                            jobType: "Full-time",
                             description:
-                                "Join our team to develop innovative software solutions."),
+                                "Grow partnerships and improve operations."),
                         SizedBox(
                           height: 50,
                         ),
                         Text(
-                            'Select Apply to send us your details and CV. For other enquiries, email info@gihealthcare.co.uk.')
+                            'Select Apply to share your details and a portfolio or project link. For other enquiries, email info@gihealthcare.co.uk.')
                       ],
                     ),
                     const SizedBox(height: 60),

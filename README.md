@@ -7,10 +7,10 @@ contact, careers and admin features.
 ## Routes
 
 - `/` and the existing Flutter routes: public GI Healthcare website
-- `/apply`: same-domain career application form with private CV upload
+- `/apply`: same-domain, portfolio-first career application form
 - `/admin`: password-protected contact and application dashboard
 - `/api/contact`: stores contact-page enquiries
-- `/api/applications`: stores applications and uploads CVs
+- `/api/applications`: stores right-to-work-confirmed, portfolio-first applications
 
 Contact messages and applications are written to Supabase. If Resend is
 configured, a notification is also emailed to `ash@gihealthcare.co.uk`.
@@ -40,11 +40,11 @@ until the Cloudflare cutover is complete.
 4. Add the URL, publishable key and service-role key to Vercel using the names
    in `.env.example`. The service-role key must remain server-only.
 5. Generate a long random value for `SUBMISSION_HASH_SECRET`.
-6. Redeploy and verify a test contact message, test application/CV, admin login,
-   status update and CV download.
+6. Apply all newer migrations, then redeploy and verify a test contact message,
+   portfolio-first application, admin login and status update.
 
-The CV bucket is private. Browser users cannot list or download CVs; the admin
-API issues a one-minute signed URL after verifying the logged-in user.
+Legacy CV files remain private and accessible only to an authenticated admin.
+New applications do not request or upload a CV.
 
 ## Optional email notifications
 

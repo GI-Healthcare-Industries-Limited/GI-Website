@@ -6,3 +6,5 @@ public/
 frontend/
 *.DS_Store
 docs/.DS_Store
+.design-qa*.png
+design-qa.md

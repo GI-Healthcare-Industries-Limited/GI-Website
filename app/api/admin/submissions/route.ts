@@ -24,7 +24,7 @@ export async function GET(request: Request) {
         .select('id, created_at, updated_at, name, email, phone, message, status')
     : supabase
         .from('career_applications')
-        .select('id, created_at, updated_at, job_title, name, email, phone, cover_letter, cv_path, cv_original_name, status')
+        .select('id, created_at, updated_at, job_title, name, email, phone, portfolio_url, project_summary, right_to_work, cover_letter, cv_path, cv_original_name, status')
 
   if (status && status !== 'all') query = query.eq('status', status)
 

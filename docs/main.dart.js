@@ -75216,8 +75216,8 @@ r.toString
 if(r>0&&s.e)s.a8(new A.adT(s))}},
 l(){this.d.l()
 this.aB()},
-J(a){var s=null,r="Edinburgh",q="Internship",p=A.em(s,80,s),o=A.b([new A.cG(5,B.bv,A.al(B.c.al(127.5),B.er.gm()>>>16&255,B.er.gm()>>>8&255,B.er.gm()&255),B.Jr,7)],t.G),n=t.w,m=t.p
-return A.oJ(B.j,A.eG(B.aR,A.b([A.oY(new A.aK(B.D7,A.fU(A.cr(A.b([B.Lv,p,B.Ss,B.aJ,A.cX(s,A.bC("assets/images/robo_tile.webp",B.zB,s,A.bh(a,s,n).w.a.a*2/3),B.r,s,s,new A.cd(s,s,s,s,o,s,B.a0),s,s,s,s,s,s,s),B.aJ,A.em(B.SQ,s,A.bh(a,s,n).w.a.a*0.5),B.jX,B.S8,B.aJ,A.cr(A.b([new A.x6("Technician Intern",r,q,"Join our team to maintain and repair complex systems.",s),new A.x6("Junior Software Developer",r,q,"Join our team to develop innovative software solutions.",s),A.em(s,50,s),A.bO("Select Apply to send us your details and CV. For other enquiries, email info@gihealthcare.co.uk.",s,s,s,s,s,s,s)],m),B.x,B.rK,B.q),B.jX,new A.qw(s)],m),B.x,B.bA,B.q),s,s),s),this.d,s),B.jf],m),B.T,B.aP))}}
+J(a){var s=null,r="Edinburgh",q="Full-time",p=A.em(s,80,s),o=A.b([new A.cG(5,B.bv,A.al(B.c.al(127.5),B.er.gm()>>>16&255,B.er.gm()>>>8&255,B.er.gm()&255),B.Jr,7)],t.G),n=t.w,m=t.p
+return A.oJ(B.j,A.eG(B.aR,A.b([A.oY(new A.aK(B.D7,A.fU(A.cr(A.b([B.Lv,p,B.Ss,B.aJ,A.cX(s,A.bC("assets/images/robo_tile.webp",B.zB,s,A.bh(a,s,n).w.a.a*2/3),B.r,s,s,new A.cd(s,s,s,s,o,s,B.a0),s,s,s,s,s,s,s),B.aJ,A.em(B.SQ,s,A.bh(a,s,n).w.a.a*0.5),B.jX,B.S8,B.aJ,A.cr(A.b([new A.x6("Embedded Systems Engineer",r,q,"Build reliable embedded technology for healthcare.",s),new A.x6("Business Development and Operations Manager",r,q,"Grow partnerships and improve operations.",s),A.em(s,50,s),A.bO("Select Apply to share your details and a portfolio or project link. For other enquiries, email info@gihealthcare.co.uk.",s,s,s,s,s,s,s)],m),B.x,B.rK,B.q),B.jX,new A.qw(s)],m),B.x,B.bA,B.q),s,s),s),this.d,s),B.jf],m),B.T,B.aP))}}
 A.adS.prototype={
 $0(){this.a.e=!0},
 $S:0}

@@ -6,6 +6,7 @@ public/
 .env.*.local
 *.tsbuildinfo
 npm-debug.log*
+.design-qa*.png
 .vercel
 .env*.local
 supabase/.temp/

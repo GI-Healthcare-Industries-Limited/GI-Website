@@ -46,9 +46,10 @@ class JobPosting extends StatelessWidget {
           Text(jobType),
           SizedBox(height: 8),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(description),
+              Expanded(child: Text(description)),
+              const SizedBox(width: 16),
               Semantics(
                 button: true,
                 label: 'Apply for $title',

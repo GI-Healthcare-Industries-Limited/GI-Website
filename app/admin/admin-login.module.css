@@ -78,25 +78,11 @@
 
 .visibility:hover { color: #343943; }
 
-.forgot, .backToSignIn {
-  align-self: flex-end;
-  min-height: 44px;
-  border: 0;
-  padding: 0;
-  margin-top: 8px;
-  background: transparent;
-  color: var(--login-link);
-  font-size: 16px;
-  font-weight: 400;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
 .submit {
   display: block;
   width: 100%;
   min-height: 50px;
-  margin-top: 27px;
+  margin-top: 35px;
   border: 1px solid transparent;
   border-radius: 5px;
   padding: 12px 20px;
@@ -127,17 +113,8 @@
   text-underline-offset: 3px;
 }
 
-.help, .error, .notice {
-  margin: 0 0 24px;
-  font-size: 14px;
-  line-height: 1.65;
-  color: #59616c;
-}
-
-.error, .notice { margin: 18px 0 0; }
+.error { margin: 18px 0 0; font-size: 14px; line-height: 1.65; }
 .error { color: #a91e29; }
-.notice { color: #286044; }
-.backToSignIn { align-self: flex-start; margin-top: 16px; }
 
 .visual {
   position: relative;

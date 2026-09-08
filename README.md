@@ -45,13 +45,12 @@ until the Cloudflare cutover is complete.
 
 Legacy CV files remain private and accessible only to an authenticated admin.
 
-### Admin sign-in and recovery
+### Admin sign-in
 
 The `/admin` login uses the supplied orbit logo and the approved minimal cooking-studio design.
 Visible labels and placeholders are intentionally absent; associated labels remain available to screen readers.
-`Forgot password?` uses Supabase's password-reset email flow and returns to `/admin`, where the recovery session can set a new password.
-In Supabase Authentication URL Configuration, allow `https://www.gihealthcare.co.uk/admin` (and the apex equivalent if used).
-Email receipt depends on the project's configured Supabase email sender. No account password is changed by deploying this UI.
+Password recovery is intentionally not exposed because the project does not have a verified production SMTP and redirect setup.
+An administrator can change their password after signing in. If access is lost, the account owner must set a new password from Supabase Authentication or configure and verify production recovery email first.
 The asset provenance and visual QA are recorded in `assets/admin/README.md` and `design-qa.md`.
 New applications do not request or upload a CV.
 

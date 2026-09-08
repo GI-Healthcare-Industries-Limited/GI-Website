@@ -17,12 +17,11 @@ function fixture(authOverrides = {}, propOverrides = {}) {
   let cursor = 0
   let tree
   const props = {
-    supabase: { auth: Object.fromEntries(['signInWithPassword', 'resetPasswordForEmail', 'updateUser'].map(name => [name, async (...args) => {
+    supabase: { auth: Object.fromEntries(['signInWithPassword'].map(name => [name, async (...args) => {
       calls.push({ name, args })
       return authOverrides[name] ? authOverrides[name](...args) : { error: null }
     }])) },
-    checkingSession: false, recoveringPassword: false,
-    onPasswordUpdated: () => calls.push({ name: 'passwordUpdated' }),
+    checkingSession: false,
     ...propOverrides,
   }
   const hooks = {
@@ -90,25 +89,9 @@ test('failed sign-in is visible and submit becomes available again', async () =>
   assert.equal(f.find(n => n.props?.type === 'submit').props.disabled, false)
 })
 
-test('password reset uses the same admin route and does not disclose whether the account exists', async () => {
+test('login does not expose an unconfigured password-reset control', () => {
   const f = fixture()
-  f.click('Forgot password?')
-  assert.equal(f.nodes().filter(n => n.type === 'input').length, 1)
-  await f.submit({ email: 'test@example.com' })
-  assert.deepEqual(f.calls[0], { name: 'resetPasswordForEmail', args: ['test@example.com', { redirectTo: 'https://www.gihealthcare.co.uk/admin' }] })
-  assert.match(f.find(n => n.props?.role === 'status').props.children, /If this address has an account/)
-  f.click('Back to sign in')
-  assert.equal(f.nodes().filter(n => n.type === 'input').length, 2)
-})
-
-test('recovery validates password length and confirmation before updating auth', async () => {
-  const f = fixture({}, { recoveringPassword: true })
-  await f.submit({ password: 'short', confirmation: 'short' })
-  assert.equal(f.calls.length, 0)
-  await f.submit({ password: 'long-enough-password', confirmation: 'different-password' })
-  assert.equal(f.calls.length, 0)
-  await f.submit({ password: 'long-enough-password', confirmation: 'long-enough-password' })
-  assert.deepEqual(f.calls.map(c => c.name), ['updateUser', 'passwordUpdated'])
+  assert.equal(f.nodes().some(n => n.type === 'button' && /forgot|reset/i.test(String(n.props.children))), false)
 })
 
 test('missing client or pending session cannot submit', async () => {

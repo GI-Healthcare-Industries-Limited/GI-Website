@@ -712,6 +712,13 @@ p {
 
 /* Admin console */
 
+.admin-orbit-brand { display: block; max-width: 200px; }
+.admin-orbit-brand img { display: block; width: 100%; height: auto; }
+
+@media (max-width: 760px) {
+  .admin-orbit-brand { max-width: 150px; }
+}
+
 .admin-console {
   display: grid;
   min-height: 100vh;

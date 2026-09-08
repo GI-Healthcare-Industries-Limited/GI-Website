@@ -6,7 +6,7 @@ import {
   getRequestFingerprint,
   hasAllowedOrigin,
   isRateLimited,
-  publicError,
+  submissionErrorResponse,
 } from '@/lib/submissions'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
@@ -69,6 +69,6 @@ export async function POST(request: Request) {
     return Response.json({ ok: true, id: data.id }, { status: 201 })
   } catch (error) {
     console.error('Career application failed', error)
-    return Response.json({ error: publicError(error) }, { status: 400 })
+    return submissionErrorResponse(error)
   }
 }

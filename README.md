@@ -53,6 +53,34 @@ and `RESEND_FROM_EMAIL` in Vercel. `CONTACT_NOTIFICATION_EMAIL` defaults to
 `ash@gihealthcare.co.uk`. Database storage and the admin page continue to work
 when Resend is not configured.
 
+## Daily database health check
+
+`vercel.json` schedules `/api/cron/database-health` once each day at 07:17 UTC
+(Vercel Hobby scheduling can run within that hour). Set a random, server-only
+`CRON_SECRET` in the production Vercel environment, then deploy to production.
+Vercel sends it in the Authorization header automatically. Preview deployments
+and local development do not run the schedule.
+
+The check makes three small HEAD queries against the contact, application and
+admin tables. It neither creates records nor downloads applicants' details.
+Each query has a 10-second timeout, with one bounded retry of the checks. A
+failed check returns HTTP 503; inspect Vercel's Cron Jobs execution logs for
+`Database health check passed` or `Database health check failed`. This is not
+continuous outage monitoring and does not send email alerts.
+
+This daily activity is a best-effort way to reduce Supabase Free inactivity
+pauses, not an uptime guarantee. Supabase says a few daily database requests
+are typically sufficient, but only a paid plan guarantees no inactivity pauses:
+https://supabase.com/docs/guides/platform/free-project-pausing
+The daily job fits Vercel's free cron frequency allowance; normal function
+usage limits still apply.
+
+If the project is already paused, open the GI Healthcare project in the
+Supabase dashboard and select **Resume project**. After it is restored, run
+the job from Vercel Settings → Cron Jobs and confirm HTTP 200. The job cannot
+resume a paused project. Failed form submissions return an error and retain
+the visitor's input; they are not queued for automatic delivery later.
+
 ## Domain cutover
 
 Do not change the live records until the Supabase-backed form flow has passed

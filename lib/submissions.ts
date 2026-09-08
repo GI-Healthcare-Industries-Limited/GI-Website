@@ -77,5 +77,14 @@ export function publicError(error: unknown) {
   if (error instanceof z.ZodError) {
     return error.issues[0]?.message || 'Please check the form and try again.'
   }
-  return 'We could not submit your details. Please try again.'
+  if (error instanceof SyntaxError) return 'Please reload the page and try again.'
+  return 'We could not confirm your submission because the service is temporarily unavailable. Please try again shortly, or email info@gihealthcare.co.uk if this continues.'
+}
+
+export function submissionErrorResponse(error: unknown) {
+  const invalidInput = error instanceof z.ZodError || error instanceof SyntaxError
+  return Response.json({ error: publicError(error) }, {
+    status: invalidInput ? 400 : 503,
+    headers: invalidInput ? {} : { 'Retry-After': '60' },
+  })
 }

@@ -1,64 +1,47 @@
-# Design QA — portfolio-first careers application
+# Minimal admin login — design QA
 
-## Evidence
+final result: passed
 
-- Source visual truth selected by the user: `/var/folders/nf/y0bjgpm530n_g2dp6dngbrqr0000gn/T/TemporaryItems/NSIRD_screencaptureui_nyHYrD/Screenshot 2026-08-31 at 01.30.26.png` (`2136 × 1474` pixels).
-- Density-normalized source used for the one-to-one comparison: `/Users/gihealthcareindustrieslimited/.codex/generated_images/019fb87f-090d-79b1-94ba-81092418c106/exec-044200a6-21ac-4a72-aec0-ade7ae41fd72.png` (`1487 × 1058` pixels).
-- Final browser-rendered implementation: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-apply-final-2.png` (`1488 × 1059` pixels).
-- Final full-view comparison: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-apply-comparison-final-2.png`.
-- Focused comparisons:
-  - header and eligibility: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-focus-header-final.png`
-  - form and submission area: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-focus-form-final.png`
-  - role and progress rail: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-focus-rail-final.png`
-- Supplementary admin sign-in render: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-admin-login.png`.
-- CSS viewport: `1488 × 1059`; implementation device pixel ratio: `1`.
-- State: Embedded Systems Engineer selected, UK right-to-work answer set to Yes, remaining form empty and enabled.
-- Normalization: the selected generated source was compared at its native `1487 × 1058` density against a DPR-1 implementation capture at `1488 × 1059`; no browser chrome or device frame was included.
+## Visual truth and evidence
+
+- Approved source: `/Users/gihealthcareindustrieslimited/.codex/generated_images/019fb87f-090d-79b1-94ba-81092418c106/exec-940b21f7-d79b-4f6e-9287-ed150e451984.png` (1486 × 1058).
+- Implementation: `http://localhost:3107/admin`, signed out, empty fields, no validation message.
+- Browser: Codex in-app browser through CUA; CSS viewport 1486 × 1058, reported devicePixelRatio 1.
+- Raw screenshot: `.design-qa-login-desktop-raw.png`. Browser capture returns a 1486 × 1058 image but renders the viewport at half size in its top-left quadrant. This is capture scaling, not page overflow: DOM confirms viewport and scrollWidth are both 1486, photo x674.64/y17/w793.36/h1022.
+- Full-view paired comparison: `.design-qa-login-comparison.png`. Source downsampled to743 ×529; browser content extracted at743 ×529 to remove the capture-only blank padding. Both were inspected together.
+- Normalized desktop: `.design-qa-login-desktop.png` (1486 ×1058; upsampled capture, not native-resolution evidence).
+- Focused paired control comparison: `.design-qa-login-controls-comparison.png`. Comparison covers fields, eye icon, recovery action, submit, divider and return link. Some raster softness is caused by the browser capture; text and controls are native HTML, not raster screenshots.
+- Mobile: `.design-qa-login-mobile.png` (390 ×844); capture normalized from the same half-scale behavior.
 
 ## Findings
 
-No actionable P0, P1 or P2 differences remain.
+No remaining actionable P0/P1/P2 visual findings after the responsive correction and final comparison.
 
-- Fonts and typography: Inter matches the source's neutral grotesk character and the implemented weights, wrapping, hierarchy and uppercase tracking are visually consistent. The role heading, eligibility question and small field labels retain the same optical order.
-- Spacing and layout rhythm: the two-column frame, fixed red rail, toolbar, section dividers, narrow field measure and bottom submission row now align with the source. The final form ends at the same viewport edge without clipping the primary button.
-- Colors and visual tokens: the white workspace, GI red rail and actions, pale selected state, grey borders, and dark text hierarchy map cleanly to the source. Contrast remains sufficient for text and controls.
-- Image and icon fidelity: the existing GI Healthcare butterfly asset is reused rather than recreated. Phosphor icons provide a consistent real icon family for location, role, external link, eligibility and privacy states; no handwritten SVG, emoji or CSS-drawn asset substitutes are present.
-- Copy and content: the source structure is preserved. `Edinburgh` and `info@gihealthcare.co.uk` intentionally replace the mock's London location and old careers address so the production interface reflects GI Healthcare's real role location and the previously approved contact address. The explicit consent line is an intentional functional addition.
-- States and accessibility: role selection updates the rail; Yes reveals the application; No immediately shows the ineligibility explanation and removes the submission path. Form controls have labels, keyboard focus treatments, semantic fieldsets, accessible status announcements and practical target sizes.
+- Typography: existing self-hosted Inter at400 for form text,500 for submit,300 for photograph caption. Oversized headings and heavy weights removed. Normal line-height and no visible field labels/placeholders. Minor difference from generated lettering is expected for real text.
+- Layout: 45.4/54.6 split; photo17px top,18px right,19px bottom,20px corners. Logo x72/y53/w230; email x74/y422/w514/h58, compared with source approximately x75/y423/w514/h58. Submit top652 versus source653. Spacing and hierarchy match.
+- Colors: white panel, thin cool neutral field borders, restrained red actions. Links use a slightly darker accessible red than the bright generated reference; deliberate contrast adjustment. Original supplied logo preserved rather than regenerating artwork.
+- Assets: supplied orbit wordmark and generated cooking-studio WebP; no CSS/inline-SVG illustration substitutes. Phosphor eye/external-link icons preserve line style. Small photographic differences in the extracted asset are acceptable; subject, composition, materials, lighting and greenery match.
+- Content: removed Admin Workspace, Welcome back, sign-in introduction, placeholders, visible labels, and footer. Kept sign-in/recovery/navigation actions and photo caption. Recovery/error instructions appear only when relevant.
+- Responsive: no horizontal overflow at390 ×844 or820 ×1180. At phone widths the decorative photograph is hidden so login controls remain usable. Inputs58px high, submit50px, ancillary controls44px. All form and navigation controls remain above the fold at the tested phone viewport.
+- Accessibility: real associated screen-reader-only labels; autocomplete enabled; keyboard focus outlines; password visibility button has accessible name/state; status and error announcements; native required/email validation; respects reduced motion.
 
-Residual P3 polish only:
+## Behavior and safety
 
-- Native font antialiasing and the source render's slight red texture make the two rails differ subtly at pixel level; the implemented solid GI red token is more stable and remains faithful to the selected direction.
-- The implementation's input fields are a few pixels taller than the normalized source, improving usability without changing the visual hierarchy.
+- Browser tested: native empty-field validation focuses email; visibility toggles text/password; invalid test credentials produce an error and re-enable the form; recovery switches to email-only form; required email validation; return to sign-in restores blank controls; return-to-website navigation.
+- Initial browser console: no errors or warnings. The deliberate invalid-login test produces the expected Supabase400 response, not an application exception.
+- Seventeen isolated tests pass: existing database/submit safety tests plus actual login component handlers, blank fields and labels, auth call forwarding, failure handling, recovery URL/neutral response, new-password validation, unavailable-client guard and duplicate-submit suppression.
+- Production build and TypeScript pass.
+- No real account password changed; no reset email sent. Authenticated inbox and live recovery email delivery were not exercised because no user credentials were supplied. Recovery requires Supabase to allow the site's `/admin` redirect and its configured email sender; follow-up delivery verification must be performed by the account holder.
+- Existing server-side admin authorization, submissions, database, cron, and current credentials are unchanged. The authenticated sidebar uses the same supplied new logo; public-site branding is outside this login implementation.
 
 ## Comparison history
 
-1. Initial comparison: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-apply-comparison.png`
-   - [P2] The first implementation was materially too tall and too wide: the lower form content fell below the selected viewport, the fields spread across most of the workspace, the rail heading wrapped to three lines, and the native radio retained a browser-specific focus appearance.
-   - Fixes: reduced toolbar and section padding; constrained field and eligibility widths; tightened type scale and rail padding; replaced native radio artwork with Phosphor selected/unselected icons while preserving the semantic inputs; shortened the work textarea and submission spacing.
-2. Second comparison: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-apply-comparison-2.png`
-   - Post-fix evidence showed that the entire form and primary action now fit the target viewport and the major grid proportions matched.
-   - [P2] The left progress rail was still too compressed: steps two and three sat visibly higher than the source.
-   - Fix: increased the rail progress padding and step rhythm to match the source's vertical sequence.
-3. Final comparison: `/Users/gihealthcareindustrieslimited/Documents/GI Healthcare Website/.design-qa-apply-comparison-final-2.png`
-   - Post-fix evidence shows matching two-column proportions, section rhythm, field measure, bottom action position and near-identical progress-step placement. No actionable P0/P1/P2 difference remains.
+1. Initial screenshot had capture-only half-scale padding. Normalized both images before judging, rather than changing correct CSS to compensate.
+2. Desktop full-view and focused comparisons show matching controls, major proportions and imagery.
+3. [P2, fixed] Tablet inspection at820 ×1180 showed the centre-cropped image cutting off the cooking machine at the right edge. Set `.photo { object-position: 75% center; }` below1000px. Post-fix screenshot `.design-qa-login-tablet-raw.png` shows the machine fully visible with the controls unchanged. This is a deliberate responsive crop; no tablet mockup was supplied.
+4. Final desktop capture `.design-qa-login-desktop-final-raw.png` compared with approved source in `.design-qa-login-final-comparison.png` confirms the responsive fix does not change the approved desktop layout. Passed.
 
-## Functional verification
+## Follow-up polish
 
-- Browser interaction: role switch, Yes reveal, No blocking state, submit-path removal for ineligible applicants, admin login render.
-- Browser console: zero errors on `/apply` and `/admin`.
-- API/database: a synthetic eligible application returned `201`, persisted the new role, portfolio URL and `right_to_work = true`, and was then removed; an ineligible application returned `400` and was not stored.
-- Admin API: authenticated request returned `200` with the new portfolio and right-to-work fields.
-- Build checks: `npm run typecheck` and `npm run build` passed.
-- Responsive test gap: the in-app browser's temporary viewport override did not apply to a new tab, so the mobile breakpoint was reviewed from the implemented media rules rather than captured as separate browser evidence. This does not affect the selected desktop target comparison.
-
-## Implementation checklist
-
-- [x] Match the selected option-three visual hierarchy.
-- [x] Replace CV upload with portfolio/project evidence.
-- [x] Block applicants who do not already have the right to work in the UK.
-- [x] Update the public role names and descriptions.
-- [x] Carry portfolio and eligibility data into Supabase and the admin inbox.
-- [x] Verify build, API persistence, rejection logic, admin API and browser console.
-
-final result: passed
+- Optional P3: obtain a higher-density browser capture if pixel-level text antialiasing comparison is needed.
+- Account holder should test password-reset email receipt and complete the reset themselves if required.

@@ -24,6 +24,8 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react
 
 import { applicationStatuses, contactStatuses } from '@/lib/submission-constants'
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
+import { AdminLogin } from '@/app/admin/admin-login'
+import logo from '@/assets/brand/gi-healthcare-logo.png'
 
 type Kind = 'contact' | 'application'
 type Submission = {
@@ -87,6 +89,7 @@ export function AdminDashboard() {
   const supabase = getSupabaseBrowserClient()
   const [session, setSession] = useState<Session | null>(null)
   const [checkingSession, setCheckingSession] = useState(true)
+  const [recoveringPassword, setRecoveringPassword] = useState(false)
   const [kind, setKind] = useState<Kind>('contact')
   const [items, setItems] = useState<Submission[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -103,12 +106,18 @@ export function AdminDashboard() {
       return
     }
 
-    void supabase.auth.getSession().then(({ data }) => {
+    void supabase.auth.getSession().then(({ data, error: sessionError }) => {
       setSession(data.session)
+      if (sessionError) setError('Your sign-in link may have expired. Please request a new password reset link or sign in again.')
+      setCheckingSession(false)
+    }).catch(() => {
+      setError('Could not check your session. Please try signing in again.')
       setCheckingSession(false)
     })
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === 'PASSWORD_RECOVERY') setRecoveringPassword(true)
+      if (event === 'SIGNED_OUT') setRecoveringPassword(false)
       setSession(nextSession)
       setCheckingSession(false)
     })
@@ -116,7 +125,7 @@ export function AdminDashboard() {
   }, [supabase])
 
   const loadSubmissions = useCallback(async () => {
-    if (!session) return
+    if (!session || recoveringPassword) return
     setLoading(true)
     setError(null)
     try {
@@ -137,7 +146,7 @@ export function AdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }, [kind, session, statusFilter, supabase])
+  }, [kind, session, statusFilter, supabase, recoveringPassword])
 
   useEffect(() => {
     void loadSubmissions()
@@ -157,18 +166,6 @@ export function AdminDashboard() {
   }, [items, searchQuery])
 
   const selectedItem = filteredItems.find((item) => item.id === selectedId) ?? filteredItems[0] ?? null
-
-  async function signIn(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (!supabase) return
-    setError(null)
-    const formData = new FormData(event.currentTarget)
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: String(formData.get('email') || ''),
-      password: String(formData.get('password') || ''),
-    })
-    if (signInError) setError(signInError.message)
-  }
 
   function changeKind(nextKind: Kind) {
     setKind(nextKind)
@@ -236,58 +233,11 @@ export function AdminDashboard() {
     window.open(payload.url, '_blank', 'noopener,noreferrer')
   }
 
-  if (checkingSession) {
-    return <main className="admin-loading">Checking your admin session…</main>
-  }
-
-  if (!supabase) {
+  if (checkingSession || !supabase || !session || recoveringPassword) {
     return (
-      <main className="admin-loading">
-        <strong>Admin is not connected yet.</strong>
-        <span>Add the Supabase public URL and publishable key to the Vercel project environment.</span>
-      </main>
-    )
-  }
-
-  if (!session) {
-    return (
-      <main className="admin-login-layout">
-        <section className="admin-login-brand">
-          <Link className="rail-brand" href="/">
-            <span className="rail-brand-mark">
-              <Image alt="" height={48} priority src="/assets/assets/images/butterfly.webp" width={48} />
-            </span>
-            <span>GI Healthcare</span>
-          </Link>
-          <div>
-            <p className="rail-eyebrow">Private workspace</p>
-            <h1>One place for every conversation and candidate.</h1>
-            <p>Review website enquiries, assess portfolio-first applications, and keep the team moving.</p>
-          </div>
-          <Link className="admin-return-link" href="/">
-            Return to website <ArrowSquareOutIcon aria-hidden size={18} />
-          </Link>
-        </section>
-
-        <section className="admin-login-panel">
-          <form className="admin-login-form" onSubmit={signIn}>
-            <span className="admin-login-icon"><LockKeyIcon aria-hidden size={25} /></span>
-            <p className="section-index">Restricted access</p>
-            <h2>Welcome back</h2>
-            <p>Sign in with your authorised GI Healthcare account.</p>
-            <div className="application-field">
-              <label htmlFor="admin-email">Email address</label>
-              <input autoComplete="email" id="admin-email" name="email" placeholder="you@gihealthcare.co.uk" required type="email" />
-            </div>
-            <div className="application-field">
-              <label htmlFor="admin-password">Password</label>
-              <input autoComplete="current-password" id="admin-password" name="password" placeholder="Enter your password" required type="password" />
-            </div>
-            <button className="admin-sign-in-button" type="submit">Sign in</button>
-            {error && <p aria-live="polite" className="application-status error">{error}</p>}
-          </form>
-        </section>
-      </main>
+      <AdminLogin checkingSession={checkingSession} recoveringPassword={recoveringPassword}
+        onPasswordUpdated={() => { setRecoveringPassword(false); setPasswordMessage('Your admin password has been changed.') }}
+        sessionError={error} supabase={supabase} />
     )
   }
 
@@ -296,11 +246,8 @@ export function AdminDashboard() {
   return (
     <main className="admin-console">
       <aside className="admin-sidebar">
-        <Link className="rail-brand" href="/">
-          <span className="rail-brand-mark">
-            <Image alt="" height={44} priority src="/assets/assets/images/butterfly.webp" width={44} />
-          </span>
-          <span>GI Healthcare</span>
+        <Link className="admin-orbit-brand" href="/">
+          <Image alt="GI Healthcare" height={58} src={logo} width={200} />
         </Link>
 
         <nav aria-label="Website inbox">

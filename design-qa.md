@@ -27,11 +27,11 @@ No remaining actionable P0/P1/P2 visual findings after the responsive correction
 
 ## Behavior and safety
 
-- Browser tested: native empty-field validation focuses email; visibility toggles text/password; invalid test credentials produce an error and re-enable the form; recovery switches to email-only form; required email validation; return to sign-in restores blank controls; return-to-website navigation.
+- Browser tested: native empty-field validation focuses email; visibility toggles text/password; invalid test credentials produce an error and re-enable the form; return-to-website navigation. Password recovery was subsequently removed because no production-ready SMTP and redirect setup was verified.
 - Initial browser console: no errors or warnings. The deliberate invalid-login test produces the expected Supabase400 response, not an application exception.
-- Seventeen isolated tests pass: existing database/submit safety tests plus actual login component handlers, blank fields and labels, auth call forwarding, failure handling, recovery URL/neutral response, new-password validation, unavailable-client guard and duplicate-submit suppression.
+- Sixteen isolated tests pass: existing database/submit safety tests plus actual login component handlers, blank fields and labels, auth call forwarding, failure handling, absence of an unconfigured reset control, unavailable-client guard and duplicate-submit suppression.
 - Production build and TypeScript pass.
-- No real account password changed; no reset email sent. Authenticated inbox and live recovery email delivery were not exercised because no user credentials were supplied. Recovery requires Supabase to allow the site's `/admin` redirect and its configured email sender; follow-up delivery verification must be performed by the account holder.
+- No real account password changed and no reset email was sent. Authenticated inbox was not exercised because no user credentials were supplied.
 - Existing server-side admin authorization, submissions, database, cron, and current credentials are unchanged. The authenticated sidebar uses the same supplied new logo; public-site branding is outside this login implementation.
 
 ## Comparison history

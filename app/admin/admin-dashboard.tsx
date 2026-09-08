@@ -89,7 +89,6 @@ export function AdminDashboard() {
   const supabase = getSupabaseBrowserClient()
   const [session, setSession] = useState<Session | null>(null)
   const [checkingSession, setCheckingSession] = useState(true)
-  const [recoveringPassword, setRecoveringPassword] = useState(false)
   const [kind, setKind] = useState<Kind>('contact')
   const [items, setItems] = useState<Submission[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -115,9 +114,7 @@ export function AdminDashboard() {
       setCheckingSession(false)
     })
 
-    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
-      if (event === 'PASSWORD_RECOVERY') setRecoveringPassword(true)
-      if (event === 'SIGNED_OUT') setRecoveringPassword(false)
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession)
       setCheckingSession(false)
     })
@@ -125,7 +122,7 @@ export function AdminDashboard() {
   }, [supabase])
 
   const loadSubmissions = useCallback(async () => {
-    if (!session || recoveringPassword) return
+    if (!session) return
     setLoading(true)
     setError(null)
     try {
@@ -146,7 +143,7 @@ export function AdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }, [kind, session, statusFilter, supabase, recoveringPassword])
+  }, [kind, session, statusFilter, supabase])
 
   useEffect(() => {
     void loadSubmissions()
@@ -233,11 +230,9 @@ export function AdminDashboard() {
     window.open(payload.url, '_blank', 'noopener,noreferrer')
   }
 
-  if (checkingSession || !supabase || !session || recoveringPassword) {
+  if (checkingSession || !supabase || !session) {
     return (
-      <AdminLogin checkingSession={checkingSession} recoveringPassword={recoveringPassword}
-        onPasswordUpdated={() => { setRecoveringPassword(false); setPasswordMessage('Your admin password has been changed.') }}
-        sessionError={error} supabase={supabase} />
+      <AdminLogin checkingSession={checkingSession} sessionError={error} supabase={supabase} />
     )
   }
 

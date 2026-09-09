@@ -1069,6 +1069,12 @@ p {
   gap: 6px;
 }
 
+.admin-detail-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+}
+
 .admin-status-select span {
   color: var(--muted);
   font-size: 0.69rem;
@@ -1079,6 +1085,31 @@ p {
   min-height: 39px;
   padding: 0 10px;
   text-transform: capitalize;
+}
+
+.admin-delete-button {
+  display: inline-flex;
+  min-height: 39px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #e4b7bb;
+  border-radius: 4px;
+  background: #fff;
+  color: #a91925;
+  padding: 0 12px;
+  font-size: 0.75rem;
+  font-weight: 720;
+}
+
+.admin-delete-button:hover:not(:disabled) {
+  border-color: #c72532;
+  background: #fff4f4;
+}
+
+.admin-delete-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .admin-contact-grid {
@@ -1592,6 +1623,19 @@ p {
 
   .admin-status-select {
     width: 100%;
+  }
+
+  .admin-detail-actions {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .admin-detail-actions .admin-status-select {
+    flex: 1;
+  }
+
+  .admin-delete-button {
+    align-self: end;
   }
 
   .admin-contact-grid > :last-child {

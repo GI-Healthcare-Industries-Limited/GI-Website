@@ -65,3 +65,61 @@ export async function PATCH(request: Request) {
 
   return Response.json({ ok: true })
 }
+
+export async function DELETE(request: Request) {
+  const admin = await requireWebsiteAdmin(request)
+  if (!admin) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+  let body: { kind?: unknown; id?: unknown }
+  try {
+    body = (await request.json()) as { kind?: unknown; id?: unknown }
+  } catch {
+    return Response.json({ error: 'Invalid deletion request.' }, { status: 400 })
+  }
+
+  const kind = parseKind(body.kind)
+  if (!kind || typeof body.id !== 'string' || !body.id) {
+    return Response.json({ error: 'Invalid deletion request.' }, { status: 400 })
+  }
+
+  const supabase = getSupabaseAdmin()
+  let legacyCvPath: string | null = null
+
+  if (kind === 'application') {
+    const { data: application, error: lookupError } = await supabase
+      .from('career_applications')
+      .select('cv_path')
+      .eq('id', body.id)
+      .maybeSingle()
+
+    if (lookupError) {
+      console.error('Admin application lookup before deletion failed', lookupError)
+      return Response.json({ error: 'Could not delete the application.' }, { status: 500 })
+    }
+    if (!application) return Response.json({ error: 'Application not found.' }, { status: 404 })
+    legacyCvPath = application.cv_path as string | null
+  }
+
+  const table = kind === 'contact' ? 'contact_submissions' : 'career_applications'
+  const { data: deleted, error: deleteError } = await supabase
+    .from(table)
+    .delete()
+    .eq('id', body.id)
+    .select('id')
+    .maybeSingle()
+
+  if (deleteError) {
+    console.error('Admin submission deletion failed', deleteError)
+    return Response.json({ error: `Could not delete the ${kind === 'contact' ? 'message' : 'application'}.` }, { status: 500 })
+  }
+  if (!deleted) {
+    return Response.json({ error: `${kind === 'contact' ? 'Message' : 'Application'} not found.` }, { status: 404 })
+  }
+
+  if (legacyCvPath) {
+    const { error: storageError } = await supabase.storage.from('career-cvs').remove([legacyCvPath])
+    if (storageError) console.error('Legacy CV cleanup after application deletion failed', storageError)
+  }
+
+  return Response.json({ ok: true })
+}

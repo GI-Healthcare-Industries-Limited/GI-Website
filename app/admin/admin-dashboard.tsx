@@ -14,6 +14,7 @@ import {
   MagnifyingGlassIcon,
   PhoneIcon,
   SignOutIcon,
+  TrashIcon,
   UserCircleIcon,
   UsersThreeIcon,
 } from '@phosphor-icons/react'
@@ -98,6 +99,7 @@ export function AdminDashboard() {
   const [error, setError] = useState<string | null>(null)
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null)
   const [changingPassword, setChangingPassword] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!supabase) {
@@ -182,6 +184,39 @@ export function AdminDashboard() {
     if (!response.ok) {
       setItems((current) => current.map((entry) => entry.id === item.id ? { ...entry, status: previousStatus } : entry))
       setError('Could not update the submission status.')
+    }
+  }
+
+  async function deleteSubmission(item: Submission) {
+    if (!session) return
+
+    const itemLabel = kind === 'contact' ? 'message' : 'application'
+    if (!window.confirm(`Permanently delete this ${itemLabel} from ${item.name}? This cannot be undone.`)) return
+
+    setDeletingId(item.id)
+    setError(null)
+    try {
+      const response = await authenticatedFetch(session, '/api/admin/submissions', {
+        method: 'DELETE',
+        body: JSON.stringify({ kind, id: item.id }),
+      })
+      const payload = (await response.json()) as { error?: string }
+
+      if (response.status === 401) {
+        await supabase?.auth.signOut()
+        throw new Error('Your admin session has expired. Please sign in again.')
+      }
+      if (!response.ok) throw new Error(payload.error || `Could not delete the ${itemLabel}.`)
+
+      setItems((current) => {
+        const remaining = current.filter((entry) => entry.id !== item.id)
+        setSelectedId(remaining[0]?.id ?? null)
+        return remaining
+      })
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : `Could not delete the ${itemLabel}.`)
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -330,12 +365,23 @@ export function AdminDashboard() {
                     <h2>{selectedItem.name}</h2>
                     <p>{selectedItem.job_title || 'Website enquiry'}</p>
                   </div>
-                  <label className="admin-status-select">
-                    <span>Status</span>
-                    <select onChange={(event) => void updateStatus(selectedItem, event.target.value)} value={selectedItem.status}>
-                      {statuses.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}
-                    </select>
-                  </label>
+                  <div className="admin-detail-actions">
+                    <label className="admin-status-select">
+                      <span>Status</span>
+                      <select disabled={deletingId === selectedItem.id} onChange={(event) => void updateStatus(selectedItem, event.target.value)} value={selectedItem.status}>
+                        {statuses.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}
+                      </select>
+                    </label>
+                    <button
+                      className="admin-delete-button"
+                      disabled={deletingId === selectedItem.id}
+                      onClick={() => void deleteSubmission(selectedItem)}
+                      type="button"
+                    >
+                      <TrashIcon aria-hidden size={18} />
+                      {deletingId === selectedItem.id ? 'Deleting…' : 'Delete'}
+                    </button>
+                  </div>
                 </header>
 
                 <div className="admin-contact-grid">

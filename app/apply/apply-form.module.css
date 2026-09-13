@@ -21,9 +21,17 @@
 .intro h1 span { color: #8b8f82; }
 .intro > p:last-child { max-width: 440px; margin: 20px 0 0; color: #73766e; font-size: 14px; line-height: 1.7; }
 .role { margin-top: 34px; padding-bottom: 29px; border-bottom: 1px solid #e8e9e4; }
-.role > label { display: block; margin-bottom: 10px; color: #75796d; font-size: 12px; }
-.mobileRole { display: none; }
-.role select { width: 100%; min-height: 52px; border: 1px solid #dddfd7; border-radius: 7px; padding: 10px 30px 10px 14px; background: #fafbf8; color: var(--text); font-size: 14px; font-weight: 500; text-overflow: ellipsis; }
+.roleOptions { border: 0; padding: 0; margin: 0; min-width: 0; }
+.roleOptions legend { margin-bottom: 13px; padding: 0; color: #68705f; font-size: 12px; }
+.roleCards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.roleCards label { display: flex; position: relative; flex-direction: column; min-width: 0; gap: 12px; padding: 18px; border: 1px solid #dde1d7; border-radius: 11px; cursor: pointer; transition: border-color .15s, background-color .15s; }
+.roleCards label:hover { border-color: #8b997b; }
+.roleCards .activeRole { background: #f3f5ef; border-color: #788569; box-shadow: inset 0 0 0 1px #788569; }
+.roleCards input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.roleCards label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+.roleCardTop { display: flex; justify-content: space-between; color: #75836a; }
+.roleCards strong { font-size: 15px; line-height: 1.5; font-weight: 500; letter-spacing: -.02em; }
+.roleCards small { margin-top: auto; color: #727a67; font-size: 10px; line-height: 1.5; }
 .roleMeta { display: flex; align-items: center; gap: 18px; margin-top: 13px; color: #7b7e74; font-size: 11px; }
 .roleMeta span, .deadline { display: flex; align-items: center; gap: 6px; }
 .deadline { margin: 13px 0 0; color: #566346; font-size: 11px; line-height: 1.6; }
@@ -36,6 +44,29 @@
 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .choices label { position: relative; display: flex; min-height: 47px; align-items: center; gap: 10px; border: 1px solid #dddfd7; border-radius: 7px; padding: 10px 14px; font-size: 13px; cursor: pointer; }
 .choices svg { color: #bcc1b2; }
+.choices svg { flex-shrink: 0; }
+.subquestion { border: 0; padding: 0; margin: 24px 0 0; min-width: 0; }
+.subquestion:first-of-type { margin-top: 0; }
+.section .subquestion legend { margin-bottom: 12px; font-size: 13px; line-height: 1.6; letter-spacing: 0; }
+.statusChoices { gap: 9px; }
+.statusChoices label { gap: 9px; padding: 13px 12px; font-size: 12px; line-height: 1.5; }
+.statusChoices small { display: block; margin-top: 3px; color: #727a67; font-size: 10px; line-height: 1.5; }
+.evidence { margin-top: 26px; }
+.evidenceFields { margin-top: 24px; }
+.studentNote { padding: 17px; border: 1px solid #e3d6b9; border-radius: 9px; background: #fcfaf4; font-size: 12px; line-height: 1.7; }
+.studentNote strong { font-weight: 550; }
+.studentNote p { margin: 8px 0; }
+.studentNote .consent { margin-top: 15px; }
+.manualHelp { margin-top: 17px; font-size: 12px; line-height: 1.7; color: #68705f; }
+.manualHelp summary { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.manualHelp p { margin-bottom: 0; }
+.continue { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; min-height: 49px; border: 0; border-radius: 7px; padding: 13px 16px; margin-top: 24px; background: #505f43; color: #fff; font-size: 13px; }
+.continue:hover:not(:disabled) { background: #3e4c32; }
+.completed { display: flex; gap: 12px; align-items: center; padding: 15px; background: #f3f5ef; border-radius: 8px; color: #536547; }
+.completed > svg { flex-shrink: 0; }
+.completed strong { font-size: 13px; font-weight: 500; }
+.completed p { margin: 5px 0 0; font-size: 11px; line-height: 1.6; }
+.completed button { margin-left: auto; border: 0; padding: 6px; background: transparent; color: inherit; font-size: 11px; text-decoration: underline; }
 .choices .selected { border-color: #768268; background: #f5f7f0; }
 .choices .selected svg { color: #687658; }
 .choices input { position: absolute; width: 1px; height: 1px; opacity: 0; }
@@ -76,15 +107,12 @@
 .visual { position: sticky; top: 16px; height: calc(100svh - 32px); min-height: 540px; align-self: start; min-width: 0; margin: 16px 16px 16px 0; overflow: hidden; border-radius: 18px; background: #c2b49d; }
 .photo { object-fit: cover; object-position: center; }
 .photoFrame { position: absolute; inset: 0; }
-.visual figcaption { position: absolute; left: 30px; right: 30px; bottom: 32px; width: fit-content; max-width: calc(100% - 60px); padding: 20px 24px; border-radius: 10px; color: #fff; background: rgb(32 40 28 / 72%); backdrop-filter: blur(16px); }
-.visual figcaption span { display: block; margin-bottom: 9px; font-size: 10px; letter-spacing: .06em; color: #dce1d3; }
-.visual figcaption strong { display: block; font-size: clamp(23px, 2.3vw, 34px); font-weight: 350; letter-spacing: -.035em; line-height: 1.2; }
 .success { display: flex; min-height: 60svh; flex-direction: column; justify-content: center; outline: none; }
 .success > svg { margin-bottom: 28px; color: #6a7858; }
 .success > p:not(.eyebrow) { max-width: 430px; color: #777e6e; line-height: 1.8; font-size: 14px; }
 .layout :is(input, textarea, select, button, a):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (min-width: 1800px) { .content { margin-top: 85px; } }
-@media (max-width: 1100px) { .panel { padding-inline: 28px; } .brand { width: 160px; } .back { font-size: 11px; } .content { margin-top: 48px; } .fields { grid-template-columns: 1fr; } .visual figcaption { left: 20px; right: 20px; max-width: calc(100% - 40px); padding: 18px; } }
+@media (max-width: 1100px) { .panel { padding-inline: 28px; } .brand { width: 160px; } .back { font-size: 11px; } .content { margin-top: 48px; } .fields { grid-template-columns: 1fr; } .roleCards label { padding: 14px; } .statusChoices { grid-template-columns: 1fr; } }
 @media (max-width: 760px) {
   .layout { display: flex; flex-direction: column; }
   .panel { padding: 26px 24px 32px; }
@@ -93,11 +121,13 @@
   .back { font-size: 10px; }
   .content { margin-top: 42px; }
   .intro h1 { font-size: 37px; }
-  .mobileRole { display: block; margin: 12px 0 0; font-size: 14px; line-height: 1.6; font-weight: 500; }
   .visual { position: relative; top: auto; order: 2; height: 350px; min-height: 0; width: calc(100% - 32px); margin: 0 16px 16px; }
   .photo { object-position: center 57%; }
-  .visual figcaption { bottom: 20px; }
-  .field input, .field textarea, .role select { font-size: 16px; }
+  .field input, .field textarea { font-size: 16px; }
+  .roleCards strong { font-size: 13px; }
+  .choices:not(.statusChoices) { gap: 8px; }
+  .choices label { padding: 12px; font-size: 12px; line-height: 1.5; }
   .privacy { align-items: flex-start; text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) { .layout * { transition: none; } }
+@media (max-width: 380px) { .roleCards { grid-template-columns: 1fr; } .roleCards label { gap: 8px; } .intro h1 { font-size: 32px; } }

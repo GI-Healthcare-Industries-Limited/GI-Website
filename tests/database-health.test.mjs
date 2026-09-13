@@ -130,7 +130,7 @@ for (const endpoint of ['contact', 'applications']) {
         name: 'Test Applicant', email: 'test@example.com', message: 'This is a test enquiry.',
         jobTitle: JOB_TITLES[0], portfolioUrl: 'https://example.com/portfolio',
         projectSummary: 'This is an example project description used only for an isolated automated test. No data is sent.',
-        rightToWork: 'yes', consent: 'yes',
+        rightToWork: 'yes', immigrationStatus: 'british_irish', consent: 'yes',
       }
       const { POST } = load(`app/api/${endpoint}/route.ts`)
       const response = await POST(new Request(`https://example.com/api/${endpoint}`, {

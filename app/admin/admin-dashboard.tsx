@@ -27,6 +27,7 @@ import { applicationStatuses, contactStatuses } from '@/lib/submission-constants
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
 import { AdminLogin } from '@/app/admin/admin-login'
 import { ApplicationDeadlines } from '@/app/admin/application-deadlines'
+import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
 
 type Kind = 'contact' | 'application'
@@ -400,10 +401,11 @@ export function AdminDashboard() {
                 {kind === 'application' && (
                   <div className="admin-application-facts">
                     <span><BriefcaseIcon aria-hidden size={20} /><span><small>Role</small>{selectedItem.job_title}</span></span>
-                    <span><CheckCircleIcon aria-hidden size={20} weight="fill" /><span><small>UK right to work</small>{selectedItem.right_to_work ? 'Confirmed' : 'Legacy application — not recorded'}</span></span>
+                    <span><CheckCircleIcon aria-hidden size={20} weight="fill" /><span><small>UK right to work</small>{selectedItem.right_to_work ? 'Self-declared — check required' : 'Legacy application — not recorded'}</span></span>
                   </div>
                 )}
 
+                {kind === 'application' && <RightToWorkEvidence key={`${selectedItem.id}:${session.user.id}`} id={selectedItem.id} session={session} />}
                 <article className="admin-message-body">
                   <p className="section-index">{kind === 'contact' ? 'Message' : 'Project highlight'}</p>
                   <p>{getSubmissionPreview(selectedItem)}</p>

@@ -1,0 +1,15 @@
+.section { margin: 24px 0; border: 1px solid #e1e4dc; border-radius: 12px; background: #fafbf8; padding: 19px; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.header h3 { margin: 0; font-size: 14px; font-weight: 550; color: #333c2b; }
+.header p { margin: 6px 0 0; font-size: 11px; color: #737b68; }
+.header button { flex-shrink: 0; padding: 9px 12px; border: 1px solid #cbd3c3; border-radius: 7px; background: #fff; color: #4e6141; font-size: 12px; }
+.body { margin-top: 22px; font-size: 12px; line-height: 1.75; color: #59664e; }
+.body dl { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 20px; }
+.body dt { color: #737b68; font-size: 11px; }
+.body dd { margin: 4px 0 0; color: #2e3826; font-size: 13px; }
+.body .code { font-family: monospace; font-size: 17px; letter-spacing: .1em; }
+.body a { text-underline-offset: 3px; }
+.body .warning { border-left: 2px solid #b89658; padding-left: 12px; color: #7e612e; }
+.body .note { margin-bottom: 0; color: #747c6a; font-size: 11px; }
+.error { color: #a52b32; font-size: 12px; }
+@media (max-width: 600px) { .header { align-items: flex-start; flex-direction: column; gap: 12px; } .body dl { grid-template-columns: 1fr; } }

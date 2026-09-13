@@ -47,6 +47,11 @@ export async function POST(request: Request) {
       portfolio_url: input.portfolioUrl,
       project_summary: input.projectSummary,
       right_to_work: true,
+      immigration_status: input.immigrationStatus,
+      right_to_work_share_code: input.shareCode || null,
+      right_to_work_date_of_birth: input.dateOfBirth || null,
+      work_permission_declared: input.workPermission === 'yes' ? true : null,
+      student_conditions_acknowledged: input.studentConditions === 'yes' ? true : null,
       request_fingerprint: fingerprint,
     }).select('id').single()
 
@@ -67,7 +72,7 @@ export async function POST(request: Request) {
             { label: 'Phone', value: input.phone || 'Not provided' },
             { label: 'Portfolio', value: input.portfolioUrl },
             { label: 'Project', value: input.projectSummary },
-            { label: 'Right to work in the UK', value: 'Confirmed' },
+            { label: 'Right to work in the UK', value: 'Self-declared — employer check required. Review the evidence privately in the admin portal.' },
           ],
         })
       } catch (notificationError) {
@@ -77,7 +82,9 @@ export async function POST(request: Request) {
 
     return Response.json({ ok: true, id: data.id }, { status: 201 })
   } catch (error) {
-    console.error('Career application failed', error)
+    // Database constraint errors can include the entire failing row, including
+    // DOB and share code. Never log the raw error or submitted payload.
+    console.error('Career application failed; no applicant details logged')
     return submissionErrorResponse(error)
   }
 }

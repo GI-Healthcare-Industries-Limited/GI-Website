@@ -82,6 +82,19 @@ and `RESEND_FROM_EMAIL` in Vercel. `CONTACT_NOTIFICATION_EMAIL` defaults to
 `ash@gihealthcare.co.uk`. Database storage and the admin page continue to work
 when Resend is not configured.
 
+## Backend hosting region
+
+`vercel.json` pins Vercel Functions to London (`lhr1`), including the contact,
+application, admin and database-health endpoints. Keep the Vercel project's
+default Function Region set to London as well. Region changes require a new
+deployment; confirm the production deployment's `regions` is `["lhr1"]` after
+publishing, rather than relying on the build location or CDN response location.
+
+This changes application execution only. It does not migrate the existing London
+Supabase database, alter DNS or access permissions, or certify UK-only processing
+across provider logs, support, backups, email and other subprocessors. Defence
+project systems are separate and are not configured by this repository.
+
 ## Daily database health check
 
 `vercel.json` schedules `/api/cron/database-health` once each day at 07:17 UTC

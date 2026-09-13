@@ -54,6 +54,27 @@ An administrator can change their password after signing in. If access is lost, 
 The asset provenance and visual QA are recorded in `assets/admin/README.md` and `design-qa.md`.
 New applications do not request or upload a CV.
 
+### Application design and closing dates
+
+`/apply` uses the same cooking-studio photograph and orbit logo as the admin login,
+with a responsive form, portfolio links and the existing UK right-to-work gate.
+Under **Admin → Applications → Application closing dates**, choose and save a date
+for either role. The entire closing date is included, ending at midnight at the
+start of the next day in `Europe/London` (including British Summer Time).
+Clear a date to reopen without a deadline, or extend it to a future date.
+
+Apply `supabase/migrations/20260913223000_career_closing_dates.sql` before deploying.
+Both roles initially have no deadline. Public availability is served without caching
+through `/api/careers/openings`; only authenticated website admins can edit dates.
+The application API checks availability, and a database insert trigger enforces
+the cutoff again to cover forms left open or a deadline changing during submission.
+Failed availability checks disable submission until a successful retry.
+
+`npm test` covers authorisation, date validation, closed roles and submission errors.
+`tests/career-closing-dates.sql` exercises the real database trigger and UK daylight
+saving boundaries. Run that SQL inside a transaction/savepoint and roll it back:
+its temporary dates and synthetic application must never be committed.
+
 ## Optional email notifications
 
 Create a Resend API key, verify `gihealthcare.co.uk`, and add `RESEND_API_KEY`

@@ -1,305 +1,193 @@
 'use client'
 
-import {
-  ArrowRightIcon,
-  ArrowSquareOutIcon,
-  BriefcaseIcon,
-  BuildingsIcon,
-  CaretDownIcon,
-  CheckCircleIcon,
-  CircleIcon,
-  LinkSimpleIcon,
-  MapPinIcon,
-  ShieldCheckIcon,
-} from '@phosphor-icons/react'
+import { ArrowRightIcon, ArrowUpRightIcon, CalendarBlankIcon, CheckCircleIcon, CircleIcon, LinkSimpleIcon, MapPinIcon, ShieldCheckIcon } from '@phosphor-icons/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { type FormEvent, useRef, useState } from 'react'
+import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 
+import cookingStudio from '@/assets/admin/cooking-studio.webp'
+import logo from '@/assets/brand/gi-healthcare-logo.png'
+import { formatClosingDate, type JobTitle, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import { JOB_TITLES } from '@/lib/submission-constants'
+import styles from './apply-form.module.css'
 
-type ApplyFormProps = {
-  initialRole: (typeof JOB_TITLES)[number]
-}
+type Props = { initialRole: JobTitle; initialOpenings: OpeningsSnapshot | null }
 
-type Eligibility = '' | 'yes' | 'no'
-
-const roleDetails: Record<(typeof JOB_TITLES)[number], { discipline: string }> = {
-  'Embedded Systems Engineer': { discipline: 'Engineering' },
-  'Business Development and Operations Manager': { discipline: 'Commercial & Operations' },
-}
-
-const applicationSteps = [
-  { number: '01', title: 'Eligibility', copy: 'Confirm your right to work in the UK.' },
-  { number: '02', title: 'Your details', copy: 'Tell us who you are and how we can reach you.' },
-  { number: '03', title: 'Your work', copy: 'Share a link to your work and a project you are proud of.' },
-]
-
-export function ApplyForm({ initialRole }: ApplyFormProps) {
-  const formRef = useRef<HTMLFormElement>(null)
+export function ApplyForm({ initialRole, initialOpenings }: Props) {
   const [selectedRole, setSelectedRole] = useState(initialRole)
-  const [eligibility, setEligibility] = useState<Eligibility>('')
+  const [eligibility, setEligibility] = useState('')
   const [projectSummary, setProjectSummary] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const [result, setResult] = useState<{ kind: 'success' | 'error'; message: string } | null>(null)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [openings, setOpenings] = useState(initialOpenings)
+  const [availabilityError, setAvailabilityError] = useState(!initialOpenings)
+  const [checking, setChecking] = useState(false)
+  const [now, setNow] = useState(initialOpenings ? Date.parse(initialOpenings.checkedAt) : 0)
+  const submittingRef = useRef(false)
+  const clockOffset = useRef(0)
+  const refreshRequest = useRef(0)
+  const resultRef = useRef<HTMLDivElement>(null)
+
+  const refreshOpenings = useCallback(async () => {
+    const requestId = ++refreshRequest.current
+    setChecking(true)
+    try {
+      const response = await fetch('/api/careers/openings', { cache: 'no-store' })
+      if (!response.ok) throw new Error('Availability unavailable')
+      const data = await response.json() as OpeningsSnapshot
+      if (requestId !== refreshRequest.current) return
+      clockOffset.current = Date.parse(data.checkedAt) - Date.now()
+      setNow(Date.parse(data.checkedAt))
+      setOpenings(data)
+      setAvailabilityError(false)
+    } catch {
+      if (requestId === refreshRequest.current) setAvailabilityError(true)
+    } finally {
+      if (requestId === refreshRequest.current) setChecking(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void refreshOpenings()
+    const refresh = () => { if (document.visibilityState === 'visible') void refreshOpenings() }
+    const interval = window.setInterval(refresh, 60_000)
+    const clock = window.setInterval(() => setNow(Date.now() + clockOffset.current), 1000)
+    window.addEventListener('focus', refresh)
+    return () => {
+      window.clearInterval(interval)
+      window.clearInterval(clock)
+      window.removeEventListener('focus', refresh)
+      refreshRequest.current++
+    }
+  }, [refreshOpenings])
+
+  useEffect(() => { if (submitted) resultRef.current?.focus() }, [submitted])
+
+  const opening = openings?.items.find((item) => item.job_title === selectedRole)
+  const closed = Boolean(opening && (!opening.is_open || (opening.closes_at && now >= Date.parse(opening.closes_at))))
+  const unavailable = availabilityError || !opening
+  const canApply = !closed && !unavailable
 
   async function submitApplication(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setResult(null)
-
-    if (eligibility !== 'yes') {
-      setResult({
-        kind: 'error',
-        message: 'You must confirm that you already have the right to work in the UK.',
-      })
+    if (submittingRef.current) return
+    setError(null)
+    if (!canApply || eligibility !== 'yes') {
+      setError(closed ? 'Applications for this role have closed.' : unavailable
+        ? 'Please check availability before submitting.' : 'Please confirm your right to work in the UK.')
       return
     }
-
+    const formData = new FormData(event.currentTarget)
+    submittingRef.current = true
     setSubmitting(true)
-
     try {
-      const formData = new FormData(event.currentTarget)
       const response = await fetch('/api/applications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          jobTitle: selectedRole,
-          name: formData.get('name'),
-          email: formData.get('email'),
-          phone: formData.get('phone'),
-          portfolioUrl: formData.get('portfolioUrl'),
-          projectSummary: formData.get('projectSummary'),
-          rightToWork: eligibility,
-          consent: formData.get('consent'),
-          company: formData.get('company'),
+          jobTitle: selectedRole, name: formData.get('name'), email: formData.get('email'),
+          phone: formData.get('phone'), portfolioUrl: formData.get('portfolioUrl'),
+          projectSummary: formData.get('projectSummary'), rightToWork: eligibility,
+          consent: formData.get('consent'), company: formData.get('company'),
         }),
       })
-      const payload = (await response.json().catch(() => ({}))) as { error?: string }
-
-      if (!response.ok) throw new Error(payload.error || 'We could not send your application.')
-
-      formRef.current?.reset()
-      setEligibility('')
-      setProjectSummary('')
-      setResult({
-        kind: 'success',
-        message: 'Thank you. Your application has been received by GI Healthcare.',
-      })
-    } catch (error) {
-      setResult({
-        kind: 'error',
-        message: error instanceof Error ? error.message : 'We could not send your application.',
-      })
+      const payload = await response.json().catch(() => ({})) as { error?: string; code?: string; ok?: boolean }
+      if (payload.code === 'APPLICATION_CLOSED') void refreshOpenings()
+      if (!response.ok || !payload.ok) throw new Error(payload.error || 'We could not confirm your application. Please try again.')
+      setSubmitted(true)
+    } catch (submissionError) {
+      setError(submissionError instanceof Error ? submissionError.message : 'We could not send your application. Please try again.')
     } finally {
+      submittingRef.current = false
       setSubmitting(false)
     }
   }
 
   return (
-    <main className="application-layout">
-      <aside className="application-rail">
-        <Link className="rail-brand" href="/">
-          <span className="rail-brand-mark">
-            <Image
-              alt=""
-              height={48}
-              priority
-              src="/assets/assets/images/butterfly.webp"
-              width={48}
-            />
-          </span>
-          <span>GI Healthcare</span>
-        </Link>
-
-        <div className="rail-role">
-          <p className="rail-eyebrow">Careers at GI Healthcare</p>
-          <h1>{selectedRole}</h1>
-          <div className="rail-role-meta">
-            <span><MapPinIcon aria-hidden size={21} weight="bold" />Edinburgh, United Kingdom</span>
-            <span><BriefcaseIcon aria-hidden size={21} weight="bold" />Full-time</span>
-            <span><BuildingsIcon aria-hidden size={21} weight="bold" />{roleDetails[selectedRole].discipline}</span>
-          </div>
-        </div>
-
-        <ol className="application-progress">
-          {applicationSteps.map((step, index) => (
-            <li className={index === 0 ? 'active' : ''} key={step.number}>
-              <span className="progress-number">{step.number}</span>
-              <span className="progress-copy">
-                <strong>{step.title}</strong>
-                <span>{step.copy}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-
-        <p className="rail-contact">
-          Questions? Contact us at<br />
-          <a href="mailto:info@gihealthcare.co.uk">info@gihealthcare.co.uk</a>
-        </p>
-      </aside>
-
-      <section className="application-workspace">
-        <header className="application-toolbar">
-          <div className="role-picker-field">
-            <label htmlFor="jobTitle">Role</label>
-            <span className="select-with-icon">
-              <BriefcaseIcon aria-hidden size={21} />
-              <select
-                id="jobTitle"
-                name="jobTitle"
-                onChange={(event) => setSelectedRole(event.target.value as (typeof JOB_TITLES)[number])}
-                value={selectedRole}
-              >
-                {JOB_TITLES.map((jobTitle) => <option key={jobTitle}>{jobTitle}</option>)}
-              </select>
-              <CaretDownIcon aria-hidden className="select-caret" size={17} />
-            </span>
-          </div>
-          <Link className="careers-back-link" href="/">
-            Back to careers site <ArrowSquareOutIcon aria-hidden size={18} />
-          </Link>
+    <main className={styles.layout}>
+      <section className={styles.panel} aria-label="Job application">
+        <header className={styles.header}>
+          <Link href="/" aria-label="GI Healthcare home" className={styles.brand}><Image src={logo} alt="GI Healthcare" width={200} height={58} preload /></Link>
+          <Link href="/" className={styles.back}>Back to website <ArrowUpRightIcon aria-hidden size={17} /></Link>
         </header>
-
-        <form className="guided-application-form" ref={formRef} onSubmit={submitApplication}>
-          <section className="application-section eligibility-section">
-            <p className="section-index">01 Eligibility</p>
-            <h2>Do you currently have the right to work in the UK?</h2>
-            <fieldset className="eligibility-options">
-              <legend className="sr-only">Right to work in the UK</legend>
-              <label className={eligibility === 'yes' ? 'selected' : ''}>
-                <input
-                  checked={eligibility === 'yes'}
-                  name="rightToWork"
-                  onChange={() => {
-                    setEligibility('yes')
-                    setResult(null)
-                  }}
-                  required
-                  type="radio"
-                  value="yes"
-                />
-                {eligibility === 'yes'
-                  ? <CheckCircleIcon aria-hidden className="eligibility-choice-icon" size={26} weight="fill" />
-                  : <CircleIcon aria-hidden className="eligibility-choice-icon" size={26} />}
-                <span>Yes</span>
-              </label>
-              <label className={eligibility === 'no' ? 'selected negative' : ''}>
-                <input
-                  checked={eligibility === 'no'}
-                  name="rightToWork"
-                  onChange={() => {
-                    setEligibility('no')
-                    setResult(null)
-                  }}
-                  required
-                  type="radio"
-                  value="no"
-                />
-                {eligibility === 'no'
-                  ? <CheckCircleIcon aria-hidden className="eligibility-choice-icon" size={26} weight="fill" />
-                  : <CircleIcon aria-hidden className="eligibility-choice-icon" size={26} />}
-                <span>No</span>
-              </label>
-            </fieldset>
-            <p className="eligibility-note">GI Healthcare is unable to provide visa sponsorship for this role.</p>
-
-            {eligibility === 'no' && (
-              <div aria-live="polite" className="eligibility-blocked" role="status">
-                <CheckCircleIcon aria-hidden size={24} weight="fill" />
-                <div>
-                  <strong>This role is not available without an existing right to work in the UK.</strong>
-                  <p>We cannot progress this application because GI Healthcare is not able to sponsor a visa for this position.</p>
-                </div>
-              </div>
-            )}
-          </section>
-
-          {eligibility === 'yes' && (
+        <div className={styles.content}>
+          {submitted ? (
+            <div className={styles.success} ref={resultRef} tabIndex={-1}>
+              <CheckCircleIcon aria-hidden size={44} weight="light" />
+              <p className={styles.eyebrow}>Application received</p>
+              <h1>Thank you for<br />sharing your work.</h1>
+              <p>Your application for {selectedRole} is with our team. We’ll review it and contact you if we’d like to take things further.</p>
+              <Link href="/" className={styles.submit}>Back to website <ArrowRightIcon aria-hidden size={20} /></Link>
+            </div>
+          ) : (
             <>
-              <section className="application-section">
-                <p className="section-index">02 Your details</p>
-                <div className="application-field-grid">
-                  <div className="application-field">
-                    <label htmlFor="name">Full name</label>
-                    <input autoComplete="name" id="name" maxLength={120} name="name" placeholder="e.g. Alex Morgan" required />
-                  </div>
-                  <div className="application-field">
-                    <label htmlFor="email">Email address</label>
-                    <input autoComplete="email" id="email" maxLength={254} name="email" placeholder="e.g. alex.morgan@example.com" required type="email" />
-                  </div>
-                  <div className="application-field full-width">
-                    <label htmlFor="phone">Phone number <span>(optional)</span></label>
-                    <input autoComplete="tel" id="phone" maxLength={50} name="phone" placeholder="e.g. +44 7123 456789" type="tel" />
-                  </div>
-                </div>
-              </section>
-
-              <section className="application-section">
-                <p className="section-index">03 Your work</p>
-                <div className="application-field full-width">
-                  <label htmlFor="portfolioUrl">Portfolio or project link</label>
-                  <span className="input-with-icon">
-                    <LinkSimpleIcon aria-hidden size={20} />
-                    <input
-                      id="portfolioUrl"
-                      maxLength={2048}
-                      name="portfolioUrl"
-                      placeholder="https://yourwebsite.com, https://github.com/you, or another relevant URL"
-                      required
-                      type="url"
-                    />
-                  </span>
-                  <p className="application-help">Share a personal website, GitHub, project page, case study, demo, or other work that shows your skills.</p>
-                </div>
-                <div className="application-field full-width summary-field">
-                  <label htmlFor="projectSummary">Tell us about one project you&apos;re proud of.</label>
-                  <textarea
-                    id="projectSummary"
-                    maxLength={800}
-                    minLength={80}
-                    name="projectSummary"
-                    onChange={(event) => setProjectSummary(event.target.value)}
-                    placeholder="What was the problem, what did you build, what was your approach, and what impact did it have?"
-                    required
-                    value={projectSummary}
-                  />
-                  <span className="character-count">{projectSummary.length} / 800</span>
-                </div>
-              </section>
-
-              <div className="hp-field" aria-hidden="true">
-                <label htmlFor="company">Company</label>
-                <input autoComplete="off" id="company" name="company" tabIndex={-1} />
+              <div className={styles.intro}>
+                <p className={styles.eyebrow}>Careers at GI Healthcare</p>
+                <h1>A little about you.<br /><span>A lot of possibility.</span></h1>
+                <p>Help us build autonomous cooking for extreme environments. Start by sharing a little of what you do.</p>
               </div>
-
-              <footer className="application-submit-row">
-                <div className="application-privacy">
-                  <ShieldCheckIcon aria-hidden size={34} />
-                  <div>
-                    <strong>Your information is safe with us.</strong>
-                    <span>We only use your details to assess this application.</span>
-                    <label>
-                      <input name="consent" required type="checkbox" value="yes" />
-                      I consent to GI Healthcare using these details to assess and contact me about this role.
-                    </label>
+              <div className={styles.role}>
+                <label htmlFor="jobTitle">I’m applying for</label>
+                <select id="jobTitle" value={selectedRole} disabled={submitting} onChange={(event) => { setSelectedRole(event.target.value as JobTitle); setError(null) }}>
+                  {JOB_TITLES.map((title) => <option key={title} value={title}>{title}</option>)}
+                </select>
+                <p className={styles.mobileRole}>{selectedRole}</p>
+                <div className={styles.roleMeta}><span><MapPinIcon aria-hidden size={15} /> Edinburgh, UK</span><span>Full-time</span></div>
+                {!unavailable && opening && <p className={`${styles.deadline} ${closed ? styles.closedLabel : ''}`}><CalendarBlankIcon aria-hidden size={16} />{opening.closing_date ? <span>{closed ? 'Closed' : 'Apply by'} {formatClosingDate(opening.closing_date)}{!closed && ' · 11:59 pm UK time'}</span> : 'Applications open · No closing date'}</p>}
+              </div>
+              {unavailable && <div role="status" className={styles.notice}><p>We’re unable to check application availability right now. Please try again shortly.</p><button disabled={checking} type="button" onClick={() => void refreshOpenings()}>{checking ? 'Checking…' : 'Check again'}</button></div>}
+              {closed && <div role="status" className={styles.notice}><strong>Applications for this role are closed.</strong><p>You can select another role above to check its availability.</p></div>}
+              <form onSubmit={submitApplication} aria-busy={submitting}>
+                <fieldset className={styles.section} disabled={!canApply || submitting}>
+                  <legend><span>01</span> Before we begin</legend>
+                  <p className={styles.question}>Do you currently have the right to work in the UK?</p>
+                  <div className={styles.choices}>
+                    {['yes', 'no'].map((choice) => <label key={choice} className={eligibility === choice ? styles.selected : ''}>
+                      <input type="radio" name="rightToWork" value={choice} checked={eligibility === choice} required onChange={() => { setEligibility(choice); setError(null) }} />
+                      {eligibility === choice ? <CheckCircleIcon aria-hidden size={21} weight="fill" /> : <CircleIcon aria-hidden size={21} />}
+                      {choice === 'yes' ? 'Yes, I do' : 'No, I don’t'}
+                    </label>)}
                   </div>
-                </div>
-                <button className="application-submit-button" disabled={submitting} type="submit">
-                  {submitting ? 'Submitting…' : 'Submit application'}
-                  <ArrowRightIcon aria-hidden size={23} weight="bold" />
-                </button>
-              </footer>
+                  <p className={styles.help}>You must already have permission to work in the UK. Visa sponsorship is not available for these roles.</p>
+                  {eligibility === 'no' && <p role="status" className={styles.ineligible}>We’re unable to accept your application without an existing right to work in the UK.</p>}
+                </fieldset>
+                <fieldset className={styles.section} disabled={!canApply || eligibility !== 'yes' || submitting}>
+                  <legend><span>02</span> Your details</legend>
+                  <div className={styles.fields}>
+                    <div className={styles.field}><label htmlFor="name">Full name</label><input autoComplete="name" id="name" name="name" minLength={2} maxLength={120} required /></div>
+                    <div className={styles.field}><label htmlFor="email">Email address</label><input autoComplete="email" id="email" name="email" maxLength={254} required type="email" /></div>
+                    <div className={`${styles.field} ${styles.full}`}><label htmlFor="phone">Phone number <span>Optional</span></label><input autoComplete="tel" id="phone" name="phone" maxLength={50} type="tel" /></div>
+                  </div>
+                </fieldset>
+                <fieldset className={styles.section} disabled={!canApply || eligibility !== 'yes' || submitting}>
+                  <legend><span>03</span> Show us your work</legend>
+                  <div className={styles.field}>
+                    <label htmlFor="portfolioUrl">Portfolio or project link</label>
+                    <div className={styles.linkInput}><LinkSimpleIcon aria-hidden size={18} /><input id="portfolioUrl" name="portfolioUrl" maxLength={2048} required type="url" placeholder="https://" aria-describedby="portfolio-help" /></div>
+                    <p className={styles.help} id="portfolio-help">{selectedRole === 'Embedded Systems Engineer' ? 'A personal site, GitHub repository, engineering project or demo.' : 'A portfolio, case study, business project or example of your work.'} No CV needed.</p>
+                  </div>
+                  <div className={`${styles.field} ${styles.summary}`}>
+                    <label htmlFor="projectSummary">A project you’re proud of</label>
+                    <p className={styles.help} id="project-help">What was the challenge, what did you contribute, and what changed?</p>
+                    <textarea id="projectSummary" name="projectSummary" minLength={80} maxLength={800} required value={projectSummary} onChange={(event) => setProjectSummary(event.target.value)} aria-describedby="project-help project-count" />
+                    <div className={styles.counter} id="project-count"><span>80–800 characters</span><span>{projectSummary.length} / 800</span></div>
+                  </div>
+                  <label className={styles.consent}><input name="consent" required type="checkbox" value="yes" /><span>I agree to GI Healthcare using my details to review my application and contact me about this role.</span></label>
+                </fieldset>
+                <div className="hp-field" aria-hidden="true"><label htmlFor="company">Company</label><input autoComplete="off" id="company" name="company" tabIndex={-1} /></div>
+                {error && <p role="alert" className={styles.error}>{error}</p>}
+                <button className={styles.submit} disabled={submitting || !canApply || eligibility !== 'yes'} type="submit">{submitting ? 'Sending application…' : closed ? 'Applications closed' : 'Send application'}<ArrowRightIcon aria-hidden size={20} /></button>
+                <p className={styles.privacy}><ShieldCheckIcon aria-hidden size={17} />Your details are only used to assess your application.</p>
+              </form>
+              <footer className={styles.footer}>Have a question? <a href="mailto:info@gihealthcare.co.uk">Let’s talk <ArrowUpRightIcon aria-hidden size={14} /></a></footer>
             </>
           )}
-
-          {result && (
-            <p aria-live="polite" className={`application-status ${result.kind}`} role="status">
-              {result.message}
-            </p>
-          )}
-        </form>
+        </div>
       </section>
+      <figure className={styles.visual}>
+        <div className={styles.photoFrame}><Image alt="GI Healthcare autonomous cooking machine in a sunlit studio with wood, ribbed glass and greenery" className={styles.photo} fill preload sizes="(max-width: 760px) 100vw, 44vw" src={cookingStudio} /></div>
+        <figcaption><span>Thoughtfully engineered.</span><strong>Good food.<br />Wherever life takes us.</strong></figcaption>
+      </figure>
     </main>
   )
 }

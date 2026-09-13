@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 
 import { ApplyForm } from '@/app/apply/apply-form'
 import { JOB_TITLES } from '@/lib/submission-constants'
+import { getCareerOpenings } from '@/lib/career-openings'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Apply',
@@ -18,5 +21,9 @@ export default async function ApplyPage({
     ? (role as (typeof JOB_TITLES)[number])
     : 'Embedded Systems Engineer'
 
-  return <ApplyForm initialRole={initialRole} />
+  const openings = await getCareerOpenings().catch((error) => {
+    console.error('Application page availability failed', error)
+    return null
+  })
+  return <ApplyForm initialRole={initialRole} initialOpenings={openings} />
 }

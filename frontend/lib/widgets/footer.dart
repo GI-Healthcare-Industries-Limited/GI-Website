@@ -178,6 +178,10 @@ class Footer extends StatelessWidget {
               )
             ],
           ),
+          TextButton(
+            onPressed: () => Helpers.SendToUrl('https://www.gihealthcare.co.uk/privacy'),
+            child: const Text('Privacy notice', style: TextStyle(color: Colors.white, decoration: TextDecoration.underline)),
+          ),
           const Text(
             'Copyright © 2025 GI Healthcare Industries Ltd.',
             style: MainTheme.smallPrint,

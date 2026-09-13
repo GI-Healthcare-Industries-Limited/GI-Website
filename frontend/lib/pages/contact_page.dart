@@ -112,6 +112,7 @@ class _EnquiriesBoxState extends State<EnquiriesBox> {
           'email': email,
           'phone': phone,
           'message': message,
+          'privacyNoticeVersion': '2026-09-14',
         }),
       );
 
@@ -186,6 +187,15 @@ class _EnquiriesBoxState extends State<EnquiriesBox> {
               ),
             ),
             const SizedBox(height: 20),
+            const Text(
+              'GI Healthcare Industries Limited uses your details to respond to your enquiry. Messages are automatically deleted from the portal within three calendar months. Please do not include identity documents, health information or confidential defence material.',
+              style: TextStyle(fontSize: 14, height: 1.5),
+            ),
+            TextButton(
+              onPressed: () => Helpers.SendToUrl('https://www.gihealthcare.co.uk/privacy'),
+              child: const Text('Privacy notice & your rights ↗'),
+            ),
+            const SizedBox(height: 12),
             TextField(
               controller: _nameController,
               autofillHints: const [AutofillHints.name],
@@ -210,7 +220,7 @@ class _EnquiriesBoxState extends State<EnquiriesBox> {
               keyboardType: TextInputType.phone,
               autofillHints: const [AutofillHints.telephoneNumber],
               decoration: const InputDecoration(
-                labelText: 'Phone Number',
+                labelText: 'Phone Number (optional)',
                 border: OutlineInputBorder(),
               ),
             ),

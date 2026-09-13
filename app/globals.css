@@ -1643,6 +1643,19 @@ p {
   }
 }
 
+.admin-retention-copy {
+  margin: 18px 0;
+  padding: 16px 20px;
+  border: 1px solid #dce2d3;
+  border-radius: 10px;
+  background: #f6f8f2;
+  color: #45503c;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.admin-retention-copy p { margin: 5px 0 0; }
+.admin-retention-copy a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

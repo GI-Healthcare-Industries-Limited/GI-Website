@@ -17,6 +17,8 @@
 .controls .clear { border-color: #dedfd9; color: #717765; background: #fff; }
 .controls button:disabled { opacity: .45; cursor: default; }
 .controls button:hover:not(:disabled) { filter: brightness(.94); }
+.card .startLabel { margin-top: 20px; }
+.saveRow { margin-top: 18px; }
 .controls :focus-visible { outline: 2px solid #c9232c; outline-offset: 3px; }
 .help, .error, .saved { font-size: 11px; line-height: 1.7; }
 .help { margin: 10px 0 0; color: #89917e; }

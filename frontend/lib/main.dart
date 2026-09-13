@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(fontFamily: 'Roboto', fontFamilyFallback: const ['Noto Sans Symbols']),
       scrollBehavior: WebScrollBehavior(),
       title: 'GI Healthcare',
       home: Scaffold(

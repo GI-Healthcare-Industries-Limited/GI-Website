@@ -3,7 +3,7 @@ import { timingSafeEqual } from 'node:crypto'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 30
+export const maxDuration = 60
 
 const headers = { 'Cache-Control': 'no-store' }
 
@@ -34,6 +34,11 @@ export async function GET(request: Request) {
       )
 
       if (checks.every((check) => check.ok)) {
+        // External fallback to the every-minute database retention job. A failed
+        // purge makes this health check fail rather than a silent green.
+        const { error: retentionError } = await db.rpc('purge_expired_submissions')
+          .abortSignal(AbortSignal.timeout(10_000))
+        if (retentionError) throw new Error('Retention unavailable')
         const checkedAt = new Date().toISOString()
         console.info('Database health check passed', { checkedAt, attempt })
         return Response.json({ ok: true, checkedAt }, { headers })

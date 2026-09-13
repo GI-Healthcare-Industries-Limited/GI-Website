@@ -6,6 +6,7 @@ import {
   getRequestFingerprint,
   hasAllowedOrigin,
   isRateLimited,
+  readSubmissionJson,
   submissionErrorResponse,
 } from '@/lib/submissions'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const input = contactSchema.parse(await request.json())
+    const input = contactSchema.parse(await readSubmissionJson(request, 20_000))
 
     // Honeypot submissions receive a normal response so automated senders do
     // not learn how the protection works.
@@ -42,6 +43,8 @@ export async function POST(request: Request) {
         email: input.email.toLowerCase(),
         phone: input.phone || null,
         message: input.message,
+        privacy_notice_version: input.privacyNoticeVersion,
+        privacy_notice_provided_at: new Date().toISOString(),
         request_fingerprint: fingerprint,
       })
       .select('id')
@@ -51,24 +54,15 @@ export async function POST(request: Request) {
 
     after(async () => {
       try {
-        await sendSubmissionNotification({
-          subject: `New website enquiry from ${input.name}`,
-          heading: 'New GI Healthcare website enquiry',
-          lines: [
-            { label: 'Name', value: input.name },
-            { label: 'Email', value: input.email },
-            { label: 'Phone', value: input.phone || 'Not provided' },
-            { label: 'Message', value: input.message },
-          ],
-        })
-      } catch (notificationError) {
-        console.error('Contact notification failed', notificationError)
+        await sendSubmissionNotification('contact')
+      } catch {
+        console.error('Contact notification failed; no personal details logged')
       }
     })
 
     return Response.json({ ok: true, id: data.id }, { status: 201 })
   } catch (error) {
-    console.error('Contact submission failed', error)
+    console.error('Contact submission failed; no personal details logged')
     return submissionErrorResponse(error)
   }
 }

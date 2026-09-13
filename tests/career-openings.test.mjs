@@ -6,7 +6,7 @@ import ts from 'typescript'
 
 const require = createRequire(import.meta.url)
 const title = 'Embedded Systems Engineer'
-const validApplication = { jobTitle: title, name: 'Applicant Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid/portfolio', projectSummary: 'A test-only project with sufficient detail to exercise application validation without real applicant data.', rightToWork: 'yes', immigrationStatus: 'british_irish', consent: 'yes' }
+const validApplication = { jobTitle: title, name: 'Applicant Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid/portfolio', projectSummary: 'A test-only project with sufficient detail to exercise application validation without real applicant data.', rightToWork: 'yes', immigrationStatus: 'british_irish', privacyNoticeVersion: '2026-09-14' }
 
 function loadRoute(file, overrides = {}) {
   let writes = 0
@@ -101,5 +101,27 @@ test('an admin can set and clear only the selected role closing date', async () 
     assert.equal((await f.route.PATCH(request('PATCH', { jobTitle: title, closingDate }))).status, 200)
     assert.equal(f.update.closing_date, closingDate)
     assert.deepEqual(f.filter, ['job_title', title])
+  }
+})
+
+test('start date can be set and cleared independently without resetting closing date', async () => {
+  for (const startDate of ['2026-12-01', null]) {
+    const f = loadRoute('app/api/admin/openings/route.ts')
+    assert.equal((await f.route.PATCH(request('PATCH', { jobTitle: title, startDate }))).status, 200)
+    assert.equal(f.update.start_date, startDate)
+    assert.equal('closing_date' in f.update, false)
+    assert.deepEqual(f.filter, ['job_title', title])
+  }
+})
+
+test('both dates can be saved together; malformed start dates and extra fields are rejected', async () => {
+  const f = loadRoute('app/api/admin/openings/route.ts')
+  assert.equal((await f.route.PATCH(request('PATCH', { jobTitle: title, closingDate: '2026-10-01', startDate: '2026-11-01' }))).status, 200)
+  assert.equal(f.update.start_date, '2026-11-01')
+  assert.equal(f.update.closing_date, '2026-10-01')
+  for (const input of [{ startDate: '2026-02-30' }, { startDate: '2100-01-01' }, { startDate: null, is_open: true }]) {
+    const invalid = loadRoute('app/api/admin/openings/route.ts')
+    assert.equal((await invalid.route.PATCH(request('PATCH', { jobTitle: title, ...input }))).status, 400)
+    assert.equal(invalid.writes, 0)
   }
 })

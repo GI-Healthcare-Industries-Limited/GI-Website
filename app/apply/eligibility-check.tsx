@@ -27,7 +27,6 @@ export function EligibilityCheck({ disabled, completed, onComplete }: Props) {
     const data = new FormData(form)
     const result = rightToWorkSchema.safeParse({
       rightToWork, immigrationStatus: citizen ? 'british_irish' : status,
-      shareCode: data.get('shareCode') || '', dateOfBirth: data.get('dateOfBirth') || '',
       workPermission: data.get('workPermission') || '', studentConditions: data.get('studentConditions') || '',
     })
     if (!result.success) {
@@ -94,21 +93,8 @@ export function EligibilityCheck({ disabled, completed, onComplete }: Props) {
             <label className={styles.consent}><input type="checkbox" name="workPermission" value="yes" aria-describedby={errors.workPermission ? 'permission-error' : undefined} /><span>My current permission allows me to do this full-time role without sponsorship from GI Healthcare.</span></label>
             {errors.workPermission && <p id="permission-error" role="alert" className={styles.error}>{errors.workPermission}</p>}
             <p className={styles.help}>If you cannot confirm this, contact us before continuing. Selecting a visa does not verify your eligibility.</p>
-            <div className={`${styles.fields} ${styles.evidenceFields}`}>
-              <div className={styles.field}>
-                <label htmlFor="shareCode">Right-to-work share code</label>
-                <input id="shareCode" name="shareCode" type="text" autoComplete="off" autoCapitalize="characters" spellCheck={false} maxLength={40} aria-invalid={Boolean(errors.shareCode)} aria-describedby={errors.shareCode ? 'share-help share-error' : 'share-help'} />
-                {errors.shareCode && <p id="share-error" role="alert" className={styles.error}>{errors.shareCode}</p>}
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="dateOfBirth">Date of birth</label>
-                <input id="dateOfBirth" name="dateOfBirth" type="date" autoComplete="bday" aria-invalid={Boolean(errors.dateOfBirth)} aria-describedby={errors.dateOfBirth ? 'birth-help birth-error' : 'birth-help'} />
-                {errors.dateOfBirth && <p id="birth-error" role="alert" className={styles.error}>{errors.dateOfBirth}</p>}
-              </div>
-            </div>
-            <p id="share-help" className={styles.help}>Use a 9-character code beginning with W, issued within the last 90 days. <a href="https://www.gov.uk/prove-right-to-work/get-a-share-code-online" target="_blank" rel="noreferrer">Get a right-to-work share code on GOV.UK ↗</a></p>
-            <p id="birth-help" className={styles.help}>Your date of birth is needed for the employer’s check. These details are saved only when you submit your application, are visible only to authorised reviewers, and are not included in notification emails. We check the code’s format here; the team must check its validity on GOV.UK.</p>
-            <details className={styles.manualHelp}><summary>Can’t get a share code?</summary><p>Some people can prove their right to work with eligible documents or the Home Office Employer Checking Service. <a href="mailto:info@gihealthcare.co.uk">Contact us to arrange a manual check</a>. Not having a share code does not, by itself, mean you have no right to work. Please don’t email identity documents or your date of birth.</p></details>
+            <p className={styles.help}>We’ll arrange a right-to-work check if we make a conditional offer, before employment begins. Please do not send a date of birth, share code or identity documents in this application or by email.</p>
+            <details className={styles.manualHelp}><summary>Need help with your permission?</summary><p>Some people can prove their right to work with eligible documents or the Home Office Employer Checking Service. <a href="mailto:info@gihealthcare.co.uk">Ask for a manual review</a>. Not having a share code does not, by itself, mean you have no right to work.</p></details>
           </div>}
           {errors.immigrationStatus && <p role="alert" className={styles.error}>{errors.immigrationStatus}</p>}
           {(citizen || needsEvidence) && <button type="submit" className={styles.continue}>Continue to your details <ArrowRightIcon size={18} aria-hidden /></button>}

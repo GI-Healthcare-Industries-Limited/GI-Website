@@ -4,6 +4,7 @@ export type JobTitle = (typeof JOB_TITLES)[number]
 export type CareerOpening = {
   job_title: JobTitle
   closing_date: string | null
+  start_date: string | null
   closes_at: string | null
   is_open: boolean
 }

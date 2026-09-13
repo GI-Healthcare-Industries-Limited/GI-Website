@@ -35,6 +35,7 @@ function loadServer(dependencies, env = {}) {
 function cronFixture(result = () => ({ error: null }), secret = 'test-cron-secret') {
   const calls = []
   const db = {
+    rpc(name) { assert.equal(name, 'purge_expired_submissions'); return { abortSignal: () => Promise.resolve({ error: null }) } },
     from(table) {
       const call = { table }
       calls.push(call)
@@ -130,7 +131,7 @@ for (const endpoint of ['contact', 'applications']) {
         name: 'Test Applicant', email: 'test@example.com', message: 'This is a test enquiry.',
         jobTitle: JOB_TITLES[0], portfolioUrl: 'https://example.com/portfolio',
         projectSummary: 'This is an example project description used only for an isolated automated test. No data is sent.',
-        rightToWork: 'yes', immigrationStatus: 'british_irish', consent: 'yes',
+        rightToWork: 'yes', immigrationStatus: 'british_irish', privacyNoticeVersion: '2026-09-14',
       }
       const { POST } = load(`app/api/${endpoint}/route.ts`)
       const response = await POST(new Request(`https://example.com/api/${endpoint}`, {

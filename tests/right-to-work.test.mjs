@@ -6,7 +6,7 @@ import ts from 'typescript'
 
 const require = createRequire(import.meta.url)
 const id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
-const base = { jobTitle: 'Embedded Systems Engineer', name: 'Synthetic Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid', projectSummary: 'A synthetic test project description to validate the submission flow without using any real applicant data.', consent: 'yes', rightToWork: 'yes' }
+const base = { jobTitle: 'Embedded Systems Engineer', name: 'Synthetic Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid', projectSummary: 'A synthetic test project description to validate the submission flow without using any real applicant data.', privacyNoticeVersion: '2026-09-14', rightToWork: 'yes' }
 const visa = { immigrationStatus: 'graduate', workPermission: 'yes', shareCode: 'w12 345 678', dateOfBirth: '2000-02-29' }
 
 function harness(options = {}) {
@@ -17,10 +17,11 @@ function harness(options = {}) {
     insert(value) { writes.push(value); return this },
     select(value) { reads.push(value); return this },
     eq(...value) { filter = value; return this },
+    gt(...value) { reads.push(value.join(':')); return this },
     order() { return this },
     limit: async () => ({ data: [] }),
     single: async () => options.error ? { error: { message: 'Constraint failed', details: JSON.stringify(visa) } } : { data: { id } },
-    maybeSingle: async () => ({ data: options.missing ? null : { immigration_status: 'graduate', right_to_work_share_code: 'W12345678', right_to_work_date_of_birth: '2000-02-29' } }),
+    maybeSingle: async () => ({ data: options.missing ? null : { immigration_status: 'graduate', work_permission_declared: true } }),
   }
   const dependencies = {
     'server-only': {},
@@ -52,8 +53,8 @@ function request(body) {
 test('British and Irish citizen route needs neither code nor DOB and discards irrelevant evidence', () => {
   const { rightToWorkSchema } = harness().load('lib/right-to-work.ts')
   const data = rightToWorkSchema.parse({ ...base, ...visa, immigrationStatus: 'british_irish' })
-  assert.equal(data.shareCode, '')
-  assert.equal(data.dateOfBirth, '')
+  assert.equal(data.shareCode, undefined)
+  assert.equal(data.dateOfBirth, undefined)
   assert.equal(data.workPermission, '')
 })
 
@@ -61,21 +62,18 @@ test('each listed permission accepts a declaration for human review, not automat
   const { rightToWorkSchema, IMMIGRATION_OPTIONS } = harness().load('lib/right-to-work.ts')
   for (const { value } of IMMIGRATION_OPTIONS) {
     const result = rightToWorkSchema.parse({ ...base, ...visa, immigrationStatus: value, studentConditions: 'yes' })
-    assert.equal(result.shareCode, 'W12345678')
-    assert.equal(result.dateOfBirth, '2000-02-29')
+    assert.equal(result.shareCode, undefined)
+    assert.equal(result.dateOfBirth, undefined)
     assert.equal(result.studentConditions, value === 'student' ? 'yes' : '')
     assert.equal(result.verified, undefined)
   }
 })
 
-test('server rejects missing answers, no permission, sponsorship, malformed codes and invalid dates before writing', async () => {
+test('server rejects missing answers, no permission, unsupported categories and missing notice version before writing', async () => {
   const changes = [
     { rightToWork: 'no' }, { immigrationStatus: undefined }, { immigrationStatus: 'none' },
     { immigrationStatus: 'skilled_worker' }, { immigrationStatus: 'invented' },
-    { workPermission: '' }, { shareCode: '' }, { shareCode: 'R12345678' }, { shareCode: 'S12345678' },
-    { shareCode: 'W1234567' }, { shareCode: 'W123456789' }, { shareCode: 'W12345!78' },
-    { dateOfBirth: '' }, { dateOfBirth: '2001-02-29' }, { dateOfBirth: '2100-01-01' },
-    { dateOfBirth: new Date().toISOString().slice(0, 10) }, { dateOfBirth: '01/02/2000' },
+    { workPermission: '' }, { privacyNoticeVersion: undefined }, { privacyNoticeVersion: 'old' },
     { immigrationStatus: 'student', studentConditions: '' },
   ]
   for (const change of changes) {
@@ -87,24 +85,28 @@ test('server rejects missing answers, no permission, sponsorship, malformed code
   }
 })
 
-test('application and evidence are saved in one insert; notification and response exclude private evidence', async () => {
+test('application stores declaration and notice version; notification contains no personal data', async () => {
   const f = harness()
   const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa }))
   assert.equal(response.status, 201)
   assert.equal(f.writes.length, 1)
-  assert.equal(f.writes[0].right_to_work_share_code, 'W12345678')
-  assert.equal(f.writes[0].right_to_work_date_of_birth, '2000-02-29')
+  assert.equal(f.writes[0].right_to_work_share_code, undefined)
+  assert.equal(f.writes[0].right_to_work_date_of_birth, undefined)
+  assert.equal(f.writes[0].privacy_notice_version, '2026-09-14')
+  assert.ok(Number.isFinite(Date.parse(f.writes[0].privacy_notice_provided_at)))
   assert.equal(f.writes[0].work_permission_declared, true)
   const output = JSON.stringify([await response.json(), f.emails, f.logs])
   assert.doesNotMatch(output, /W12345678|2000-02-29|"Confirmed"/)
-  assert.match(JSON.stringify(f.emails), /employer check required/)
+  assert.deepEqual(f.emails, ['application'])
+  assert.doesNotMatch(JSON.stringify(f.emails), /Synthetic|example|graduate/)
 })
 
 test('citizen insert never stores code, DOB or visa declarations', async () => {
   const f = harness()
   const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, immigrationStatus: 'british_irish' }))
   assert.equal(response.status, 201)
-  for (const key of ['right_to_work_share_code', 'right_to_work_date_of_birth', 'work_permission_declared', 'student_conditions_acknowledged']) assert.equal(f.writes[0][key], null)
+  for (const key of ['right_to_work_share_code', 'right_to_work_date_of_birth']) assert.equal(f.writes[0][key], undefined)
+  for (const key of ['work_permission_declared', 'student_conditions_acknowledged']) assert.equal(f.writes[0][key], null)
 })
 
 test('database errors cannot leak a failing row into application logs or responses', async () => {
@@ -130,7 +132,9 @@ test('private evidence endpoint requires an authorised website admin, valid ID a
   assert.deepEqual(f.filter, ['id', id])
   assert.equal(allowed.headers.get('Vary'), 'Authorization')
   assert.match(allowed.headers.get('Cache-Control'), /private, no-store/)
-  assert.equal((await allowed.json()).evidence.right_to_work_share_code, 'W12345678')
+  assert.equal((await allowed.json()).evidence.right_to_work_share_code, undefined)
+  assert.ok(f.reads.some(value => value.startsWith('retention_expires_at:')))
+  assert.doesNotMatch(f.reads.join(), /share_code|date_of_birth/)
   assert.equal((await harness({ missing: true }).load('app/api/admin/right-to-work/route.ts').GET(new Request(`https://example.invalid?id=${id}`))).status, 404)
 })
 

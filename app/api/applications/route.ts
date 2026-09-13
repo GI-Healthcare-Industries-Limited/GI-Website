@@ -7,6 +7,7 @@ import {
   getRequestFingerprint,
   hasAllowedOrigin,
   isRateLimited,
+  readSubmissionJson,
   submissionErrorResponse,
 } from '@/lib/submissions'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const input = applicationSchema.parse(await request.json())
+    const input = applicationSchema.parse(await readSubmissionJson(request, 25_000))
 
     if (input.company) return Response.json({ ok: true }, { status: 201 })
 
@@ -48,8 +49,8 @@ export async function POST(request: Request) {
       project_summary: input.projectSummary,
       right_to_work: true,
       immigration_status: input.immigrationStatus,
-      right_to_work_share_code: input.shareCode || null,
-      right_to_work_date_of_birth: input.dateOfBirth || null,
+      privacy_notice_version: input.privacyNoticeVersion,
+      privacy_notice_provided_at: new Date().toISOString(),
       work_permission_declared: input.workPermission === 'yes' ? true : null,
       student_conditions_acknowledged: input.studentConditions === 'yes' ? true : null,
       request_fingerprint: fingerprint,
@@ -62,21 +63,9 @@ export async function POST(request: Request) {
 
     after(async () => {
       try {
-        await sendSubmissionNotification({
-          subject: `New ${input.jobTitle} application from ${input.name}`,
-          heading: 'New GI Healthcare career application',
-          lines: [
-            { label: 'Role', value: input.jobTitle },
-            { label: 'Name', value: input.name },
-            { label: 'Email', value: input.email },
-            { label: 'Phone', value: input.phone || 'Not provided' },
-            { label: 'Portfolio', value: input.portfolioUrl },
-            { label: 'Project', value: input.projectSummary },
-            { label: 'Right to work in the UK', value: 'Self-declared — employer check required. Review the evidence privately in the admin portal.' },
-          ],
-        })
-      } catch (notificationError) {
-        console.error('Application notification failed', notificationError)
+        await sendSubmissionNotification('application')
+      } catch {
+        console.error('Application notification failed; no applicant details logged')
       }
     })
 

@@ -21,13 +21,15 @@ import {
 import type { Session } from '@supabase/supabase-js'
 import Image from 'next/image'
 import Link from 'next/link'
-import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { applicationStatuses, contactStatuses } from '@/lib/submission-constants'
-import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
+import { clearStoredAdminSession, getSupabaseBrowserClient } from '@/lib/supabase/browser'
 import { AdminLogin } from '@/app/admin/admin-login'
 import { ApplicationDeadlines } from '@/app/admin/application-deadlines'
 import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
+import { RetentionNotice } from '@/app/admin/retention-notice'
+import { isWithinRetention } from '@/lib/privacy'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
 
 type Kind = 'contact' | 'application'
@@ -35,6 +37,8 @@ type Submission = {
   id: string
   created_at: string
   updated_at: string
+  retention_expires_at: string
+  privacy_notice_version: string | null
   name: string
   email: string
   phone: string | null
@@ -45,8 +49,6 @@ type Submission = {
   project_summary?: string | null
   right_to_work?: boolean | null
   cover_letter?: string | null
-  cv_path?: string | null
-  cv_original_name?: string | null
 }
 
 const statusLabels: Record<string, string> = {
@@ -102,6 +104,19 @@ export function AdminDashboard() {
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null)
   const [changingPassword, setChangingPassword] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const loadRequest = useRef(0)
+  const clockOffset = useRef(0)
+  const locked = useRef(false)
+
+  const endSession = useCallback(() => {
+    locked.current = true
+    loadRequest.current++
+    setItems([]); setSelectedId(null); setSearchQuery(''); setSession(null)
+    // Clear the UI and stored token even when the network is offline. Token
+    // revocation is best-effort; issued access tokens still have their own TTL.
+    void supabase?.auth.signOut({ scope: 'local' }).catch(() => {}).finally(clearStoredAdminSession)
+    clearStoredAdminSession()
+  }, [supabase])
 
   useEffect(() => {
     if (!supabase) {
@@ -110,7 +125,7 @@ export function AdminDashboard() {
     }
 
     void supabase.auth.getSession().then(({ data, error: sessionError }) => {
-      setSession(data.session)
+      if (!locked.current) setSession(data.session)
       if (sessionError) setError('Your sign-in link may have expired. Please request a new password reset link or sign in again.')
       setCheckingSession(false)
     }).catch(() => {
@@ -118,8 +133,14 @@ export function AdminDashboard() {
       setCheckingSession(false)
     })
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === 'SIGNED_IN') locked.current = false
+      if (locked.current && nextSession) return
+      loadRequest.current++
       setSession(nextSession)
+      setItems([])
+      setSelectedId(null)
+      setSearchQuery('')
       setCheckingSession(false)
     })
     return () => listener.subscription.unsubscribe()
@@ -127,31 +148,73 @@ export function AdminDashboard() {
 
   const loadSubmissions = useCallback(async () => {
     if (!session) return
+    const requestId = ++loadRequest.current
     setLoading(true)
     setError(null)
     try {
       const params = new URLSearchParams({ kind })
       if (statusFilter !== 'all') params.set('status', statusFilter)
       const response = await authenticatedFetch(session, `/api/admin/submissions?${params}`)
-      const payload = (await response.json()) as { items?: Submission[]; error?: string }
+      const payload = (await response.json()) as { items?: Submission[]; error?: string; checkedAt?: string }
+      if (requestId !== loadRequest.current) return
       if (response.status === 401) {
-        await supabase?.auth.signOut()
+        endSession()
         throw new Error('Your admin session has expired. Please sign in again.')
       }
       if (!response.ok) throw new Error(payload.error || 'Could not load submissions.')
-      const nextItems = payload.items ?? []
+      if (payload.checkedAt) clockOffset.current = Date.parse(payload.checkedAt) - Date.now()
+      const nextItems = (payload.items ?? []).filter(item => isWithinRetention(item.retention_expires_at, Date.now() + clockOffset.current))
       setItems(nextItems)
       setSelectedId((current) => nextItems.some((item) => item.id === current) ? current : nextItems[0]?.id ?? null)
     } catch (loadError) {
+      if (requestId !== loadRequest.current) return
+      setItems([])
+      setSelectedId(null)
       setError(loadError instanceof Error ? loadError.message : 'Could not load submissions.')
     } finally {
-      setLoading(false)
+      if (requestId === loadRequest.current) setLoading(false)
     }
-  }, [kind, session, statusFilter, supabase])
+  }, [kind, session, statusFilter, endSession])
 
   useEffect(() => {
+    setItems([])
     void loadSubmissions()
+    const refresh = () => { if (document.visibilityState === 'visible') void loadSubmissions() }
+    const interval = window.setInterval(refresh, 60_000)
+    window.addEventListener('focus', refresh)
+    return () => { loadRequest.current++; window.clearInterval(interval); window.removeEventListener('focus', refresh) }
   }, [loadSubmissions])
+
+  useEffect(() => {
+    if (!session) return
+    // Drop expired content from memory even if an inbox was left open or the
+    // next network request fails. Server time compensates for local clock skew.
+    const expire = () => setItems(current => current.filter(item => isWithinRetention(item.retention_expires_at, Date.now() + clockOffset.current)))
+    const interval = window.setInterval(expire, 1000)
+    window.addEventListener('focus', expire)
+    return () => { window.clearInterval(interval); window.removeEventListener('focus', expire) }
+  }, [session])
+
+  useEffect(() => {
+    if (!session || !supabase) return
+    let lastActivity = Date.now()
+    const lock = endSession
+    const activity = () => {
+      if (Date.now() - lastActivity >= 15 * 60_000) lock()
+      else lastActivity = Date.now()
+    }
+    const check = () => { if (Date.now() - lastActivity >= 15 * 60_000) lock() }
+    const interval = window.setInterval(check, 5000)
+    window.addEventListener('pointerdown', activity, { passive: true })
+    window.addEventListener('keydown', activity)
+    window.addEventListener('focus', check)
+    return () => {
+      window.clearInterval(interval)
+      window.removeEventListener('pointerdown', activity)
+      window.removeEventListener('keydown', activity)
+      window.removeEventListener('focus', check)
+    }
+  }, [session?.user.id, supabase, endSession])
 
   const filteredItems = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
@@ -169,6 +232,8 @@ export function AdminDashboard() {
   const selectedItem = filteredItems.find((item) => item.id === selectedId) ?? filteredItems[0] ?? null
 
   function changeKind(nextKind: Kind) {
+    loadRequest.current++
+    setItems([])
     setKind(nextKind)
     setStatusFilter('all')
     setSearchQuery('')
@@ -205,7 +270,7 @@ export function AdminDashboard() {
       const payload = (await response.json()) as { error?: string }
 
       if (response.status === 401) {
-        await supabase?.auth.signOut()
+        endSession()
         throw new Error('Your admin session has expired. Please sign in again.')
       }
       if (!response.ok) throw new Error(payload.error || `Could not delete the ${itemLabel}.`)
@@ -256,17 +321,6 @@ export function AdminDashboard() {
     setPasswordMessage('Your admin password has been changed.')
   }
 
-  async function openCv(item: Submission) {
-    if (!session || !item.cv_path) return
-    const response = await authenticatedFetch(session, `/api/admin/cv?path=${encodeURIComponent(item.cv_path)}`)
-    const payload = (await response.json()) as { url?: string; error?: string }
-    if (!response.ok || !payload.url) {
-      setError(payload.error || 'Could not open the legacy CV.')
-      return
-    }
-    window.open(payload.url, '_blank', 'noopener,noreferrer')
-  }
-
   if (checkingSession || !supabase || !session) {
     return (
       <AdminLogin checkingSession={checkingSession} sessionError={error} supabase={supabase} />
@@ -295,7 +349,7 @@ export function AdminDashboard() {
         <div className="admin-account">
           <span className="admin-account-avatar"><UserCircleIcon aria-hidden size={32} weight="fill" /></span>
           <span><strong>Ash</strong><small>Website admin</small></span>
-          <button aria-label="Sign out" onClick={() => void supabase.auth.signOut()} type="button"><SignOutIcon aria-hidden size={20} /></button>
+          <button aria-label="Sign out" onClick={endSession} type="button"><SignOutIcon aria-hidden size={20} /></button>
         </div>
       </aside>
 
@@ -314,6 +368,7 @@ export function AdminDashboard() {
         {error && <p aria-live="polite" className="application-status error admin-error">{error}</p>}
 
         {kind === 'application' && <ApplicationDeadlines session={session} />}
+        <RetentionNotice session={session} />
 
         <div className="admin-filters">
           <label className="admin-search">
@@ -396,6 +451,7 @@ export function AdminDashboard() {
                     <span><PhoneIcon aria-hidden size={19} /><span><small>Phone</small>Not provided</span></span>
                   )}
                   <span><ClockIcon aria-hidden size={19} /><span><small>Received</small>{formatDate(selectedItem.created_at)}</span></span>
+                  <span><TrashIcon aria-hidden size={19} /><span><small>Deleted by</small>{formatDate(selectedItem.retention_expires_at)}</span></span>
                 </div>
 
                 {kind === 'application' && (
@@ -418,11 +474,6 @@ export function AdminDashboard() {
                         <LinkSimpleIcon aria-hidden size={20} /> Open portfolio <ArrowSquareOutIcon aria-hidden size={17} />
                       </a>
                     )}
-                    {selectedItem.cv_path && (
-                      <button onClick={() => void openCv(selectedItem)} type="button">
-                        <FolderOpenIcon aria-hidden size={20} /> Open legacy {selectedItem.cv_original_name || 'CV'}
-                      </button>
-                    )}
                   </div>
                 )}
               </>
@@ -430,6 +481,7 @@ export function AdminDashboard() {
           </section>
         </div>
 
+        <p className="admin-retention-copy">Notice supplied: {selectedItem ? selectedItem.privacy_notice_version || 'Legacy submission — no version recorded' : 'Select a submission to view its notice version'}. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy notice</Link></p>
         <details className="admin-account-settings">
           <summary><LockKeyIcon aria-hidden size={19} /> Change admin password</summary>
           <form onSubmit={changePassword}>

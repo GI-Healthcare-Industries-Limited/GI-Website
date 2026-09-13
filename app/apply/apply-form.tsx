@@ -9,6 +9,7 @@ import cookingStudio from '@/assets/admin/cooking-studio.webp'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
 import { formatClosingDate, type JobTitle, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import { JOB_TITLES } from '@/lib/submission-constants'
+import { PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import type { RightToWorkDeclaration } from '@/lib/right-to-work'
 import { EligibilityCheck } from './eligibility-check'
 import styles from './apply-form.module.css'
@@ -92,7 +93,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
           jobTitle: selectedRole, name: formData.get('name'), email: formData.get('email'),
           phone: formData.get('phone'), portfolioUrl: formData.get('portfolioUrl'),
           projectSummary: formData.get('projectSummary'), ...eligibility,
-          consent: formData.get('consent'), company: formData.get('company'),
+          privacyNoticeVersion: PRIVACY_NOTICE_VERSION, company: formData.get('company'),
         }),
       })
       const payload = await response.json().catch(() => ({})) as { error?: string; code?: string; ok?: boolean }
@@ -100,6 +101,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
       if (!response.ok || !payload.ok) throw new Error(payload.error || 'We could not confirm your application. Please try again.')
       setSubmitted(true)
       setEligibility(null)
+      setProjectSummary('')
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'We could not send your application. Please try again.')
     } finally {
@@ -143,10 +145,12 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
                   </div>
                 </fieldset>
                 <div className={styles.roleMeta}><span><MapPinIcon aria-hidden size={15} /> Edinburgh, UK</span><span>Full-time</span></div>
+                {!unavailable && opening && <p className={styles.deadline}><CalendarBlankIcon aria-hidden size={16} /><span>Proposed start: {opening.start_date ? formatClosingDate(opening.start_date) : 'To be agreed'}</span></p>}
                 {!unavailable && opening && <p className={`${styles.deadline} ${closed ? styles.closedLabel : ''}`}><CalendarBlankIcon aria-hidden size={16} />{opening.closing_date ? <span>{closed ? 'Closed' : 'Apply by'} {formatClosingDate(opening.closing_date)}{!closed && ' · 11:59 pm UK time'}</span> : 'Applications open · No closing date'}</p>}
               </div>
               {unavailable && <div role="status" className={styles.notice}><p>We’re unable to check application availability right now. Please try again shortly.</p><button disabled={checking} type="button" onClick={() => void refreshOpenings()}>{checking ? 'Checking…' : 'Check again'}</button></div>}
               {closed && <div role="status" className={styles.notice}><strong>Applications for this role are closed.</strong><p>You can select another role above to check its availability.</p></div>}
+              <p className={styles.help}>GI Healthcare Industries Limited uses your details to assess this application and contact you. Applications are automatically deleted within three calendar months of submission. Read our <Link href="/privacy" target="_blank" rel="noreferrer">privacy notice</Link> for how we use your information, service providers and your rights.</p>
               <EligibilityCheck disabled={!canApply || submitting} completed={eligibility} onComplete={setEligibility} />
               <form onSubmit={submitApplication} aria-busy={submitting} hidden={!eligibility}>
                 <fieldset className={styles.section} disabled={!canApply || !eligibility || submitting}>
@@ -166,16 +170,15 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
                   </div>
                   <div className={`${styles.field} ${styles.summary}`}>
                     <label htmlFor="projectSummary">A project you’re proud of</label>
-                    <p className={styles.help} id="project-help">What was the challenge, what did you contribute, and what changed?</p>
+                    <p className={styles.help} id="project-help">What was the challenge, what did you contribute, and what changed? Do not include identity documents, health information, other people’s personal details or confidential defence material.</p>
                     <textarea id="projectSummary" name="projectSummary" minLength={80} maxLength={800} required value={projectSummary} onChange={(event) => setProjectSummary(event.target.value)} aria-describedby="project-help project-count" />
                     <div className={styles.counter} id="project-count"><span>80–800 characters</span><span>{projectSummary.length} / 800</span></div>
                   </div>
-                  <label className={styles.consent}><input name="consent" required type="checkbox" value="yes" /><span>I agree to GI Healthcare using my details to review my application, check my right to work and contact me about this role.</span></label>
                 </fieldset>
                 <div className="hp-field" aria-hidden="true"><label htmlFor="company">Company</label><input autoComplete="off" id="company" name="company" tabIndex={-1} /></div>
                 {error && <p role="alert" className={styles.error}>{error}</p>}
                 <button className={styles.submit} disabled={submitting || !canApply || !eligibility} type="submit">{submitting ? 'Sending application…' : closed ? 'Applications closed' : 'Send application'}<ArrowRightIcon aria-hidden size={20} /></button>
-                <p className={styles.privacy}><ShieldCheckIcon aria-hidden size={17} />Your details are only used to assess your application.</p>
+                <p className={styles.privacy}><ShieldCheckIcon aria-hidden size={17} /><span>No marketing or talent-pool enrolment. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy & your rights</Link></span></p>
               </form>
               <footer className={styles.footer}>Have a question? <a href="mailto:info@gihealthcare.co.uk">Let’s talk <ArrowUpRightIcon aria-hidden size={14} /></a></footer>
             </>

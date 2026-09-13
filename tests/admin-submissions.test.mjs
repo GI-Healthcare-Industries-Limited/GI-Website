@@ -5,6 +5,7 @@ import test from 'node:test'
 import ts from 'typescript'
 
 const require = createRequire(import.meta.url)
+const id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
 const source = ts.transpileModule(readFileSync('app/api/admin/submissions/route.ts', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText
@@ -79,7 +80,7 @@ function deletionRequest(body) {
 
 test('submission deletion rejects unauthorised requests without database access', async () => {
   const f = fixture({ admin: null })
-  const response = await f.DELETE(deletionRequest({ kind: 'contact', id: 'message-id' }))
+  const response = await f.DELETE(deletionRequest({ kind: 'contact', id }))
 
   assert.equal(response.status, 401)
   assert.equal(f.databaseAccesses, 0)
@@ -95,22 +96,20 @@ test('submission deletion validates its kind and id before database access', asy
 
 test('contact deletion targets only the selected contact record', async () => {
   const f = fixture()
-  const response = await f.DELETE(deletionRequest({ kind: 'contact', id: 'message-id' }))
+  const response = await f.DELETE(deletionRequest({ kind: 'contact', id }))
 
   assert.equal(response.status, 200)
   assert.deepEqual(f.calls, [
-    { table: 'contact_submissions', operation: 'delete', id: 'message-id' },
+    { table: 'contact_submissions', operation: 'delete', id },
   ])
 })
 
-test('application deletion removes its row and any legacy CV', async () => {
+test('application deletion removes only the selected row; retired CV storage is not used', async () => {
   const f = fixture()
-  const response = await f.DELETE(deletionRequest({ kind: 'application', id: 'application-id' }))
+  const response = await f.DELETE(deletionRequest({ kind: 'application', id }))
 
   assert.equal(response.status, 200)
   assert.deepEqual(f.calls, [
-    { table: 'career_applications', operation: 'lookup', id: 'application-id' },
-    { table: 'career_applications', operation: 'delete', id: 'application-id' },
-    { bucket: 'career-cvs', operation: 'storage-remove', paths: ['legacy/test.pdf'] },
+    { table: 'career_applications', operation: 'delete', id },
   ])
 })

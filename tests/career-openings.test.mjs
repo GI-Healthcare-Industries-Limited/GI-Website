@@ -6,7 +6,7 @@ import ts from 'typescript'
 
 const require = createRequire(import.meta.url)
 const title = 'Embedded Systems Engineer'
-const validApplication = { jobTitle: title, name: 'Applicant Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid/portfolio', projectSummary: 'A test-only project with sufficient detail to exercise application validation without real applicant data.', rightToWork: 'yes', consent: 'yes' }
+const validApplication = { jobTitle: title, name: 'Applicant Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid/portfolio', projectSummary: 'A test-only project with sufficient detail to exercise application validation without real applicant data.', rightToWork: 'yes', immigrationStatus: 'british_irish', consent: 'yes' }
 
 function loadRoute(file, overrides = {}) {
   let writes = 0

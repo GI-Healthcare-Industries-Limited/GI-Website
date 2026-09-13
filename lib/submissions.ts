@@ -5,6 +5,7 @@ import { createHmac } from 'node:crypto'
 import { z } from 'zod'
 
 import { JOB_TITLES } from '@/lib/submission-constants'
+import { rightToWorkSchema } from '@/lib/right-to-work'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 export const contactSchema = z.object({
@@ -27,12 +28,9 @@ export const applicationSchema = z.object({
   projectSummary: z.string().trim()
     .min(80, 'Please tell us a little more about the project.')
     .max(800, 'Please keep your project summary to 800 characters or fewer.'),
-  rightToWork: z.string().refine((value) => value === 'yes', {
-    message: 'You must already have the right to work in the UK to apply.',
-  }),
   consent: z.literal('yes'),
   company: z.string().max(0).optional().default(''),
-})
+}).and(rightToWorkSchema)
 
 export function getRequestFingerprint(request: Request) {
   const secret = process.env.SUBMISSION_HASH_SECRET

@@ -26,6 +26,7 @@ import { type FormEvent, useCallback, useEffect, useMemo, useState } from 'react
 import { applicationStatuses, contactStatuses } from '@/lib/submission-constants'
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'
 import { AdminLogin } from '@/app/admin/admin-login'
+import { ApplicationDeadlines } from '@/app/admin/application-deadlines'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
 
 type Kind = 'contact' | 'application'
@@ -310,6 +311,8 @@ export function AdminDashboard() {
         </header>
 
         {error && <p aria-live="polite" className="application-status error admin-error">{error}</p>}
+
+        {kind === 'application' && <ApplicationDeadlines session={session} />}
 
         <div className="admin-filters">
           <label className="admin-search">

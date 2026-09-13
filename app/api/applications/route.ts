@@ -1,6 +1,7 @@
 import { after } from 'next/server'
 
 import { sendSubmissionNotification } from '@/lib/notify'
+import { getCareerOpenings } from '@/lib/career-openings'
 import {
   applicationSchema,
   getRequestFingerprint,
@@ -25,6 +26,11 @@ export async function POST(request: Request) {
 
     if (input.company) return Response.json({ ok: true }, { status: 201 })
 
+    const openings = await getCareerOpenings()
+    if (!openings.items.find((opening) => opening.job_title === input.jobTitle)?.is_open) {
+      return Response.json({ error: 'Applications for this role have closed.', code: 'APPLICATION_CLOSED' }, { status: 409 })
+    }
+
     const fingerprint = getRequestFingerprint(request)
     if (await isRateLimited('career_applications', fingerprint, 24 * 60, 3)) {
       return Response.json(
@@ -44,6 +50,9 @@ export async function POST(request: Request) {
       request_fingerprint: fingerprint,
     }).select('id').single()
 
+    if (insertError?.message === 'APPLICATION_CLOSED') {
+      return Response.json({ error: 'Applications for this role have closed.', code: 'APPLICATION_CLOSED' }, { status: 409 })
+    }
     if (insertError) throw insertError
 
     after(async () => {

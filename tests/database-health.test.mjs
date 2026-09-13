@@ -123,6 +123,7 @@ for (const endpoint of ['contact', 'applications']) {
         '@/lib/supabase/admin': { getSupabaseAdmin: () => db },
         'next/server': { after: () => notifications++ },
         '@/lib/notify': { sendSubmissionNotification() {} },
+        '@/lib/career-openings': { getCareerOpenings: async () => ({ items: [{ job_title: 'Embedded Systems Engineer', is_open: true }] }) },
       }, { SUBMISSION_HASH_SECRET: 'test-only' })
       const { JOB_TITLES } = load('lib/submission-constants.ts')
       const body = {

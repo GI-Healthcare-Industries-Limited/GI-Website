@@ -1,11 +1,8 @@
 'use client'
 
-import { ArrowRightIcon, ArrowUpRightIcon, CheckCircleIcon } from '@phosphor-icons/react'
-import Image from 'next/image'
+import { ArrowRightIcon, CheckCircleIcon } from '@phosphor-icons/react'
 import Link from 'next/link'
 import { type FormEvent, useEffect, useRef, useState } from 'react'
-import cookingStudio from '@/assets/admin/cooking-studio.webp'
-import logo from '@/assets/brand/gi-healthcare-logo.png'
 import { PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import styles from './contact.module.css'
 
@@ -36,21 +33,13 @@ export function ContactForm() {
     } finally { sendingRef.current = false; setSending(false) }
   }
 
-  return <main className={styles.page}>
-    <section className={styles.panel} aria-label="Contact GI Healthcare">
-      <header className={styles.header}>
-        <Link href="/" aria-label="GI Healthcare home"><Image src={logo} alt="GI Healthcare" width={180} height={52} preload /></Link>
-        <Link href="/">Back to website <ArrowUpRightIcon aria-hidden size={15} /></Link>
-      </header>
-      <div className={styles.content}>
+  return <section className={styles.formPanel} aria-label="Contact GI Healthcare">
         {sent ? <div ref={result} tabIndex={-1} className={styles.success}>
           <CheckCircleIcon aria-hidden size={42} weight="light" />
-          <h1>Message received.</h1><p>Thank you for getting in touch. We’ll reply to the email address you provided.</p>
-          <Link className={styles.submit} href="/">Back to website <ArrowRightIcon aria-hidden size={19} /></Link>
+          <h2>Message received.</h2><p>Thank you for getting in touch. We’ll reply to the email address you provided.</p>
+          <a className={styles.submit} href="/?page=about">Explore GI Healthcare <ArrowRightIcon aria-hidden size={19} /></a>
         </div> : <>
-          <p className={styles.eyebrow}>Get in touch</p>
-          <h1>Let’s talk.</h1>
-          <p className={styles.intro}>A question, an idea, a possibility.<br />We’d love to hear it.</p>
+          <h2 className={styles.formTitle}>Send us a message</h2>
           <form onSubmit={submit} aria-busy={sending}>
             <fieldset disabled={sending}>
               <legend className="sr-only">Your message</legend>
@@ -67,13 +56,5 @@ export function ContactForm() {
             <button className={styles.submit} type="submit" disabled={sending}>{sending ? 'Sending…' : 'Send message'}<ArrowRightIcon aria-hidden size={19} /></button>
           </form>
         </>}
-        <footer className={styles.footer}>
-          <a href="https://www.linkedin.com/company/gihil/" target="_blank" rel="noreferrer">LinkedIn <ArrowUpRightIcon aria-hidden size={13} /></a>
-          <Link href="/apply">Careers <ArrowUpRightIcon aria-hidden size={13} /></Link>
-        </footer>
-        <details className={styles.locations}><summary>Our locations</summary><div><p><strong>Head office</strong>1F23 Student Ventures, Bristol, BS16 1QY</p><p><strong>Research & development</strong>The National Robotarium, Edinburgh, EH14 4AS</p></div></details>
-      </div>
-    </section>
-    <figure className={styles.visual}><Image src={cookingStudio} alt="GI Healthcare autonomous cooking machine in a sunlit studio" fill preload sizes="(max-width: 760px) 100vw, 44vw" /></figure>
-  </main>
+  </section>
 }

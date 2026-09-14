@@ -132,6 +132,7 @@ for (const endpoint of ['contact', 'applications']) {
         jobTitle: JOB_TITLES[0], portfolioUrl: 'https://example.com/portfolio',
         projectSummary: 'This is an example project description used only for an isolated automated test. No data is sent.',
         rightToWork: 'yes', immigrationStatus: 'british_irish', privacyNoticeVersion: '2026-09-14',
+        dataSharingAcknowledged: true, dataSharingStatementVersion: 'recruitment-data-sharing-v1',
       }
       const { POST } = load(`app/api/${endpoint}/route.ts`)
       const response = await POST(new Request(`https://example.com/api/${endpoint}`, {

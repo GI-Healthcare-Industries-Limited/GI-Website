@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   const checkedAt = new Date().toISOString()
   let query = kind.data === 'contact'
     ? getSupabaseAdmin().from('contact_submissions').select('id, created_at, updated_at, retention_expires_at, privacy_notice_version, name, email, phone, message, status')
-    : getSupabaseAdmin().from('career_applications').select('id, created_at, updated_at, retention_expires_at, privacy_notice_version, job_title, name, email, phone, portfolio_url, project_summary, right_to_work, cover_letter, status')
+    : getSupabaseAdmin().from('career_applications').select('id, created_at, updated_at, retention_expires_at, privacy_notice_version, data_sharing_acknowledged_at, data_sharing_statement_version, job_title, name, email, phone, portfolio_url, project_summary, right_to_work, cover_letter, status')
   query = query.gt('retention_expires_at', checkedAt)
   if (status && status !== 'all') query = query.eq('status', status)
   const { data, error } = await query.order('created_at', { ascending: false }).limit(100)

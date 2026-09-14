@@ -40,6 +40,7 @@ export async function POST(request: Request) {
       )
     }
 
+    const receivedAt = new Date().toISOString()
     const { data, error: insertError } = await getSupabaseAdmin().from('career_applications').insert({
       job_title: input.jobTitle,
       name: input.name,
@@ -50,7 +51,9 @@ export async function POST(request: Request) {
       right_to_work: true,
       immigration_status: input.immigrationStatus,
       privacy_notice_version: input.privacyNoticeVersion,
-      privacy_notice_provided_at: new Date().toISOString(),
+      privacy_notice_provided_at: receivedAt,
+      data_sharing_acknowledged_at: receivedAt,
+      data_sharing_statement_version: input.dataSharingStatementVersion,
       work_permission_declared: input.workPermission === 'yes' ? true : null,
       student_conditions_acknowledged: input.studentConditions === 'yes' ? true : null,
       request_fingerprint: fingerprint,

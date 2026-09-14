@@ -5,7 +5,7 @@ import { createHmac } from 'node:crypto'
 import { z } from 'zod'
 
 import { JOB_TITLES } from '@/lib/submission-constants'
-import { PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
+import { APPLICATION_DATA_SHARING_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import { rightToWorkSchema } from '@/lib/right-to-work'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
@@ -19,6 +19,8 @@ export const contactSchema = z.object({
 })
 
 export const applicationSchema = z.object({
+  dataSharingAcknowledged: z.literal(true, { error: 'Please tick the box to confirm you are happy to share your data with GI Healthcare.' }),
+  dataSharingStatementVersion: z.literal(APPLICATION_DATA_SHARING_VERSION, { error: 'Please reload the page to view the current data-sharing statement.' }),
   jobTitle: z.enum(JOB_TITLES),
   name: z.string().trim().min(2, 'Please enter your name.').max(120),
   email: z.string().trim().email('Please enter a valid email address.').max(254),

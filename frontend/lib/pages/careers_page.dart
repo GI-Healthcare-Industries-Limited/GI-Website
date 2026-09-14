@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/themes/main_theme.dart';
+import 'package:frontend/utils/helpers.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/job_posting.dart';
 import 'package:frontend/widgets/navigation_bar.dart';
@@ -196,12 +197,18 @@ class _CareersPageState extends State<CareersPage> {
                             closingDate: job['closing_date'],
                             startDate: job['start_date'],
                           )),
-                    const Padding(
-                        padding: EdgeInsets.all(24),
-                        child: Text(
-                          'Select Apply to share your details and a portfolio or project link. For other enquiries, email info@gihealthcare.co.uk.',
-                          textAlign: TextAlign.center,
-                        )),
+                    Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(children: [
+                          const Text(
+                            'Select Apply to share your details. A portfolio or project link is optional.',
+                            textAlign: TextAlign.center,
+                          ),
+                          TextButton(
+                            onPressed: () => Helpers.SendToSameTab('/contact'),
+                            child: const Text('Other questions? Contact us'),
+                          ),
+                        ])),
                     const SizedBox(height: 60),
                     Footer(),
                   ],

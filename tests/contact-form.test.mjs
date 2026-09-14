@@ -29,13 +29,13 @@ function fixture(response = async () => new Response('{"ok":true}',{status:201})
 }
 const values={name:'Synthetic contact',email:'qa@example.invalid',phone:'',message:'Synthetic contact message.',company:''}
 
-test('new contact form has accessible required fields, optional phone and no email-launch CTA',()=>{
+test('contact form preserves visitor fields without publishing business email or phone links',()=>{
   const f=fixture()
   const inputs=f.nodes().filter(n=>['input','textarea'].includes(n.type))
   assert.deepEqual(inputs.filter(n=>n.props.required).map(n=>n.props.name),['name','email','message'])
   assert.equal(inputs.find(n=>n.props.name==='phone').props.autoComplete,'tel')
   assert.ok(inputs.every(n=>f.nodes().some(label=>label.type==='label'&&label.props.htmlFor===n.props.id)))
-  assert.ok(!f.nodes().some(n=>String(n.props?.href).startsWith('mailto:')))
+  assert.ok(!f.nodes().some(n=>/^(mailto:|tel:)/.test(String(n.props?.href))))
 })
 test('contact submits to existing inbox API with notice version and no new consent use',async()=>{
   const f=fixture();await f.submit(values)

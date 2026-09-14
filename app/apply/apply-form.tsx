@@ -9,7 +9,7 @@ import cookingStudio from '@/assets/admin/cooking-studio.webp'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
 import { formatClosingDate, type JobTitle, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import { JOB_TITLES } from '@/lib/submission-constants'
-import { PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
+import { APPLICATION_DATA_SHARING_STATEMENT, APPLICATION_DATA_SHARING_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import type { RightToWorkDeclaration } from '@/lib/right-to-work'
 import { EligibilityCheck } from './eligibility-check'
 import styles from './apply-form.module.css'
@@ -20,6 +20,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
   const [selectedRole, setSelectedRole] = useState(initialRole)
   const [eligibility, setEligibility] = useState<RightToWorkDeclaration | null>(null)
   const [projectSummary, setProjectSummary] = useState('')
+  const [dataSharingAcknowledged, setDataSharingAcknowledged] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -32,6 +33,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
   const refreshRequest = useRef(0)
   const resultRef = useRef<HTMLDivElement>(null)
   const detailsRef = useRef<HTMLInputElement>(null)
+  const dataSharingRef = useRef<HTMLInputElement>(null)
 
   const refreshOpenings = useCallback(async () => {
     const requestId = ++refreshRequest.current
@@ -84,6 +86,11 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
       return
     }
     const formData = new FormData(event.currentTarget)
+    if (formData.get('dataSharingAcknowledged') !== 'yes') {
+      setError('Please tick the box to confirm you are happy to share your data with GI Healthcare.')
+      dataSharingRef.current?.focus()
+      return
+    }
     submittingRef.current = true
     setSubmitting(true)
     try {
@@ -94,6 +101,8 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
           phone: formData.get('phone'), portfolioUrl: formData.get('portfolioUrl'),
           projectSummary: formData.get('projectSummary'), ...eligibility,
           privacyNoticeVersion: PRIVACY_NOTICE_VERSION, company: formData.get('company'),
+          dataSharingAcknowledged: formData.get('dataSharingAcknowledged') === 'yes',
+          dataSharingStatementVersion: APPLICATION_DATA_SHARING_VERSION,
         }),
       })
       const payload = await response.json().catch(() => ({})) as { error?: string; code?: string; ok?: boolean }
@@ -102,6 +111,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
       setSubmitted(true)
       setEligibility(null)
       setProjectSummary('')
+      setDataSharingAcknowledged(false)
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'We could not send your application. Please try again.')
     } finally {
@@ -138,7 +148,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
                   <legend>I’m applying for</legend>
                   <div className={styles.roleCards}>
                     {JOB_TITLES.map((title, index) => <label key={title} className={selectedRole === title ? styles.activeRole : ''}>
-                      <input type="radio" name="jobTitle" value={title} checked={selectedRole === title} onChange={() => { setSelectedRole(title); setEligibility(null); setError(null) }} />
+                      <input type="radio" name="jobTitle" value={title} checked={selectedRole === title} onChange={() => { setSelectedRole(title); setEligibility(null); setDataSharingAcknowledged(false); setError(null) }} />
                       <span className={styles.roleCardTop}>{index === 0 ? <CpuIcon size={23} aria-hidden weight="light" /> : <ChartLineUpIcon size={23} aria-hidden weight="light" />}{selectedRole === title ? <CheckCircleIcon size={18} aria-hidden weight="fill" /> : <CircleIcon size={18} aria-hidden />}</span>
                       <strong>{title}</strong><small>{index === 0 ? 'Engineering' : 'Commercial & operations'}</small>
                     </label>)}
@@ -176,6 +186,11 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
                   </div>
                 </fieldset>
                 <div className="hp-field" aria-hidden="true"><label htmlFor="company">Company</label><input autoComplete="off" id="company" name="company" tabIndex={-1} /></div>
+                <label className={styles.consent} htmlFor="dataSharingAcknowledged">
+                  <input ref={dataSharingRef} id="dataSharingAcknowledged" name="dataSharingAcknowledged" type="checkbox" value="yes" required checked={dataSharingAcknowledged} onChange={(event) => { setDataSharingAcknowledged(event.target.checked); setError(null) }} disabled={submitting || !canApply || !eligibility} aria-describedby="data-sharing-help" />
+                  <span>{APPLICATION_DATA_SHARING_STATEMENT}</span>
+                </label>
+                <p className={styles.help} id="data-sharing-help">For assessing your application and contacting you, as explained in our <Link href="/privacy" target="_blank" rel="noreferrer">privacy notice</Link>.</p>
                 {error && <p role="alert" className={styles.error}>{error}</p>}
                 <button className={styles.submit} disabled={submitting || !canApply || !eligibility} type="submit">{submitting ? 'Sending application…' : closed ? 'Applications closed' : 'Send application'}<ArrowRightIcon aria-hidden size={20} /></button>
                 <p className={styles.privacy}><ShieldCheckIcon aria-hidden size={17} /><span>No marketing or talent-pool enrolment. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy & your rights</Link></span></p>

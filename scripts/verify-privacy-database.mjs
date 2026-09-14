@@ -23,10 +23,14 @@ try {
         await db.query(await readFile(new URL(`../supabase/migrations/${file}`, import.meta.url), 'utf8'))
       }
     }
-    for (const file of ['submission-privacy.sql', 'career-closing-dates.sql', 'right-to-work.sql']) {
+    const confirmation = await db.query("select exists (select 1 from information_schema.columns where table_schema='public' and table_name='career_applications' and column_name='data_sharing_acknowledged_at') installed")
+    if (!confirmation.rows[0].installed) {
+      await db.query(await readFile(new URL('../supabase/migrations/20260914030000_application_data_sharing_confirmation.sql', import.meta.url), 'utf8'))
+    }
+    for (const file of ['submission-privacy.sql', 'career-closing-dates.sql', 'right-to-work.sql', 'application-data-sharing.sql']) {
       await db.query(await readFile(new URL(`../tests/${file}`, import.meta.url), 'utf8'))
     }
-    console.log('PASS: calendar boundaries, permissions, evidence minimisation, all-status purge, fingerprint expiry, immutable retention, start dates and closing-date enforcement')
+    console.log('PASS: calendar boundaries, permissions, evidence minimisation, all-status purge, fingerprint expiry, immutable retention, role dates and data-sharing confirmation')
   } finally { await db.query('rollback') }
   const after = (await db.query(countSql)).rows[0]
   assert.deepEqual(after, before)

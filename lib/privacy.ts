@@ -2,6 +2,11 @@
 // of information, not consent, agreement to processing, or proof it was read.
 export const PRIVACY_NOTICE_VERSION = '2026-09-14'
 
+// Separate from the notice version and the processing bases in that notice.
+// Keep each statement version immutable so recorded confirmations are traceable.
+export const APPLICATION_DATA_SHARING_VERSION = 'recruitment-data-sharing-v1'
+export const APPLICATION_DATA_SHARING_STATEMENT = 'I’m happy to share my data with GI Healthcare.'
+
 export function isWithinRetention(expiresAt: string, now = Date.now()) {
   const expiry = Date.parse(expiresAt)
   return Number.isFinite(expiry) && expiry > now

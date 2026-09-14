@@ -6,7 +6,7 @@ import ts from 'typescript'
 
 const require = createRequire(import.meta.url)
 const id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
-const base = { jobTitle: 'Embedded Systems Engineer', name: 'Synthetic Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid', projectSummary: 'A synthetic test project description to validate the submission flow without using any real applicant data.', privacyNoticeVersion: '2026-09-14', rightToWork: 'yes' }
+const base = { jobTitle: 'Embedded Systems Engineer', name: 'Synthetic Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid', projectSummary: 'A synthetic test project description to validate the submission flow without using any real applicant data.', privacyNoticeVersion: '2026-09-14', rightToWork: 'yes', dataSharingAcknowledged: true, dataSharingStatementVersion: 'recruitment-data-sharing-v1' }
 const visa = { immigrationStatus: 'graduate', workPermission: 'yes', shareCode: 'w12 345 678', dateOfBirth: '2000-02-29' }
 
 function harness(options = {}) {
@@ -94,11 +94,38 @@ test('application stores declaration and notice version; notification contains n
   assert.equal(f.writes[0].right_to_work_date_of_birth, undefined)
   assert.equal(f.writes[0].privacy_notice_version, '2026-09-14')
   assert.ok(Number.isFinite(Date.parse(f.writes[0].privacy_notice_provided_at)))
+  assert.equal(f.writes[0].data_sharing_statement_version, 'recruitment-data-sharing-v1')
+  assert.equal(f.writes[0].data_sharing_acknowledged_at, f.writes[0].privacy_notice_provided_at)
   assert.equal(f.writes[0].work_permission_declared, true)
   const output = JSON.stringify([await response.json(), f.emails, f.logs])
   assert.doesNotMatch(output, /W12345678|2000-02-29|"Confirmed"/)
   assert.deepEqual(f.emails, ['application'])
   assert.doesNotMatch(JSON.stringify(f.emails), /Synthetic|example|graduate/)
+})
+
+test('application requires an explicit true checkbox and current statement before storage or notification', async () => {
+  for (const change of [
+    { dataSharingAcknowledged: undefined }, { dataSharingAcknowledged: false },
+    { dataSharingAcknowledged: 'true' }, { dataSharingAcknowledged: 'yes' },
+    { dataSharingAcknowledged: 1 }, { dataSharingAcknowledged: null },
+    { dataSharingStatementVersion: undefined }, { dataSharingStatementVersion: 'old' },
+  ]) {
+    const f = harness()
+    const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, ...change }))
+    assert.equal(response.status, 400, JSON.stringify(change))
+    assert.match((await response.json()).error, /tick the box|reload the page/)
+    assert.equal(f.writes.length, 0)
+    assert.equal(f.emails.length, 0)
+  }
+})
+
+test('confirmation time is generated on the server, not accepted from the applicant', async () => {
+  const f = harness()
+  const before = Date.now()
+  const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, dataSharingAcknowledgedAt: '1970-01-01', data_sharing_acknowledged_at: '1970-01-01' }))
+  assert.equal(response.status, 201)
+  const recorded = Date.parse(f.writes[0].data_sharing_acknowledged_at)
+  assert.ok(recorded >= before && recorded <= Date.now())
 })
 
 test('citizen insert never stores code, DOB or visa declarations', async () => {

@@ -39,6 +39,8 @@ type Submission = {
   updated_at: string
   retention_expires_at: string
   privacy_notice_version: string | null
+  data_sharing_acknowledged_at?: string | null
+  data_sharing_statement_version?: string | null
   name: string
   email: string
   phone: string | null
@@ -481,6 +483,7 @@ export function AdminDashboard() {
           </section>
         </div>
 
+        {kind === 'application' && selectedItem && <p className="admin-retention-copy">Data-sharing confirmation: {selectedItem.data_sharing_acknowledged_at ? `Confirmed ${formatDate(selectedItem.data_sharing_acknowledged_at)} · ${selectedItem.data_sharing_statement_version}` : 'Not recorded for this application'}.</p>}
         <p className="admin-retention-copy">Notice supplied: {selectedItem ? selectedItem.privacy_notice_version || 'Legacy submission — no version recorded' : 'Select a submission to view its notice version'}. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy notice</Link></p>
         <details className="admin-account-settings">
           <summary><LockKeyIcon aria-hidden size={19} /> Change admin password</summary>

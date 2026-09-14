@@ -95,7 +95,7 @@ test('application stores declaration and notice version; notification contains n
   assert.equal(f.writes[0].right_to_work_date_of_birth, undefined)
   assert.equal(f.writes[0].privacy_notice_version, personalAnswers.privacyNoticeVersion)
   assert.ok(Number.isFinite(Date.parse(f.writes[0].privacy_notice_provided_at)))
-  assert.equal(f.writes[0].data_sharing_statement_version, 'recruitment-data-sharing-v1')
+  assert.equal(f.writes[0].data_sharing_statement_version, personalAnswers.dataSharingStatementVersion)
   assert.equal(f.writes[0].data_sharing_acknowledged_at, f.writes[0].privacy_notice_provided_at)
   assert.equal(f.writes[0].work_permission_declared, true)
   const output = JSON.stringify([await response.json(), f.emails, f.logs])
@@ -173,13 +173,14 @@ test('bulk application list never selects private code, DOB or immigration categ
   assert.doesNotMatch(f.reads.join(), /share_code|date_of_birth|immigration_status/)
 })
 
-test('all new written questions and own-words declaration are required before any storage', async () => {
+test('all short answers and an award choice are required before any storage', async () => {
   for (const change of [
-    { awardsStatus: undefined }, { awardsStatus: 'made-up' }, { competitionAwards: '' },
-    { awardsDetail: '' }, { biggestFailure: '' }, { growthArea: '' }, { projectSummary: '' },
-    { awardsDetail: ' '.repeat(100) }, { growthArea: 'a'.repeat(1001) },
-    { authorshipAcknowledged: false }, { authorshipAcknowledged: 'true' },
-    { authorshipAcknowledged: undefined }, { applicationQuestionsVersion: undefined },
+    { awardsStatus: undefined }, { awardsStatus: 'made-up' }, { awardEntries: [] },
+    { awardEntries: [''] }, { awardEntries: undefined }, { awardEntries: [null] },
+    { awardEntries: ['   '] }, { awardEntries: Array(11).fill('Award') },
+    { biggestFailure: '' }, { growthArea: '' }, { projectSummary: '' },
+    { projectSummary: ' '.repeat(100) }, { growthArea: 'a'.repeat(1601) },
+    { applicationQuestionsVersion: undefined },
     { applicationQuestionsVersion: 'old' }, { privacyNoticeVersion: '2026-09-14' },
   ]) {
     const f = harness()
@@ -202,23 +203,24 @@ test('portfolio is optional, but non-empty links must be valid HTTP or HTTPS', a
   }
 })
 
-test('no awards yet is accepted with the extracurricular follow-up, not fabricated awards', async () => {
+test('no awards yet needs no invented award or follow-up', async () => {
   const f = harness()
-  assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, awardsStatus: 'none_yet', competitionAwards: '' }))).status, 201)
+  assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, awardsStatus: 'none_yet', awardEntries: [] }))).status, 201)
   assert.equal(f.writes[0].awards_status, 'none_yet')
-  assert.equal(f.writes[0].competition_awards, null)
+  assert.deepEqual(f.writes[0].award_entries, [])
+  assert.equal(f.writes[0].awards_detail, undefined)
   const conflict = harness()
   assert.equal((await conflict.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, awardsStatus: 'none_yet' }))).status, 400)
   assert.equal(conflict.writes.length, 0)
 })
 
-test('answers are stored exactly as submitted; confirmation is server-timed, not AI scoring', async () => {
+test('short answers and ordered cards are stored without retired prompts or pledges', async () => {
   const f = harness()
-  const before = Date.now()
-  assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, authorshipConfirmedAt: '1970-01-01', aiScore: 99, allowPaste: true, typingEvents: ['private'], clipboard: 'private', projectSummary: 'Synthetic work example. '.repeat(70) }))).status, 201)
+  assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, authorshipAcknowledged: true, authorshipConfirmedAt: '1970-01-01', awardsDetail: 'Retired answer', competitionAwards: 'Retired list', aiScore: 99, allowPaste: true, typingEvents: ['private'], clipboard: 'private', projectSummary: 'A small app.' }))).status, 201)
   const row = f.writes[0]
-  for (const [field, input] of [['competition_awards','competitionAwards'],['awards_detail','awardsDetail'],['biggest_failure','biggestFailure'],['growth_area','growthArea']]) assert.equal(row[field], personalAnswers[input])
-  assert.ok(Date.parse(row.authorship_confirmed_at) >= before && Date.parse(row.authorship_confirmed_at) <= Date.now())
+  for (const [field, input] of [['biggest_failure','biggestFailure'],['growth_area','growthArea']]) assert.equal(row[field], personalAnswers[input])
+  assert.deepEqual(row.award_entries, personalAnswers.awardEntries)
+  for (const field of ['authorship_confirmed_at','awards_detail','competition_awards']) assert.equal(row[field], undefined)
   assert.equal(row.application_questions_version, personalAnswers.applicationQuestionsVersion)
   assert.doesNotMatch(JSON.stringify(row), /aiScore|allowPaste|typingEvents|clipboard|1970-01-01/)
   assert.doesNotMatch(JSON.stringify([f.emails, f.logs]), /synthetic test rig|prototype|teammate/)
@@ -228,15 +230,32 @@ test('admin reads include all personal answers under the existing authentication
   const f = harness()
   const response = await f.load('app/api/admin/submissions/route.ts').GET(new Request('https://example.invalid?kind=application'))
   assert.equal(response.status, 200)
-  for (const field of ['awards_status','competition_awards','awards_detail','biggest_failure','growth_area','authorship_confirmed_at','application_questions_version']) assert.ok(f.reads.join().includes(field))
+  for (const field of ['awards_status','award_entries','competition_awards','awards_detail','biggest_failure','growth_area','authorship_confirmed_at','application_questions_version']) assert.ok(f.reads.join().includes(field))
   assert.match(f.reads.join(), /retention_expires_at/)
   assert.match(response.headers.get('Cache-Control'), /private, no-store/)
 })
 
-test('paste deterrence is a local choice and never blocks typing or dictation', () => {
-  const { shouldDiscourageInsertion } = harness().load('lib/application-questions.ts')
-  for (const event of ['paste','drop']) { assert.equal(shouldDiscourageInsertion(false,event),true); assert.equal(shouldDiscourageInsertion(true,event),false) }
-  for (const event of ['typing','dictation','input']) assert.equal(shouldDiscourageInsertion(false,event),false)
+test('compact form has no paste restriction, pledge or input surveillance', () => {
   const source = readFileSync('app/apply/application-questions.tsx','utf8')
-  assert.doesNotMatch(source, /clipboardData|navigator\.clipboard|onKeyDown|onKeyUp|localStorage|sessionStorage|Date\.now/)
+  assert.doesNotMatch(source, /onPaste|onDrop|authorship|AI-generated|allowPaste|clipboardData|navigator\.clipboard|onKeyDown|onKeyUp|localStorage|sessionStorage|Date\.now/)
+  assert.match(source, /Add another award/)
+})
+
+test('word limits accept their exact boundary and reject excess on the server', async () => {
+  for (const [field, max] of [['awardEntries',20],['projectSummary',80],['biggestFailure',50],['growthArea',40]]) {
+    for (const [count, status] of [[max,201],[max+1,400]]) {
+      const f = harness()
+      const answer = Array(count).fill('word').join(' ')
+      const value = field === 'awardEntries' ? [answer] : answer
+      assert.equal((await f.load('app/api/applications/route.ts').POST(request({...base,...visa,[field]:value}))).status,status,`${field}:${count}`)
+      assert.equal(f.writes.length,status===201?1:0)
+    }
+  }
+})
+
+test('word counting handles line breaks, Unicode whitespace, URLs and empty answers', () => {
+  const { countWords } = harness().load('lib/application-questions.ts')
+  for (const separator of [' ', '\t', '\n', '\u00a0', '\u202f', '\ufeff']) assert.equal(countWords(`one${separator}two`),2)
+  assert.equal(countWords('  \n '),0)
+  assert.equal(countWords('hands-on https://example.invalid'),2)
 })

@@ -131,19 +131,25 @@
 }
 @media (prefers-reduced-motion: reduce) { .layout * { transition: none; } }
 .description { color: #68715f; font-size: 13px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
-.writingNote { padding: 20px; border: 1px solid #dce2d3; border-radius: 10px; background: #f5f7f0; color: #526047; font-size: 12px; line-height: 1.8; }
-.writingNote strong { color: #3d4933; font-size: 15px; font-weight: 500; }
-.writingNote p { margin: 10px 0; }
 .inputChoice { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; color: #526047; font-size: 12px; line-height: 1.6; }
 .inputChoice input { width: 16px; height: 16px; margin: 2px 0 0; flex-shrink: 0; accent-color: #687658; }
-.answerCard { padding: 27px 0; border-bottom: 1px solid #e8e9e4; }
-.answerIndex { margin: 0; font-size: 10px; font-weight: 550; letter-spacing: .1em; text-transform: uppercase; color: #707d62; }
-.answerCard .summary { margin-top: 15px; }
-.answerCard .field > label { line-height: 1.7; font-size: 14px; }
-.pasteNotice { margin: 8px 0 0; color: #825e21; font-size: 12px; line-height: 1.7; }
-.pasteNotice:empty { margin: 0; }
-.detailButton { display: flex; justify-content: space-between; gap: 15px; width: 100%; min-height: 45px; padding: 12px 15px; margin-top: 20px; border: 1px solid #ccd5c0; border-radius: 7px; background: #f7f9f3; color: #4c5a40; font-size: 12px; }
-.detailButton:disabled { opacity: .5; }
-.followUp { margin-top: 22px; padding: 20px; border-left: 2px solid #a3af93; border-radius: 0 9px 9px 0; background: #f8f9f5; }
-@media (max-width: 760px) { .writingNote, .followUp { padding: 16px; } .counter { gap: 8px; } }
+.awardsSection { border: 0; margin: 0; padding: 0 0 28px; min-width: 0; border-bottom: 1px solid #e8e9e4; }
+.section .awardsSection legend { font-size: 14px; margin-bottom: 0; letter-spacing: 0; font-weight: 450; }
+.awardCards { display: grid; gap: 12px; margin-top: 19px; }
+.awardCard { position: relative; border: 1px solid #dfe4d8; border-radius: 11px; background: #f8f9f5; padding: 17px 18px 11px; }
+.shortAnswer { min-width: 0; }
+.shortAnswer label { display: block; font-size: 14px; font-weight: 450; line-height: 1.6; margin-bottom: 11px; }
+.shortAnswer textarea { display: block; width: 100%; border: 1px solid #dddfd7; border-radius: 7px; padding: 12px; background: #fff; color: var(--text); font-size: 14px; line-height: 1.6; resize: vertical; }
+.shortAnswer textarea:hover { border-color: #9ca48e; }
+.shortAnswer textarea[aria-invalid="true"] { border-color: #a52b32; }
+.awardCard label { margin-right: 35px; font-size: 12px; color: #69755c; }
+.awardCard textarea { background: transparent; padding: 0; border: 0; border-radius: 0; }
+.wordCount { margin: 7px 0 0; text-align: right; color: #747b67; font-size: 11px; }
+.overLimit { color: #a52b32; }
+.removeAward { position: absolute; right: 9px; top: 9px; display: grid; place-items: center; width: 34px; height: 34px; background: transparent; color: #737c69; border: 0; border-radius: 6px; }
+.removeAward:hover { background: #e9ede3; }
+.addAward { display: inline-flex; align-items: center; gap: 7px; margin-top: 12px; min-height: 40px; padding: 7px 0; color: #526047; background: transparent; border: 0; font-size: 12px; }
+.addAward:disabled { opacity: .5; }
+.shortQuestions { display: grid; gap: 26px; padding-top: 28px; }
+@media (max-width: 760px) { .shortAnswer textarea { font-size: 16px; } }
 @media (max-width: 380px) { .roleCards { grid-template-columns: 1fr; } .roleCards label { gap: 8px; } .intro h1 { font-size: 32px; } }

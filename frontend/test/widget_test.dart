@@ -1,21 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/pages/contact_page.dart';
+import 'package:frontend/providers/navigation_provider.dart';
 
 void main() {
-  testWidgets('contact form validates required fields', (tester) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(body: EnquiriesBox()),
-      ),
-    );
-
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Submit'));
-    await tester.pump();
-
-    expect(
-      find.text('Please enter your name, email address and message.'),
-      findsOneWidget,
-    );
+  test('contact navigation opens the new same-domain form', () {
+    final destinations = <String>[];
+    final navigation = NavigationProvider(openContact: destinations.add);
+    navigation.updateIndex(5);
+    expect(destinations, ['/contact']);
+    expect(navigation.currentIndex, 0);
+    navigation.updateIndex(4);
+    expect(navigation.currentIndex, 4);
   });
 }

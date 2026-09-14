@@ -56,10 +56,9 @@ class Footer extends StatelessWidget {
                           ),
                         ),
                         InkWell(
-                          onTap: () => Helpers.SendToUrl(
-                              'mailto:info@gihealthcare.co.uk'),
+                          onTap: () => Helpers.SendToSameTab('/contact'),
                           child: const Text(
-                            'info@gihealthcare.co.uk',
+                            'Send a message',
                             style: MainTheme.linkText,
                           ),
                         ),

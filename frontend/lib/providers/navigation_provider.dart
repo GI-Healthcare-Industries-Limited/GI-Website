@@ -5,8 +5,13 @@ import 'package:frontend/pages/contact_page.dart';
 import 'package:frontend/pages/home_page.dart';
 import 'package:frontend/pages/military_page.dart';
 import 'package:frontend/pages/space_page.dart';
+import 'package:frontend/utils/helpers.dart';
 
 class NavigationProvider with ChangeNotifier {
+  NavigationProvider({void Function(String)? openContact})
+      : _openContact = openContact ?? Helpers.SendToSameTab;
+
+  final void Function(String) _openContact;
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
@@ -26,6 +31,10 @@ class NavigationProvider with ChangeNotifier {
 
   // Function to update the current index and notify listeners
   void updateIndex(int newIndex) {
+    if (newIndex == 5) {
+      _openContact('/contact');
+      return;
+    }
     _currentIndex = newIndex;
     notifyListeners();
   }

@@ -88,19 +88,8 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
       return
     }
     const formData = new FormData(event.currentTarget)
-    if (String(formData.get('awardsDetail') || '').trim().length < 60) {
-      setError('Please complete the short follow-up about your awards or activity before submitting.')
-      const followUp = document.getElementById('awardsDetail') || document.getElementById('awards-detail-reveal')
-      followUp?.focus()
-      return
-    }
-    if (formData.get('authorshipAcknowledged') !== 'yes') {
-      setError('Please confirm the answers are your own writing and experience.')
-      event.currentTarget.querySelector<HTMLInputElement>('[name="authorshipAcknowledged"]')?.focus()
-      return
-    }
     if (formData.get('dataSharingAcknowledged') !== 'yes') {
-      setError('Please tick the box to confirm you are happy to share your data with GI Healthcare.')
+      setError('Please tick the box to agree to the use of your information for this application.')
       dataSharingRef.current?.focus()
       return
     }
@@ -113,9 +102,9 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
           openingId: opening!.id, jobTitle: opening!.job_title, name: formData.get('name'), email: formData.get('email'),
           phone: formData.get('phone'), portfolioUrl: formData.get('portfolioUrl'),
           projectSummary: formData.get('projectSummary'), ...eligibility,
-          awardsStatus: formData.get('awardsStatus'), competitionAwards: formData.get('competitionAwards'),
-          awardsDetail: formData.get('awardsDetail'), biggestFailure: formData.get('biggestFailure'), growthArea: formData.get('growthArea'),
-          authorshipAcknowledged: formData.get('authorshipAcknowledged') === 'yes', applicationQuestionsVersion: APPLICATION_QUESTIONS_VERSION,
+          awardsStatus: formData.get('awardsStatus'), awardEntries: formData.getAll('awardEntry'),
+          biggestFailure: formData.get('biggestFailure'), growthArea: formData.get('growthArea'),
+          applicationQuestionsVersion: APPLICATION_QUESTIONS_VERSION,
           privacyNoticeVersion: APPLICATION_PRIVACY_NOTICE_VERSION, company: formData.get('company'),
           dataSharingAcknowledged: formData.get('dataSharingAcknowledged') === 'yes',
           dataSharingStatementVersion: APPLICATION_DATA_SHARING_VERSION,
@@ -176,7 +165,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
               </div>
               {unavailable && <div role="status" className={styles.notice}><p>{availabilityError ? 'We’re unable to check application availability right now. Please try again shortly.' : openings?.items.length ? 'This job is no longer available. Please choose another posting above.' : 'There are no job postings at the moment. Please check back later.'}</p><button disabled={checking} type="button" onClick={() => void refreshOpenings()}>{checking ? 'Checking…' : 'Check again'}</button></div>}
               {closed && <div role="status" className={styles.notice}><strong>Applications for this role are closed.</strong><p>You can select another role above to check its availability.</p></div>}
-              <p className={styles.help}>GI Healthcare Industries Limited uses your details to assess this application and contact you. Applications are automatically deleted within three calendar months of submission. Read our <Link href="/privacy" target="_blank" rel="noreferrer">privacy notice</Link> for how we use your information, service providers and your rights.</p>
+              <p className={styles.help}>Your information is used for recruitment and deleted within three months. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy notice</Link>.</p>
               {canApply && <EligibilityCheck key={selectedId} disabled={submitting} completed={eligibility} onComplete={setEligibility} />}
               <form onSubmit={submitApplication} aria-busy={submitting} hidden={!eligibility}>
                 <fieldset className={styles.section} disabled={!canApply || !eligibility || submitting}>
@@ -193,12 +182,12 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                   <input ref={dataSharingRef} id="dataSharingAcknowledged" name="dataSharingAcknowledged" type="checkbox" value="yes" required checked={dataSharingAcknowledged} onChange={(event) => { setDataSharingAcknowledged(event.target.checked); setError(null) }} disabled={submitting || !canApply || !eligibility} aria-describedby="data-sharing-help" />
                   <span>{APPLICATION_DATA_SHARING_STATEMENT}</span>
                 </label>
-                <p className={styles.help} id="data-sharing-help">For assessing your application and contacting you, as explained in our <Link href="/privacy" target="_blank" rel="noreferrer">privacy notice</Link>.</p>
+                <p className={styles.help} id="data-sharing-help"><Link href="/privacy" target="_blank" rel="noreferrer">Read the privacy notice</Link></p>
                 {error && <p role="alert" className={styles.error}>{error}</p>}
                 <button className={styles.submit} disabled={submitting || !canApply || !eligibility} type="submit">{submitting ? 'Sending application…' : closed ? 'Applications closed' : 'Send application'}<ArrowRightIcon aria-hidden size={20} /></button>
                 <p className={styles.privacy}><ShieldCheckIcon aria-hidden size={17} /><span>No marketing or talent-pool enrolment. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy & your rights</Link></span></p>
               </form>
-              <footer className={styles.footer}>Have a question? <a href="mailto:info@gihealthcare.co.uk">Let’s talk <ArrowUpRightIcon aria-hidden size={14} /></a></footer>
+              <footer className={styles.footer}>Have a question? <Link href="/contact">Let’s talk <ArrowUpRightIcon aria-hidden size={14} /></Link></footer>
             </>
           )}
         </div>

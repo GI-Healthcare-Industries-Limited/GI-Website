@@ -52,6 +52,7 @@ type Submission = {
   project_summary?: string | null
   awards_status?: 'listed' | 'none_yet' | null
   competition_awards?: string | null
+  award_entries?: string[] | null
   awards_detail?: string | null
   biggest_failure?: string | null
   growth_area?: string | null
@@ -478,11 +479,11 @@ export function AdminDashboard() {
                 </article>
 
                 {kind === 'application' && (selectedItem.application_questions_version ? <>
-                  <article className="admin-message-body"><p className="section-index">{AWARDS_QUESTION}</p><p>{selectedItem.awards_status === 'none_yet' ? NO_AWARDS_LABEL : selectedItem.competition_awards}</p></article>
-                  <article className="admin-message-body"><p className="section-index">{selectedItem.awards_status === 'none_yet' ? ACTIVITY_DETAIL_QUESTION : AWARD_DETAIL_QUESTION}</p><p>{selectedItem.awards_detail}</p></article>
+                  <article className="admin-message-body"><p className="section-index">{AWARDS_QUESTION}</p>{selectedItem.awards_status === 'none_yet' ? <p>{NO_AWARDS_LABEL}</p> : selectedItem.award_entries ? <ol className="admin-award-list">{selectedItem.award_entries.map((award, index) => <li key={index}>{award}</li>)}</ol> : <p>{selectedItem.competition_awards}</p>}</article>
+                  {selectedItem.awards_detail && <article className="admin-message-body"><p className="section-index">{selectedItem.awards_status === 'none_yet' ? ACTIVITY_DETAIL_QUESTION : AWARD_DETAIL_QUESTION}</p><p>{selectedItem.awards_detail}</p></article>}
                   <article className="admin-message-body"><p className="section-index">{FAILURE_QUESTION}</p><p>{selectedItem.biggest_failure}</p></article>
                   <article className="admin-message-body"><p className="section-index">{GROWTH_QUESTION}</p><p>{selectedItem.growth_area}</p></article>
-                  <p className="admin-retention-copy">Own-words declaration: {selectedItem.authorship_confirmed_at ? formatDate(selectedItem.authorship_confirmed_at) : 'Not recorded'} · {selectedItem.application_questions_version}. Self-declared, not AI detection or proof of authorship. Review examples with the applicant.</p>
+                  {selectedItem.authorship_confirmed_at && <p className="admin-retention-copy">Earlier form: own-words declaration recorded {formatDate(selectedItem.authorship_confirmed_at)}.</p>}
                 </> : <p className="admin-retention-copy">These additional questions were not asked on this earlier application.</p>)}
 
                 {kind === 'application' && (

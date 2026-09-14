@@ -10,10 +10,11 @@ class Helpers {
   }
 
   static void SendToSameTab(String url) async {
-    if (await canLaunchUrlString(url)) {
-      await launchUrlString(url, webOnlyWindowName: '_self');
+    final destination = Uri.base.resolve(url).toString();
+    if (await canLaunchUrlString(destination)) {
+      await launchUrlString(destination, webOnlyWindowName: '_self');
     } else {
-      throw 'Could not launch $url';
+      throw 'Could not launch $destination';
     }
   }
 }

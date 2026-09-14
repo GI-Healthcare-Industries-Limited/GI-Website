@@ -8,6 +8,7 @@ contact, careers and admin features.
 
 - `/` and the existing Flutter routes: public GI Healthcare website
 - `/apply`: same-domain, portfolio-first career application form
+- `/contact`: responsive contact form; main-site contact navigation opens it in the same tab
 - `/admin`: password-protected contact and application dashboard
 - `/api/contact`: stores contact-page enquiries
 - `/api/applications`: stores right-to-work-confirmed, portfolio-first applications
@@ -53,6 +54,22 @@ Password recovery is intentionally not exposed because the project does not have
 An administrator can change their password after signing in. If access is lost, the account owner must set a new password from Supabase Authentication or configure and verify production recovery email first.
 The asset provenance and visual QA are recorded in `assets/admin/README.md` and `design-qa.md`.
 New applications do not request or upload a CV.
+
+### Compact application answers
+
+The current form uses repeatable award cards (20 words each, up to 10), work examples
+(80 words), biggest failure (50 words), and a short self-reflection answer (40 words).
+The questions are required; an explicit no-awards choice is valid. The portfolio URL
+and phone number are optional. Word limits are enforced in the browser, API and database.
+There is no paste restriction, writing pledge, follow-up question or input surveillance.
+Earlier applications retain their original answers and metadata without backfilling.
+
+Apply `20260915001000_concise_application_answers.sql` before deploying this version.
+The data-use agreement is versioned independently of the notice. New contact enquiries
+continue through `/api/contact` into the existing admin inbox and retention policy.
+To rebuild main-site navigation, run `flutter build web --release --pwa-strategy=none`
+in `frontend/`, copy `frontend/build/web/` into `docs/` without removing `docs/CNAME`,
+and then run the Next.js build.
 
 ### Application design and closing dates
 

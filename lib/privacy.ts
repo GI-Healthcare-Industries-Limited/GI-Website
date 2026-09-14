@@ -2,12 +2,12 @@
 // of information, not consent, agreement to processing, or proof it was read.
 export const PRIVACY_NOTICE_VERSION = '2026-09-14'
 // Recruitment-specific addendum. Contact clients keep the base notice version.
-export const APPLICATION_PRIVACY_NOTICE_VERSION = '2026-09-14-applications-v2'
+export const APPLICATION_PRIVACY_NOTICE_VERSION = '2026-09-15-applications-v3'
 
 // Separate from the notice version and the processing bases in that notice.
 // Keep each statement version immutable so recorded confirmations are traceable.
-export const APPLICATION_DATA_SHARING_VERSION = 'recruitment-data-sharing-v1'
-export const APPLICATION_DATA_SHARING_STATEMENT = 'I’m happy to share my data with GI Healthcare.'
+export const APPLICATION_DATA_SHARING_VERSION = 'recruitment-data-sharing-v2'
+export const APPLICATION_DATA_SHARING_STATEMENT = 'I agree to GI Healthcare using my information to assess my application and contact me, as described in the privacy notice.'
 
 export function isWithinRetention(expiresAt: string, now = Date.now()) {
   const expiry = Date.parse(expiresAt)

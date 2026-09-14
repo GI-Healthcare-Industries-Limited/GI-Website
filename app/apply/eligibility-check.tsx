@@ -58,7 +58,7 @@ export function EligibilityCheck({ disabled, completed, onComplete }: Props) {
           </div>
         </fieldset>
         <p className={styles.help}>We cannot provide visa sponsorship for these roles.</p>
-        {rightToWork === 'no' && <p role="status" className={styles.ineligible}>You cannot continue with this online application without an existing right to work. If you believe you have permission or need help with evidence, <a href="mailto:info@gihealthcare.co.uk">contact our team for a manual review</a>.</p>}
+        {rightToWork === 'no' && <p role="status" className={styles.ineligible}>You cannot continue with this online application without an existing right to work. If you believe you have permission or need help with evidence, <a href="/contact">contact our team for a manual review</a>.</p>}
         {rightToWork === 'yes' && <>
           <fieldset className={styles.subquestion}>
             <legend>How do you hold that right?</legend>
@@ -81,7 +81,7 @@ export function EligibilityCheck({ disabled, completed, onComplete }: Props) {
             </div>
             <p className={styles.help}>Choose “Other existing permission” if your permission is not listed and allows this role without our sponsorship. The team reviews the conditions of every application.</p>
           </fieldset>}
-          {route === 'permission' && status === 'none' && <p role="status" className={styles.ineligible}>This online application cannot continue without permission for the role. If your situation is different or you’re unsure, <a href="mailto:info@gihealthcare.co.uk">contact our team for a manual review</a>.</p>}
+          {route === 'permission' && status === 'none' && <p role="status" className={styles.ineligible}>This online application cannot continue without permission for the role. If your situation is different or you’re unsure, <a href="/contact">contact our team for a manual review</a>.</p>}
           {needsEvidence && <div className={styles.evidence} key={status}>
             {status === 'student' && <div className={styles.studentNote}>
               <strong>Student permission has work limits</strong>
@@ -94,7 +94,7 @@ export function EligibilityCheck({ disabled, completed, onComplete }: Props) {
             {errors.workPermission && <p id="permission-error" role="alert" className={styles.error}>{errors.workPermission}</p>}
             <p className={styles.help}>If you cannot confirm this, contact us before continuing. Selecting a visa does not verify your eligibility.</p>
             <p className={styles.help}>We’ll arrange a right-to-work check if we make a conditional offer, before employment begins. Please do not send a date of birth, share code or identity documents in this application or by email.</p>
-            <details className={styles.manualHelp}><summary>Need help with your permission?</summary><p>Some people can prove their right to work with eligible documents or the Home Office Employer Checking Service. <a href="mailto:info@gihealthcare.co.uk">Ask for a manual review</a>. Not having a share code does not, by itself, mean you have no right to work.</p></details>
+            <details className={styles.manualHelp}><summary>Need help with your permission?</summary><p>Some people can prove their right to work with eligible documents or the Home Office Employer Checking Service. <a href="/contact">Ask for a manual review</a>. Not having a share code does not, by itself, mean you have no right to work.</p></details>
           </div>}
           {errors.immigrationStatus && <p role="alert" className={styles.error}>{errors.immigrationStatus}</p>}
           {(citizen || needsEvidence) && <button type="submit" className={styles.continue}>Continue to your details <ArrowRightIcon size={18} aria-hidden /></button>}

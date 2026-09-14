@@ -5,7 +5,7 @@ import { createHmac } from 'node:crypto'
 import { z } from 'zod'
 
 import { APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
-import { ANSWER_WORD_LIMITS, APPLICATION_QUESTIONS_VERSION, MAX_AWARDS, countWords } from '@/lib/application-questions'
+import { ANSWER_WORD_LIMITS, APPLICATION_QUESTIONS_VERSION, FAILURE_QUESTION, GROWTH_QUESTION, MAX_AWARDS, WORK_QUESTION, countWords } from '@/lib/application-questions'
 import { rightToWorkSchema } from '@/lib/right-to-work'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
@@ -38,11 +38,11 @@ export const applicationSchema = z.object({
   }, {
     message: 'Your portfolio link must start with http:// or https://.',
   }).optional().default(''),
-  projectSummary: shortAnswer(ANSWER_WORD_LIMITS.work, 'What have you built?'),
+  projectSummary: shortAnswer(ANSWER_WORD_LIMITS.work, WORK_QUESTION),
   awardsStatus: z.enum(['listed', 'none_yet'], { error: 'List your awards, or choose “No competitions or awards yet”.' }),
   awardEntries: z.array(shortAnswer(ANSWER_WORD_LIMITS.award, 'Award')).max(MAX_AWARDS),
-  biggestFailure: shortAnswer(ANSWER_WORD_LIMITS.failure, 'What’s your biggest failure?'),
-  growthArea: shortAnswer(ANSWER_WORD_LIMITS.growth, 'What’s one flaw your friends would point out?'),
+  biggestFailure: shortAnswer(ANSWER_WORD_LIMITS.failure, FAILURE_QUESTION),
+  growthArea: shortAnswer(ANSWER_WORD_LIMITS.growth, GROWTH_QUESTION),
   privacyNoticeVersion: z.literal(APPLICATION_PRIVACY_NOTICE_VERSION, { error: 'Please reload the page to view the current privacy notice before submitting.' }),
   company: z.string().max(0).optional().default(''),
 }).superRefine((input, context) => {

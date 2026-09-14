@@ -6,9 +6,11 @@ contact, careers and admin features.
 
 ## Routes
 
-- `/` and the existing Flutter routes: public GI Healthcare website
+- `/`: public GI Healthcare website; `/?page=about`, `/?page=military`,
+  `/?page=space` and `/?page=careers` open the corresponding main-site sections
 - `/apply`: same-domain, portfolio-first career application form
-- `/contact`: responsive contact form; main-site contact navigation opens it in the same tab
+- `/contact`: responsive contact page with the main website navigation and footer;
+  main-site contact navigation opens it in the same tab
 - `/admin`: password-protected contact and application dashboard
 - `/api/contact`: stores contact-page enquiries
 - `/api/applications`: stores right-to-work-confirmed, portfolio-first applications
@@ -70,6 +72,13 @@ continue through `/api/contact` into the existing admin inbox and retention poli
 To rebuild main-site navigation, run `flutter build web --release --pwa-strategy=none`
 in `frontend/`, copy `frontend/build/web/` into `docs/` without removing `docs/CNAME`,
 and then run the Next.js build.
+
+The Flutter public-page provider owns the allow-listed `page` query parameter and
+browser Back/Forward handling. Its web adapter disables Flutter's unused default
+Navigator history integration to avoid duplicate entries. Contact uses normal
+anchors when crossing between the Next.js form and the Flutter site.
+The distinct Contact illustration and its generation prompt are documented in
+`assets/contact/README.md`; the admin and application image is unchanged.
 
 ### Application design and closing dates
 

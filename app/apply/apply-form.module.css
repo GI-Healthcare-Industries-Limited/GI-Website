@@ -134,11 +134,11 @@
 .inputChoice { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; color: #526047; font-size: 12px; line-height: 1.6; }
 .inputChoice input { width: 16px; height: 16px; margin: 2px 0 0; flex-shrink: 0; accent-color: #687658; }
 .awardsSection { border: 0; margin: 0; padding: 0 0 28px; min-width: 0; border-bottom: 1px solid #e8e9e4; }
-.section .awardsSection legend { font-size: 14px; margin-bottom: 0; letter-spacing: 0; font-weight: 450; }
+.section .awardsSection legend { font-size: 15px; line-height: 1.6; margin-bottom: 0; letter-spacing: 0; font-weight: 500; }
 .awardCards { display: grid; gap: 12px; margin-top: 19px; }
 .awardCard { position: relative; border: 1px solid #dfe4d8; border-radius: 11px; background: #f8f9f5; padding: 17px 18px 11px; }
 .shortAnswer { min-width: 0; }
-.shortAnswer label { display: block; font-size: 14px; font-weight: 450; line-height: 1.6; margin-bottom: 11px; }
+.shortAnswer label { display: block; font-size: 15px; font-weight: 500; line-height: 1.6; margin-bottom: 11px; }
 .shortAnswer textarea { display: block; width: 100%; border: 1px solid #dddfd7; border-radius: 7px; padding: 12px; background: #fff; color: var(--text); font-size: 14px; line-height: 1.6; resize: vertical; }
 .shortAnswer textarea:hover { border-color: #9ca48e; }
 .shortAnswer textarea[aria-invalid="true"] { border-color: #a52b32; }

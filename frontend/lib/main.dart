@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:frontend/utils/web_scroll_behaviour.dart';
 import 'package:provider/provider.dart';
 import 'providers/navigation_provider.dart';
+import 'package:frontend/utils/site_location.dart' as location;
 
 void main() {
+  location.initializeNavigation();
   runApp(
     MultiProvider(
       providers: [

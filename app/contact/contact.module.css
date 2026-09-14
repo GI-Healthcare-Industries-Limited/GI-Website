@@ -1,38 +1,94 @@
-.page { display: grid; grid-template-columns: minmax(0,56%) minmax(0,44%); min-height: 100svh; background: #fff; color: #292c29; font-weight: 400; -webkit-font-smoothing: antialiased; }
-.panel { min-width: 0; padding: 38px clamp(28px,4.5vw,80px) 28px; }
-.header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.header img { display: block; width: 180px; height: auto; }
-.header > a:last-child { display: inline-flex; align-items: center; gap: 5px; color: #71746c; font-size: 12px; text-decoration: none; }
-.content { max-width: 620px; margin: 72px auto 0; }
-.eyebrow { margin: 0 0 19px; color: #737c69; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .14em; }
-.content h1 { margin: 0; font-weight: 450; font-size: clamp(42px,4.2vw,62px); line-height: 1.1; letter-spacing: -.055em; }
-.intro { margin: 22px 0 33px; color: #73796c; font-size: 15px; line-height: 1.75; }
-.content fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 23px; }
+.page { min-height: 100svh; background: #fff; color: #292c29; font-weight: 400; -webkit-font-smoothing: antialiased; }
+.siteHeader { position: sticky; top: 0; z-index: 20; background: #e82127; color: #fff; }
+.headerInner { max-width: 1320px; margin: auto; padding: 12px 40px; display: flex; align-items: center; justify-content: space-between; gap: 40px; min-height: 76px; }
+.brand { display: flex; flex-shrink: 0; }
+.brand img { width: 180px; height: auto; }
+.desktopNav { display: flex; gap: clamp(18px,2.5vw,40px); align-items: center; }
+.desktopNav a { padding-block: 12px; color: #fff; font-size: 14px; text-decoration: none; white-space: nowrap; }
+.desktopNav a:hover, .desktopNav a[aria-current=page] { text-decoration: underline; text-underline-offset: 7px; }
+.mobileMenu { display: none; }
+.skipLink { position: absolute; top: -100px; left: 20px; padding: 12px 20px; background: #fff; color: #292c29; z-index: 30; }
+.skipLink:focus { top: 12px; }
+.hero { max-width: 1320px; padding: 52px 40px; margin: auto; display: grid; grid-template-columns: minmax(0,.8fr) minmax(0,1.4fr); align-items: center; gap: 48px; }
+.heroCopy { padding-block: 18px; }
+.eyebrow { margin: 0 0 23px; color: #b62b2e; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; }
+.hero h1 { margin: 0; font-weight: 450; font-size: clamp(54px,5.5vw,78px); line-height: 1.05; letter-spacing: -.06em; }
+.intro { margin: 26px 0 30px; color: #6b7066; font-size: 16px; line-height: 1.8; }
+.heroLink { display: inline-flex; gap: 28px; padding-bottom: 8px; border-bottom: 1px solid #292c29; font-size: 13px; text-decoration: none; }
+.heroLink span { font-size: 20px; line-height: 1; }
+.visual { position: relative; margin: 0; min-height: 330px; height: 100%; border-radius: 10px; overflow: hidden; background: #b6b6ab; }
+.visual img { object-fit: cover; object-position: 65% 50%; }
+.contactSection { background: #f6f6f2; border-top: 1px solid #e7e8e1; scroll-margin-top: 90px; }
+.contactInner { max-width: 1320px; margin: auto; padding: 68px 40px 76px; display: grid; grid-template-columns: minmax(0,.8fr) minmax(0,1.4fr); gap: 48px; }
+.context { max-width: 340px; }
+.context h2 { margin: 0 0 22px; font-size: clamp(30px,3.2vw,43px); font-weight: 450; line-height: 1.15; letter-spacing: -.04em; }
+.context > p:not(.eyebrow) { margin: 0; max-width: 290px; color: #6b7066; font-size: 14px; line-height: 1.8; }
+.locations { margin-top: 46px; padding-top: 26px; border-top: 1px solid #dddfd5; }
+.locations h3 { margin: 0 0 22px; font-size: 12px; font-weight: 500; }
+.locations address { margin: 0 0 22px; color: #6b7066; font-size: 12px; line-height: 1.8; font-style: normal; }
+.locations strong { display: block; margin-bottom: 4px; color: #353b30; font-weight: 500; }
+.formPanel { min-width: 0; padding: 32px; border: 1px solid #e3e5dd; border-radius: 10px; background: #fff; align-self: start; }
+.formTitle { font-size: 21px; font-weight: 450; letter-spacing: -.025em; margin: 0 0 28px; }
+.formPanel fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 23px; }
 .twoColumns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .field { min-width: 0; }
 .field label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; font-weight: 450; }
 .field label span { color: #737c69; font-size: 11px; font-weight: 400; }
-.field input, .field textarea { display: block; width: 100%; padding: 12px; border: 1px solid #dddfd7; border-radius: 7px; background: #fff; color: #292c29; font: inherit; font-size: 14px; line-height: 1.6; }
+.field input, .field textarea { display: block; width: 100%; padding: 12px; border: 1px solid #dddfd7; border-radius: 6px; background: #fff; color: #292c29; font: inherit; font-size: 14px; line-height: 1.6; }
 .field input { height: 47px; }
 .field textarea { resize: vertical; }
 .field :is(input,textarea):hover { border-color: #9ca48e; }
 .privacy { margin: 20px 0 0; color: #69705e; font-size: 11px; line-height: 1.8; }
 .privacy a { text-underline-offset: 3px; }
-.submit { display: flex; justify-content: space-between; align-items: center; gap: 15px; width: 100%; margin-top: 23px; min-height: 51px; padding: 14px 18px; background: #c9232c; color: white; border: 0; border-radius: 7px; font-size: 13px; font-weight: 500; text-decoration: none; }
+.submit { display: flex; justify-content: space-between; align-items: center; gap: 15px; width: 100%; margin-top: 23px; min-height: 51px; padding: 14px 18px; background: #c9232c; color: white; border: 0; border-radius: 6px; font-size: 13px; font-weight: 500; text-decoration: none; }
 .submit:hover { background: #ad1e26; }
 .submit:disabled { opacity: .5; cursor: default; }
 .error { font-size: 12px; color: #a52b32; line-height: 1.7; }
-.footer { display: flex; flex-wrap: wrap; gap: 22px; border-top: 1px solid #e8e9e4; margin-top: 35px; padding-top: 23px; }
-.footer a { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #626d56; text-decoration: none; }
-.locations { margin-top: 20px; color: #73796c; font-size: 11px; line-height: 1.8; }
-.locations summary { cursor: pointer; }
-.locations > div { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.locations strong { display: block; font-weight: 500; color: #454d3e; }
-.visual { position: sticky; align-self: start; top: 16px; height: calc(100svh - 32px); min-height: 540px; margin: 16px 16px 16px 0; border-radius: 18px; overflow: hidden; background: #c2b49d; }
-.visual img { object-fit: cover; }
-.success { padding-top: 50px; padding-bottom: 30px; outline: none; }
+.success { padding: 30px 0; outline: none; }
 .success > svg { color: #6a7858; margin-bottom: 25px; }
+.success h2 { margin: 0 0 20px; font-weight: 450; font-size: 34px; letter-spacing: -.035em; }
 .success p { color: #73796c; font-size: 14px; line-height: 1.8; max-width: 430px; }
-.page :is(input,textarea,button,a,summary):focus-visible { outline: 2px solid #c9232c; outline-offset: 3px; }
-@media(max-width:1100px) { .panel { padding-inline: 28px; } .header img { width: 155px; } .header > a:last-child { font-size: 10px; } .content { margin-top: 50px; } .twoColumns { grid-template-columns: 1fr; gap: 23px; } }
-@media(max-width:760px) { .page { display: flex; flex-direction: column; } .panel { padding: 26px 24px 30px; } .header { gap: 12px; } .content { margin-top: 46px; } .content h1 { font-size: 46px; } .field input,.field textarea { font-size: 16px; } .visual { position: relative; top: auto; width: calc(100% - 32px); height: 320px; min-height: 0; margin: 0 16px 16px; } .visual img { object-position: center 57%; } .locations > div { grid-template-columns: 1fr; gap: 0; } }
+.siteFooter { display: flex; justify-content: space-between; align-items: center; gap: 30px; padding: 34px max(40px,calc((100vw - 1240px)/2)); color: #fff; background: #b92029; }
+.footerBrand { font-size: 20px; letter-spacing: -.035em; text-decoration: none; }
+.siteFooter p { margin: 8px 0 0; font-size: 10px; opacity: .8; }
+.siteFooter nav { display: flex; gap: 28px; font-size: 12px; }
+.siteFooter nav a { text-decoration: none; }
+.siteFooter nav a:hover { text-decoration: underline; }
+.page :is(input,textarea,button,a,summary):focus-visible { outline: 2px solid #c9232c; outline-offset: 4px; }
+.siteHeader :is(a,summary):focus-visible, .siteFooter a:focus-visible { outline-color: #fff; }
+@media(max-width:960px) {
+  .headerInner { padding-inline: 24px; gap: 24px; }
+  .brand img { width: 155px; }
+  .desktopNav { gap: 18px; }
+  .desktopNav a { font-size: 12px; }
+  .hero, .contactInner { padding-inline: 28px; gap: 32px; grid-template-columns: minmax(0,.8fr) minmax(0,1.25fr); }
+  .formPanel { padding: 26px; }
+  .twoColumns { grid-template-columns: 1fr; gap: 23px; }
+}
+@media(max-width:760px) {
+  .headerInner { min-height: 68px; }
+  .desktopNav { display: none; }
+  .mobileMenu { display: block; }
+  .mobileMenu summary { cursor: pointer; list-style: none; font-size: 13px; padding: 10px 0 10px 12px; }
+  .mobileMenu summary::-webkit-details-marker { display: none; }
+  .mobileMenu summary span { margin-right: 5px; }
+  .mobileMenu nav { position: absolute; left: 0; right: 0; top: 100%; display: grid; padding: 12px 24px 20px; background: #e82127; border-top: 1px solid #ffffff40; box-shadow: 0 10px 16px #00000012; }
+  .mobileMenu nav a { text-decoration: none; font-size: 15px; padding: 13px 0; }
+  .mobileMenu nav a[aria-current=page] { text-decoration: underline; text-underline-offset: 5px; }
+  .hero { display: flex; flex-direction: column; align-items: stretch; gap: 30px; padding: 38px 24px 32px; }
+  .heroCopy { padding: 0; }
+  .eyebrow { margin-bottom: 18px; }
+  .hero h1 { font-size: 58px; }
+  .intro { margin-block: 20px; font-size: 15px; }
+  .visual { min-height: 0; height: auto; aspect-ratio: 1.8; }
+  .contactInner { display: flex; flex-direction: column; padding: 36px 24px 42px; gap: 28px; }
+  .context { display: contents; }
+  .context > .eyebrow, .context > h2, .context > p { display: none; }
+  .formPanel { width: 100%; padding: 24px 20px; }
+  .field input, .field textarea { font-size: 16px; }
+  .locations { order: 2; margin: 0; padding: 26px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .locations h3 { grid-column: 1/-1; margin: 0; }
+  .locations address { margin: 0; font-size: 11px; }
+  .siteFooter { padding: 30px 24px; align-items: start; flex-direction: column; gap: 24px; }
+  .siteFooter nav { gap: 24px; }
+}

@@ -50,7 +50,7 @@ class Footer extends StatelessWidget {
                         const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Icon(
-                            Icons.email,
+                            Icons.chat_bubble_outline,
                             size: 20,
                             color: Colors.white,
                           ),
@@ -61,25 +61,6 @@ class Footer extends StatelessWidget {
                             'Send a message',
                             style: MainTheme.linkText,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(
-                            Icons.phone_rounded,
-                            size: 20,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          '+44 131 392 8881',
-                          style: MainTheme.bodyText,
                         ),
                       ],
                     ),

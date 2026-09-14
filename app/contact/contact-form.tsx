@@ -68,7 +68,6 @@ export function ContactForm() {
           </form>
         </>}
         <footer className={styles.footer}>
-          <a href="tel:+441313928881">+44 131 392 8881</a>
           <a href="https://www.linkedin.com/company/gihil/" target="_blank" rel="noreferrer">LinkedIn <ArrowUpRightIcon aria-hidden size={13} /></a>
           <Link href="/apply">Careers <ArrowUpRightIcon aria-hidden size={13} /></Link>
         </footer>

@@ -99,7 +99,7 @@ export function publicError(error: unknown) {
     return error.issues[0]?.message || 'Please check the form and try again.'
   }
   if (error instanceof SyntaxError) return 'Please reload the page and try again.'
-  return 'We could not confirm your submission because the service is temporarily unavailable. Please try again shortly, or email info@gihealthcare.co.uk if this continues.'
+  return 'We could not confirm your submission because the service is temporarily unavailable. Please try again shortly.'
 }
 
 export function submissionErrorResponse(error: unknown) {

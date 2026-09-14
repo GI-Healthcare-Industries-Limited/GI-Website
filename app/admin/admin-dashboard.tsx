@@ -30,6 +30,7 @@ import { JobPostings } from '@/app/admin/job-postings'
 import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
 import { RetentionNotice } from '@/app/admin/retention-notice'
 import { isWithinRetention } from '@/lib/privacy'
+import { ACTIVITY_DETAIL_QUESTION, AWARD_DETAIL_QUESTION, AWARDS_QUESTION, FAILURE_QUESTION, GROWTH_QUESTION, NO_AWARDS_LABEL, WORK_QUESTION } from '@/lib/application-questions'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
 
 type Kind = 'contact' | 'application'
@@ -49,6 +50,13 @@ type Submission = {
   job_title?: string
   portfolio_url?: string | null
   project_summary?: string | null
+  awards_status?: 'listed' | 'none_yet' | null
+  competition_awards?: string | null
+  awards_detail?: string | null
+  biggest_failure?: string | null
+  growth_area?: string | null
+  authorship_confirmed_at?: string | null
+  application_questions_version?: string | null
   right_to_work?: boolean | null
   cover_letter?: string | null
 }
@@ -465,9 +473,17 @@ export function AdminDashboard() {
 
                 {kind === 'application' && <RightToWorkEvidence key={`${selectedItem.id}:${session.user.id}`} id={selectedItem.id} session={session} />}
                 <article className="admin-message-body">
-                  <p className="section-index">{kind === 'contact' ? 'Message' : 'Project highlight'}</p>
+                  <p className="section-index">{kind === 'contact' ? 'Message' : selectedItem.application_questions_version ? WORK_QUESTION : 'Project highlight'}</p>
                   <p>{getSubmissionPreview(selectedItem)}</p>
                 </article>
+
+                {kind === 'application' && (selectedItem.application_questions_version ? <>
+                  <article className="admin-message-body"><p className="section-index">{AWARDS_QUESTION}</p><p>{selectedItem.awards_status === 'none_yet' ? NO_AWARDS_LABEL : selectedItem.competition_awards}</p></article>
+                  <article className="admin-message-body"><p className="section-index">{selectedItem.awards_status === 'none_yet' ? ACTIVITY_DETAIL_QUESTION : AWARD_DETAIL_QUESTION}</p><p>{selectedItem.awards_detail}</p></article>
+                  <article className="admin-message-body"><p className="section-index">{FAILURE_QUESTION}</p><p>{selectedItem.biggest_failure}</p></article>
+                  <article className="admin-message-body"><p className="section-index">{GROWTH_QUESTION}</p><p>{selectedItem.growth_area}</p></article>
+                  <p className="admin-retention-copy">Own-words declaration: {selectedItem.authorship_confirmed_at ? formatDate(selectedItem.authorship_confirmed_at) : 'Not recorded'} · {selectedItem.application_questions_version}. Self-declared, not AI detection or proof of authorship. Review examples with the applicant.</p>
+                </> : <p className="admin-retention-copy">These additional questions were not asked on this earlier application.</p>)}
 
                 {kind === 'application' && (
                   <div className="admin-portfolio-actions">
@@ -476,6 +492,7 @@ export function AdminDashboard() {
                         <LinkSimpleIcon aria-hidden size={20} /> Open portfolio <ArrowSquareOutIcon aria-hidden size={17} />
                       </a>
                     )}
+                    {!selectedItem.portfolio_url && <p className="admin-retention-copy">Portfolio link not provided (optional).</p>}
                   </div>
                 )}
               </>

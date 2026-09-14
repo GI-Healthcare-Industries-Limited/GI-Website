@@ -4,6 +4,7 @@ import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import test from 'node:test'
 import ts from 'typescript'
+import { personalAnswers } from './fixtures/personal-answers.mjs'
 
 const require = createRequire(import.meta.url)
 
@@ -132,6 +133,7 @@ for (const endpoint of ['contact', 'applications']) {
         projectSummary: 'This is an example project description used only for an isolated automated test. No data is sent.',
         rightToWork: 'yes', immigrationStatus: 'british_irish', privacyNoticeVersion: '2026-09-14',
         dataSharingAcknowledged: true, dataSharingStatementVersion: 'recruitment-data-sharing-v1',
+        ...(endpoint === 'applications' ? personalAnswers : {}),
       }
       const { POST } = load(`app/api/${endpoint}/route.ts`)
       const response = await POST(new Request(`https://example.com/api/${endpoint}`, {

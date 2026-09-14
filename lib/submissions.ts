@@ -4,7 +4,8 @@ import { createHmac } from 'node:crypto'
 
 import { z } from 'zod'
 
-import { APPLICATION_DATA_SHARING_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
+import { APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
+import { APPLICATION_QUESTIONS_VERSION } from '@/lib/application-questions'
 import { rightToWorkSchema } from '@/lib/right-to-work'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
@@ -20,20 +21,36 @@ export const contactSchema = z.object({
 export const applicationSchema = z.object({
   dataSharingAcknowledged: z.literal(true, { error: 'Please tick the box to confirm you are happy to share your data with GI Healthcare.' }),
   dataSharingStatementVersion: z.literal(APPLICATION_DATA_SHARING_VERSION, { error: 'Please reload the page to view the current data-sharing statement.' }),
+  applicationQuestionsVersion: z.literal(APPLICATION_QUESTIONS_VERSION, { error: 'Please reload the application to see the current questions.' }),
   jobTitle: z.string().trim().min(2).max(120),
   openingId: z.uuid().optional(),
   name: z.string().trim().min(2, 'Please enter your name.').max(120),
   email: z.string().trim().email('Please enter a valid email address.').max(254),
   phone: z.string().trim().max(50).optional().default(''),
-  portfolioUrl: z.string().trim().url('Please enter a valid portfolio or project URL.').max(2048)
-    .refine((value) => ['http:', 'https:'].includes(new URL(value).protocol), {
-      message: 'Your portfolio link must start with http:// or https://.',
-    }),
+  portfolioUrl: z.string().trim().max(2048).refine((value) => {
+    if (!value) return true
+    try { return ['http:', 'https:'].includes(new URL(value).protocol) } catch { return false }
+  }, {
+    message: 'Your portfolio link must start with http:// or https://.',
+  }).optional().default(''),
   projectSummary: z.string().trim()
-    .min(80, 'Please tell us a little more about the project.')
-    .max(800, 'Please keep your project summary to 800 characters or fewer.'),
-  privacyNoticeVersion: z.literal(PRIVACY_NOTICE_VERSION, { error: 'Please reload the page to view the current privacy notice before submitting.' }),
+    .min(80, 'Please tell us a little more about things you’ve built.')
+    .max(2400, 'Please keep your work examples to 2,400 characters or fewer.'),
+  awardsStatus: z.enum(['listed', 'none_yet'], { error: 'List your awards, or choose “No competitions or awards yet”.' }),
+  competitionAwards: z.string().trim().max(1600).optional().default(''),
+  awardsDetail: z.string().trim().min(60, 'Please answer the short follow-up about your own experience.').max(800),
+  biggestFailure: z.string().trim().min(80, 'Please describe a setback and what you learned.').max(1400),
+  growthArea: z.string().trim().min(60, 'Please describe a habit you’re working on, with an example.').max(1000),
+  authorshipAcknowledged: z.literal(true, { error: 'Please confirm the answers are your own writing and experience.' }),
+  privacyNoticeVersion: z.literal(APPLICATION_PRIVACY_NOTICE_VERSION, { error: 'Please reload the page to view the current privacy notice before submitting.' }),
   company: z.string().max(0).optional().default(''),
+}).superRefine((input, context) => {
+  if (input.awardsStatus === 'listed' && input.competitionAwards.length < 10) {
+    context.addIssue({ code: 'custom', path: ['competitionAwards'], message: 'List your awards with the event, year and result, or choose “No competitions or awards yet”.' })
+  }
+  if (input.awardsStatus === 'none_yet' && input.competitionAwards !== '') {
+    context.addIssue({ code: 'custom', path: ['competitionAwards'], message: 'Choose either an awards list or “No competitions or awards yet”.' })
+  }
 }).and(rightToWorkSchema)
 
 export function getRequestFingerprint(request: Request) {

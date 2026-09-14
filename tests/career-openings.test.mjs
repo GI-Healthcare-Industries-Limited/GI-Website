@@ -3,12 +3,13 @@ import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import test from 'node:test'
 import ts from 'typescript'
+import { personalAnswers } from './fixtures/personal-answers.mjs'
 
 const require = createRequire(import.meta.url)
 const title = 'Embedded Systems Engineer'
 const identity = { id: '11111111-1111-4111-8111-111111111111', expectedUpdatedAt: '2026-09-14T12:00:00+00:00' }
 const posting = { jobTitle: 'QA Test Role', location: 'Edinburgh, UK', department: 'Engineering', employmentType: 'Part-time', description: 'Synthetic description for job management tests.', acceptingApplications: true, closingDate: null, startDate: null }
-const validApplication = { jobTitle: title, name: 'Applicant Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid/portfolio', projectSummary: 'A test-only project with sufficient detail to exercise application validation without real applicant data.', rightToWork: 'yes', immigrationStatus: 'british_irish', privacyNoticeVersion: '2026-09-14', dataSharingAcknowledged: true, dataSharingStatementVersion: 'recruitment-data-sharing-v1' }
+const validApplication = { jobTitle: title, name: 'Applicant Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid/portfolio', projectSummary: 'A test-only project with sufficient detail to exercise application validation without real applicant data.', rightToWork: 'yes', immigrationStatus: 'british_irish', dataSharingAcknowledged: true, dataSharingStatementVersion: 'recruitment-data-sharing-v1', ...personalAnswers }
 
 function loadRoute(file, overrides = {}) {
   let writes = 0

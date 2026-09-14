@@ -29,7 +29,7 @@ export const rightToWorkSchema = z.object({
   studentConditions: z.string().max(3).optional().default(''),
 }).superRefine((input, context) => {
   if (input.immigrationStatus === 'british_irish') return
-  if (input.workPermission !== 'yes') context.addIssue({ code: 'custom', path: ['workPermission'], message: 'Please confirm your permission allows this full-time role without sponsorship from GI Healthcare.' })
+  if (input.workPermission !== 'yes') context.addIssue({ code: 'custom', path: ['workPermission'], message: 'Please confirm your permission allows this role without sponsorship from GI Healthcare.' })
   if (input.immigrationStatus === 'student' && input.studentConditions !== 'yes') context.addIssue({ code: 'custom', path: ['studentConditions'], message: 'Please read and acknowledge the Student visa work restrictions.' })
 }).transform((input) => input.immigrationStatus === 'british_irish'
   ? { ...input, workPermission: '', studentConditions: '' }

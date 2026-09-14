@@ -27,10 +27,18 @@ try {
     if (!confirmation.rows[0].installed) {
       await db.query(await readFile(new URL('../supabase/migrations/20260914030000_application_data_sharing_confirmation.sql', import.meta.url), 'utf8'))
     }
-    for (const file of ['submission-privacy.sql', 'career-closing-dates.sql', 'right-to-work.sql', 'application-data-sharing.sql']) {
+    const postings = await db.query("select exists (select 1 from information_schema.columns where table_schema='public' and table_name='career_openings' and column_name='id') installed")
+    if (!postings.rows[0].installed) {
+      await db.query(await readFile(new URL('../supabase/migrations/20260914040000_manage_job_postings.sql', import.meta.url), 'utf8'))
+    }
+    // Historical regression fixtures must still run after the owner removes or
+    // renames the original roles. These rows/changes are rolled back too.
+    await db.query("insert into public.career_openings(job_title) values ('Embedded Systems Engineer'), ('Business Development and Operations Manager') on conflict do nothing")
+    await db.query("update public.career_openings set accepting_applications = true where job_title in ('Embedded Systems Engineer', 'Business Development and Operations Manager')")
+    for (const file of ['submission-privacy.sql', 'career-closing-dates.sql', 'right-to-work.sql', 'application-data-sharing.sql', 'job-postings.sql']) {
       await db.query(await readFile(new URL(`../tests/${file}`, import.meta.url), 'utf8'))
     }
-    console.log('PASS: calendar boundaries, permissions, evidence minimisation, all-status purge, fingerprint expiry, immutable retention, role dates and data-sharing confirmation')
+    console.log('PASS: calendar boundaries, permissions, evidence minimisation, all-status purge, fingerprint expiry, immutable retention, role dates, data-sharing confirmation and job posting lifecycle')
   } finally { await db.query('rollback') }
   const after = (await db.query(countSql)).rows[0]
   assert.deepEqual(after, before)

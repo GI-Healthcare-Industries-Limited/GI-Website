@@ -130,4 +130,5 @@
   .privacy { align-items: flex-start; text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) { .layout * { transition: none; } }
+.description { color: #68715f; font-size: 13px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
 @media (max-width: 380px) { .roleCards { grid-template-columns: 1fr; } .roleCards label { gap: 8px; } .intro h1 { font-size: 32px; } }

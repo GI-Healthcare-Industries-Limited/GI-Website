@@ -57,7 +57,7 @@ export function EligibilityCheck({ disabled, completed, onComplete }: Props) {
             </label>)}
           </div>
         </fieldset>
-        <p className={styles.help}>These are full-time roles. We cannot provide visa sponsorship.</p>
+        <p className={styles.help}>We cannot provide visa sponsorship for these roles.</p>
         {rightToWork === 'no' && <p role="status" className={styles.ineligible}>You cannot continue with this online application without an existing right to work. If you believe you have permission or need help with evidence, <a href="mailto:info@gihealthcare.co.uk">contact our team for a manual review</a>.</p>}
         {rightToWork === 'yes' && <>
           <fieldset className={styles.subquestion}>
@@ -90,7 +90,7 @@ export function EligibilityCheck({ disabled, completed, onComplete }: Props) {
               <label className={styles.consent}><input type="checkbox" name="studentConditions" value="yes" aria-describedby={errors.studentConditions ? 'student-error' : undefined} /><span>I have read these restrictions and understand that my permission needs a manual review.</span></label>
               {errors.studentConditions && <p id="student-error" role="alert" className={styles.error}>{errors.studentConditions}</p>}
             </div>}
-            <label className={styles.consent}><input type="checkbox" name="workPermission" value="yes" aria-describedby={errors.workPermission ? 'permission-error' : undefined} /><span>My current permission allows me to do this full-time role without sponsorship from GI Healthcare.</span></label>
+            <label className={styles.consent}><input type="checkbox" name="workPermission" value="yes" aria-describedby={errors.workPermission ? 'permission-error' : undefined} /><span>My current permission allows me to do this role without sponsorship from GI Healthcare.</span></label>
             {errors.workPermission && <p id="permission-error" role="alert" className={styles.error}>{errors.workPermission}</p>}
             <p className={styles.help}>If you cannot confirm this, contact us before continuing. Selecting a visa does not verify your eligibility.</p>
             <p className={styles.help}>We’ll arrange a right-to-work check if we make a conditional offer, before employment begins. Please do not send a date of birth, share code or identity documents in this application or by email.</p>

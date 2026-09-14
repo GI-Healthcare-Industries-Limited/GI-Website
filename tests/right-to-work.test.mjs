@@ -3,10 +3,11 @@ import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import test from 'node:test'
 import ts from 'typescript'
+import { personalAnswers } from './fixtures/personal-answers.mjs'
 
 const require = createRequire(import.meta.url)
 const id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
-const base = { jobTitle: 'Embedded Systems Engineer', name: 'Synthetic Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid', projectSummary: 'A synthetic test project description to validate the submission flow without using any real applicant data.', privacyNoticeVersion: '2026-09-14', rightToWork: 'yes', dataSharingAcknowledged: true, dataSharingStatementVersion: 'recruitment-data-sharing-v1' }
+const base = { jobTitle: 'Embedded Systems Engineer', name: 'Synthetic Test', email: 'test@example.invalid', portfolioUrl: 'https://example.invalid', projectSummary: 'A synthetic test project description to validate the submission flow without using any real applicant data.', rightToWork: 'yes', dataSharingAcknowledged: true, dataSharingStatementVersion: 'recruitment-data-sharing-v1', ...personalAnswers }
 const visa = { immigrationStatus: 'graduate', workPermission: 'yes', shareCode: 'w12 345 678', dateOfBirth: '2000-02-29' }
 
 function harness(options = {}) {
@@ -92,7 +93,7 @@ test('application stores declaration and notice version; notification contains n
   assert.equal(f.writes.length, 1)
   assert.equal(f.writes[0].right_to_work_share_code, undefined)
   assert.equal(f.writes[0].right_to_work_date_of_birth, undefined)
-  assert.equal(f.writes[0].privacy_notice_version, '2026-09-14')
+  assert.equal(f.writes[0].privacy_notice_version, personalAnswers.privacyNoticeVersion)
   assert.ok(Number.isFinite(Date.parse(f.writes[0].privacy_notice_provided_at)))
   assert.equal(f.writes[0].data_sharing_statement_version, 'recruitment-data-sharing-v1')
   assert.equal(f.writes[0].data_sharing_acknowledged_at, f.writes[0].privacy_notice_provided_at)
@@ -170,4 +171,72 @@ test('bulk application list never selects private code, DOB or immigration categ
   const response = await f.load('app/api/admin/submissions/route.ts').GET(new Request('https://example.invalid?kind=application'))
   assert.equal(response.status, 200)
   assert.doesNotMatch(f.reads.join(), /share_code|date_of_birth|immigration_status/)
+})
+
+test('all new written questions and own-words declaration are required before any storage', async () => {
+  for (const change of [
+    { awardsStatus: undefined }, { awardsStatus: 'made-up' }, { competitionAwards: '' },
+    { awardsDetail: '' }, { biggestFailure: '' }, { growthArea: '' }, { projectSummary: '' },
+    { awardsDetail: ' '.repeat(100) }, { growthArea: 'a'.repeat(1001) },
+    { authorshipAcknowledged: false }, { authorshipAcknowledged: 'true' },
+    { authorshipAcknowledged: undefined }, { applicationQuestionsVersion: undefined },
+    { applicationQuestionsVersion: 'old' }, { privacyNoticeVersion: '2026-09-14' },
+  ]) {
+    const f = harness()
+    assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, ...change }))).status, 400, JSON.stringify(change))
+    assert.equal(f.writes.length, 0)
+    assert.equal(f.emails.length, 0)
+  }
+})
+
+test('portfolio is optional, but non-empty links must be valid HTTP or HTTPS', async () => {
+  for (const portfolioUrl of ['', '   ', undefined]) {
+    const f = harness()
+    assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, portfolioUrl }))).status, 201)
+    assert.equal(f.writes[0].portfolio_url, null)
+  }
+  for (const portfolioUrl of ['javascript:alert(1)', 'not a URL', 'file:///etc/passwd']) {
+    const f = harness()
+    assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, portfolioUrl }))).status, 400)
+    assert.equal(f.writes.length, 0)
+  }
+})
+
+test('no awards yet is accepted with the extracurricular follow-up, not fabricated awards', async () => {
+  const f = harness()
+  assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, awardsStatus: 'none_yet', competitionAwards: '' }))).status, 201)
+  assert.equal(f.writes[0].awards_status, 'none_yet')
+  assert.equal(f.writes[0].competition_awards, null)
+  const conflict = harness()
+  assert.equal((await conflict.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, awardsStatus: 'none_yet' }))).status, 400)
+  assert.equal(conflict.writes.length, 0)
+})
+
+test('answers are stored exactly as submitted; confirmation is server-timed, not AI scoring', async () => {
+  const f = harness()
+  const before = Date.now()
+  assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, authorshipConfirmedAt: '1970-01-01', aiScore: 99, allowPaste: true, typingEvents: ['private'], clipboard: 'private', projectSummary: 'Synthetic work example. '.repeat(70) }))).status, 201)
+  const row = f.writes[0]
+  for (const [field, input] of [['competition_awards','competitionAwards'],['awards_detail','awardsDetail'],['biggest_failure','biggestFailure'],['growth_area','growthArea']]) assert.equal(row[field], personalAnswers[input])
+  assert.ok(Date.parse(row.authorship_confirmed_at) >= before && Date.parse(row.authorship_confirmed_at) <= Date.now())
+  assert.equal(row.application_questions_version, personalAnswers.applicationQuestionsVersion)
+  assert.doesNotMatch(JSON.stringify(row), /aiScore|allowPaste|typingEvents|clipboard|1970-01-01/)
+  assert.doesNotMatch(JSON.stringify([f.emails, f.logs]), /synthetic test rig|prototype|teammate/)
+})
+
+test('admin reads include all personal answers under the existing authentication and expiry filter', async () => {
+  const f = harness()
+  const response = await f.load('app/api/admin/submissions/route.ts').GET(new Request('https://example.invalid?kind=application'))
+  assert.equal(response.status, 200)
+  for (const field of ['awards_status','competition_awards','awards_detail','biggest_failure','growth_area','authorship_confirmed_at','application_questions_version']) assert.ok(f.reads.join().includes(field))
+  assert.match(f.reads.join(), /retention_expires_at/)
+  assert.match(response.headers.get('Cache-Control'), /private, no-store/)
+})
+
+test('paste deterrence is a local choice and never blocks typing or dictation', () => {
+  const { shouldDiscourageInsertion } = harness().load('lib/application-questions.ts')
+  for (const event of ['paste','drop']) { assert.equal(shouldDiscourageInsertion(false,event),true); assert.equal(shouldDiscourageInsertion(true,event),false) }
+  for (const event of ['typing','dictation','input']) assert.equal(shouldDiscourageInsertion(false,event),false)
+  const source = readFileSync('app/apply/application-questions.tsx','utf8')
+  assert.doesNotMatch(source, /clipboardData|navigator\.clipboard|onKeyDown|onKeyUp|localStorage|sessionStorage|Date\.now/)
 })

@@ -131,4 +131,19 @@
 }
 @media (prefers-reduced-motion: reduce) { .layout * { transition: none; } }
 .description { color: #68715f; font-size: 13px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
+.writingNote { padding: 20px; border: 1px solid #dce2d3; border-radius: 10px; background: #f5f7f0; color: #526047; font-size: 12px; line-height: 1.8; }
+.writingNote strong { color: #3d4933; font-size: 15px; font-weight: 500; }
+.writingNote p { margin: 10px 0; }
+.inputChoice { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; color: #526047; font-size: 12px; line-height: 1.6; }
+.inputChoice input { width: 16px; height: 16px; margin: 2px 0 0; flex-shrink: 0; accent-color: #687658; }
+.answerCard { padding: 27px 0; border-bottom: 1px solid #e8e9e4; }
+.answerIndex { margin: 0; font-size: 10px; font-weight: 550; letter-spacing: .1em; text-transform: uppercase; color: #707d62; }
+.answerCard .summary { margin-top: 15px; }
+.answerCard .field > label { line-height: 1.7; font-size: 14px; }
+.pasteNotice { margin: 8px 0 0; color: #825e21; font-size: 12px; line-height: 1.7; }
+.pasteNotice:empty { margin: 0; }
+.detailButton { display: flex; justify-content: space-between; gap: 15px; width: 100%; min-height: 45px; padding: 12px 15px; margin-top: 20px; border: 1px solid #ccd5c0; border-radius: 7px; background: #f7f9f3; color: #4c5a40; font-size: 12px; }
+.detailButton:disabled { opacity: .5; }
+.followUp { margin-top: 22px; padding: 20px; border-left: 2px solid #a3af93; border-radius: 0 9px 9px 0; background: #f8f9f5; }
+@media (max-width: 760px) { .writingNote, .followUp { padding: 16px; } .counter { gap: 8px; } }
 @media (max-width: 380px) { .roleCards { grid-template-columns: 1fr; } .roleCards label { gap: 8px; } .intro h1 { font-size: 32px; } }

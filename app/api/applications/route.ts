@@ -18,12 +18,12 @@ export async function POST(request: Request) {
   }
 
   const contentLength = Number(request.headers.get('content-length') || 0)
-  if (contentLength > 25_000) {
+  if (contentLength > 45_000) {
     return Response.json({ error: 'Your application is too large.' }, { status: 413 })
   }
 
   try {
-    const input = applicationSchema.parse(await readSubmissionJson(request, 25_000))
+    const input = applicationSchema.parse(await readSubmissionJson(request, 45_000))
 
     if (input.company) return Response.json({ ok: true }, { status: 201 })
 
@@ -48,8 +48,15 @@ export async function POST(request: Request) {
       name: input.name,
       email: input.email.toLowerCase(),
       phone: input.phone || null,
-      portfolio_url: input.portfolioUrl,
+      portfolio_url: input.portfolioUrl || null,
       project_summary: input.projectSummary,
+      awards_status: input.awardsStatus,
+      competition_awards: input.competitionAwards || null,
+      awards_detail: input.awardsDetail,
+      biggest_failure: input.biggestFailure,
+      growth_area: input.growthArea,
+      authorship_confirmed_at: receivedAt,
+      application_questions_version: input.applicationQuestionsVersion,
       right_to_work: true,
       immigration_status: input.immigrationStatus,
       privacy_notice_version: input.privacyNoticeVersion,

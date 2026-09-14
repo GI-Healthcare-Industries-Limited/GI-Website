@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRightIcon, ArrowUpRightIcon, BriefcaseIcon, CalendarBlankIcon, CheckCircleIcon, CircleIcon, LinkSimpleIcon, MapPinIcon, ShieldCheckIcon } from '@phosphor-icons/react'
+import { ArrowRightIcon, ArrowUpRightIcon, BriefcaseIcon, CalendarBlankIcon, CheckCircleIcon, CircleIcon, MapPinIcon, ShieldCheckIcon } from '@phosphor-icons/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
@@ -8,9 +8,11 @@ import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import cookingStudio from '@/assets/admin/cooking-studio.webp'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
 import { formatClosingDate, type OpeningsSnapshot } from '@/lib/career-opening-types'
-import { APPLICATION_DATA_SHARING_STATEMENT, APPLICATION_DATA_SHARING_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
+import { APPLICATION_DATA_SHARING_STATEMENT, APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
+import { APPLICATION_QUESTIONS_VERSION } from '@/lib/application-questions'
 import type { RightToWorkDeclaration } from '@/lib/right-to-work'
 import { EligibilityCheck } from './eligibility-check'
+import { ApplicationQuestions } from './application-questions'
 import styles from './apply-form.module.css'
 
 type Props = { requestedJob: string; requestedTitle: string; initialOpenings: OpeningsSnapshot | null }
@@ -19,7 +21,6 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
   const [selectedId, setSelectedId] = useState(requestedJob || (requestedTitle ? initialOpenings?.items.find((item) => item.job_title === requestedTitle)?.id : initialOpenings?.items[0]?.id) || '')
   const [submittedTitle, setSubmittedTitle] = useState('')
   const [eligibility, setEligibility] = useState<RightToWorkDeclaration | null>(null)
-  const [projectSummary, setProjectSummary] = useState('')
   const [dataSharingAcknowledged, setDataSharingAcknowledged] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -87,6 +88,17 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
       return
     }
     const formData = new FormData(event.currentTarget)
+    if (String(formData.get('awardsDetail') || '').trim().length < 60) {
+      setError('Please complete the short follow-up about your awards or activity before submitting.')
+      const followUp = document.getElementById('awardsDetail') || document.getElementById('awards-detail-reveal')
+      followUp?.focus()
+      return
+    }
+    if (formData.get('authorshipAcknowledged') !== 'yes') {
+      setError('Please confirm the answers are your own writing and experience.')
+      event.currentTarget.querySelector<HTMLInputElement>('[name="authorshipAcknowledged"]')?.focus()
+      return
+    }
     if (formData.get('dataSharingAcknowledged') !== 'yes') {
       setError('Please tick the box to confirm you are happy to share your data with GI Healthcare.')
       dataSharingRef.current?.focus()
@@ -101,7 +113,10 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
           openingId: opening!.id, jobTitle: opening!.job_title, name: formData.get('name'), email: formData.get('email'),
           phone: formData.get('phone'), portfolioUrl: formData.get('portfolioUrl'),
           projectSummary: formData.get('projectSummary'), ...eligibility,
-          privacyNoticeVersion: PRIVACY_NOTICE_VERSION, company: formData.get('company'),
+          awardsStatus: formData.get('awardsStatus'), competitionAwards: formData.get('competitionAwards'),
+          awardsDetail: formData.get('awardsDetail'), biggestFailure: formData.get('biggestFailure'), growthArea: formData.get('growthArea'),
+          authorshipAcknowledged: formData.get('authorshipAcknowledged') === 'yes', applicationQuestionsVersion: APPLICATION_QUESTIONS_VERSION,
+          privacyNoticeVersion: APPLICATION_PRIVACY_NOTICE_VERSION, company: formData.get('company'),
           dataSharingAcknowledged: formData.get('dataSharingAcknowledged') === 'yes',
           dataSharingStatementVersion: APPLICATION_DATA_SHARING_VERSION,
         }),
@@ -112,7 +127,6 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
       setSubmittedTitle(opening!.job_title)
       setSubmitted(true)
       setEligibility(null)
-      setProjectSummary('')
       setDataSharingAcknowledged(false)
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : 'We could not send your application. Please try again.')
@@ -173,20 +187,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                     <div className={`${styles.field} ${styles.full}`}><label htmlFor="phone">Phone number <span>Optional</span></label><input autoComplete="tel" id="phone" name="phone" maxLength={50} type="tel" /></div>
                   </div>
                 </fieldset>
-                <fieldset className={styles.section} disabled={!canApply || !eligibility || submitting}>
-                  <legend><span>03</span> Show us your work</legend>
-                  <div className={styles.field}>
-                    <label htmlFor="portfolioUrl">Portfolio or project link</label>
-                    <div className={styles.linkInput}><LinkSimpleIcon aria-hidden size={18} /><input id="portfolioUrl" name="portfolioUrl" maxLength={2048} required type="url" placeholder="https://" aria-describedby="portfolio-help" /></div>
-                    <p className={styles.help} id="portfolio-help">A portfolio, personal site, GitHub repository, case study or example of your work. No CV needed.</p>
-                  </div>
-                  <div className={`${styles.field} ${styles.summary}`}>
-                    <label htmlFor="projectSummary">A project you’re proud of</label>
-                    <p className={styles.help} id="project-help">What was the challenge, what did you contribute, and what changed? Do not include identity documents, health information, other people’s personal details or confidential defence material.</p>
-                    <textarea id="projectSummary" name="projectSummary" minLength={80} maxLength={800} required value={projectSummary} onChange={(event) => setProjectSummary(event.target.value)} aria-describedby="project-help project-count" />
-                    <div className={styles.counter} id="project-count"><span>80–800 characters</span><span>{projectSummary.length} / 800</span></div>
-                  </div>
-                </fieldset>
+                <ApplicationQuestions disabled={!canApply || !eligibility || submitting} />
                 <div className="hp-field" aria-hidden="true"><label htmlFor="company">Company</label><input autoComplete="off" id="company" name="company" tabIndex={-1} /></div>
                 <label className={styles.consent} htmlFor="dataSharingAcknowledged">
                   <input ref={dataSharingRef} id="dataSharingAcknowledged" name="dataSharingAcknowledged" type="checkbox" value="yes" required checked={dataSharingAcknowledged} onChange={(event) => { setDataSharingAcknowledged(event.target.checked); setError(null) }} disabled={submitting || !canApply || !eligibility} aria-describedby="data-sharing-help" />

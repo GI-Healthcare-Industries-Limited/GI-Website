@@ -1,6 +1,8 @@
 // Version of the notice presented by both public forms. This records provision
 // of information, not consent, agreement to processing, or proof it was read.
 export const PRIVACY_NOTICE_VERSION = '2026-09-14'
+// Recruitment-specific addendum. Contact clients keep the base notice version.
+export const APPLICATION_PRIVACY_NOTICE_VERSION = '2026-09-14-applications-v2'
 
 // Separate from the notice version and the processing bases in that notice.
 // Keep each statement version immutable so recorded confirmations are traceable.

@@ -1,23 +1,23 @@
 'use client'
 
-import { ArrowRightIcon, ArrowUpRightIcon, CalendarBlankIcon, ChartLineUpIcon, CheckCircleIcon, CircleIcon, CpuIcon, LinkSimpleIcon, MapPinIcon, ShieldCheckIcon } from '@phosphor-icons/react'
+import { ArrowRightIcon, ArrowUpRightIcon, BriefcaseIcon, CalendarBlankIcon, CheckCircleIcon, CircleIcon, LinkSimpleIcon, MapPinIcon, ShieldCheckIcon } from '@phosphor-icons/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 
 import cookingStudio from '@/assets/admin/cooking-studio.webp'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
-import { formatClosingDate, type JobTitle, type OpeningsSnapshot } from '@/lib/career-opening-types'
-import { JOB_TITLES } from '@/lib/submission-constants'
+import { formatClosingDate, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import { APPLICATION_DATA_SHARING_STATEMENT, APPLICATION_DATA_SHARING_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import type { RightToWorkDeclaration } from '@/lib/right-to-work'
 import { EligibilityCheck } from './eligibility-check'
 import styles from './apply-form.module.css'
 
-type Props = { initialRole: JobTitle; initialOpenings: OpeningsSnapshot | null }
+type Props = { requestedJob: string; requestedTitle: string; initialOpenings: OpeningsSnapshot | null }
 
-export function ApplyForm({ initialRole, initialOpenings }: Props) {
-  const [selectedRole, setSelectedRole] = useState(initialRole)
+export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Props) {
+  const [selectedId, setSelectedId] = useState(requestedJob || (requestedTitle ? initialOpenings?.items.find((item) => item.job_title === requestedTitle)?.id : initialOpenings?.items[0]?.id) || '')
+  const [submittedTitle, setSubmittedTitle] = useState('')
   const [eligibility, setEligibility] = useState<RightToWorkDeclaration | null>(null)
   const [projectSummary, setProjectSummary] = useState('')
   const [dataSharingAcknowledged, setDataSharingAcknowledged] = useState(false)
@@ -46,13 +46,14 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
       clockOffset.current = Date.parse(data.checkedAt) - Date.now()
       setNow(Date.parse(data.checkedAt))
       setOpenings(data)
+      setSelectedId((previous) => previous || (requestedJob || (requestedTitle ? data.items.find((item) => item.job_title === requestedTitle)?.id : data.items[0]?.id) || ''))
       setAvailabilityError(false)
     } catch {
       if (requestId === refreshRequest.current) setAvailabilityError(true)
     } finally {
       if (requestId === refreshRequest.current) setChecking(false)
     }
-  }, [])
+  }, [requestedJob, requestedTitle])
 
   useEffect(() => {
     void refreshOpenings()
@@ -71,7 +72,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
   useEffect(() => { if (submitted) resultRef.current?.focus() }, [submitted])
   useEffect(() => { if (eligibility) detailsRef.current?.focus() }, [eligibility])
 
-  const opening = openings?.items.find((item) => item.job_title === selectedRole)
+  const opening = openings?.items.find((item) => item.id === selectedId)
   const closed = Boolean(opening && (!opening.is_open || (opening.closes_at && now >= Date.parse(opening.closes_at))))
   const unavailable = availabilityError || !opening
   const canApply = !closed && !unavailable
@@ -97,7 +98,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
       const response = await fetch('/api/applications', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          jobTitle: selectedRole, name: formData.get('name'), email: formData.get('email'),
+          openingId: opening!.id, jobTitle: opening!.job_title, name: formData.get('name'), email: formData.get('email'),
           phone: formData.get('phone'), portfolioUrl: formData.get('portfolioUrl'),
           projectSummary: formData.get('projectSummary'), ...eligibility,
           privacyNoticeVersion: PRIVACY_NOTICE_VERSION, company: formData.get('company'),
@@ -108,6 +109,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
       const payload = await response.json().catch(() => ({})) as { error?: string; code?: string; ok?: boolean }
       if (payload.code === 'APPLICATION_CLOSED') void refreshOpenings()
       if (!response.ok || !payload.ok) throw new Error(payload.error || 'We could not confirm your application. Please try again.')
+      setSubmittedTitle(opening!.job_title)
       setSubmitted(true)
       setEligibility(null)
       setProjectSummary('')
@@ -133,7 +135,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
               <CheckCircleIcon aria-hidden size={44} weight="light" />
               <p className={styles.eyebrow}>Application received</p>
               <h1>Thank you for<br />sharing your work.</h1>
-              <p>Your application for {selectedRole} is with our team. We’ll review it and contact you if we’d like to take things further.</p>
+              <p>Your application for {submittedTitle} is with our team. We’ll review it and contact you if we’d like to take things further.</p>
               <Link href="/" className={styles.submit}>Back to website <ArrowRightIcon aria-hidden size={20} /></Link>
             </div>
           ) : (
@@ -147,21 +149,21 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
                 <fieldset className={styles.roleOptions} disabled={submitting}>
                   <legend>I’m applying for</legend>
                   <div className={styles.roleCards}>
-                    {JOB_TITLES.map((title, index) => <label key={title} className={selectedRole === title ? styles.activeRole : ''}>
-                      <input type="radio" name="jobTitle" value={title} checked={selectedRole === title} onChange={() => { setSelectedRole(title); setEligibility(null); setDataSharingAcknowledged(false); setError(null) }} />
-                      <span className={styles.roleCardTop}>{index === 0 ? <CpuIcon size={23} aria-hidden weight="light" /> : <ChartLineUpIcon size={23} aria-hidden weight="light" />}{selectedRole === title ? <CheckCircleIcon size={18} aria-hidden weight="fill" /> : <CircleIcon size={18} aria-hidden />}</span>
-                      <strong>{title}</strong><small>{index === 0 ? 'Engineering' : 'Commercial & operations'}</small>
+                    {openings?.items.map((item) => <label key={item.id} className={selectedId === item.id ? styles.activeRole : ''}>
+                      <input type="radio" name="jobTitle" value={item.id} checked={selectedId === item.id} onChange={() => { setSelectedId(item.id); setEligibility(null); setDataSharingAcknowledged(false); setError(null) }} />
+                      <span className={styles.roleCardTop}><BriefcaseIcon size={23} aria-hidden weight="light" />{selectedId === item.id ? <CheckCircleIcon size={18} aria-hidden weight="fill" /> : <CircleIcon size={18} aria-hidden />}</span>
+                      <strong>{item.job_title}</strong><small>{item.department}{!item.is_open && ' · Closed'}</small>
                     </label>)}
                   </div>
                 </fieldset>
-                <div className={styles.roleMeta}><span><MapPinIcon aria-hidden size={15} /> Edinburgh, UK</span><span>Full-time</span></div>
+                {opening && <><div className={styles.roleMeta}><span><MapPinIcon aria-hidden size={15} />{opening.location}</span><span>{opening.employment_type}</span></div><p className={styles.description}>{opening.description}</p></>}
                 {!unavailable && opening && <p className={styles.deadline}><CalendarBlankIcon aria-hidden size={16} /><span>Proposed start: {opening.start_date ? formatClosingDate(opening.start_date) : 'To be agreed'}</span></p>}
-                {!unavailable && opening && <p className={`${styles.deadline} ${closed ? styles.closedLabel : ''}`}><CalendarBlankIcon aria-hidden size={16} />{opening.closing_date ? <span>{closed ? 'Closed' : 'Apply by'} {formatClosingDate(opening.closing_date)}{!closed && ' · 11:59 pm UK time'}</span> : 'Applications open · No closing date'}</p>}
+                {!unavailable && opening && <p className={`${styles.deadline} ${closed ? styles.closedLabel : ''}`}><CalendarBlankIcon aria-hidden size={16} />{closed ? 'Applications closed' : opening.closing_date ? <span>Apply by {formatClosingDate(opening.closing_date)} · 11:59 pm UK time</span> : 'Applications open · No closing date'}</p>}
               </div>
-              {unavailable && <div role="status" className={styles.notice}><p>We’re unable to check application availability right now. Please try again shortly.</p><button disabled={checking} type="button" onClick={() => void refreshOpenings()}>{checking ? 'Checking…' : 'Check again'}</button></div>}
+              {unavailable && <div role="status" className={styles.notice}><p>{availabilityError ? 'We’re unable to check application availability right now. Please try again shortly.' : openings?.items.length ? 'This job is no longer available. Please choose another posting above.' : 'There are no job postings at the moment. Please check back later.'}</p><button disabled={checking} type="button" onClick={() => void refreshOpenings()}>{checking ? 'Checking…' : 'Check again'}</button></div>}
               {closed && <div role="status" className={styles.notice}><strong>Applications for this role are closed.</strong><p>You can select another role above to check its availability.</p></div>}
               <p className={styles.help}>GI Healthcare Industries Limited uses your details to assess this application and contact you. Applications are automatically deleted within three calendar months of submission. Read our <Link href="/privacy" target="_blank" rel="noreferrer">privacy notice</Link> for how we use your information, service providers and your rights.</p>
-              <EligibilityCheck disabled={!canApply || submitting} completed={eligibility} onComplete={setEligibility} />
+              {canApply && <EligibilityCheck key={selectedId} disabled={submitting} completed={eligibility} onComplete={setEligibility} />}
               <form onSubmit={submitApplication} aria-busy={submitting} hidden={!eligibility}>
                 <fieldset className={styles.section} disabled={!canApply || !eligibility || submitting}>
                   <legend><span>02</span> Your details</legend>
@@ -176,7 +178,7 @@ export function ApplyForm({ initialRole, initialOpenings }: Props) {
                   <div className={styles.field}>
                     <label htmlFor="portfolioUrl">Portfolio or project link</label>
                     <div className={styles.linkInput}><LinkSimpleIcon aria-hidden size={18} /><input id="portfolioUrl" name="portfolioUrl" maxLength={2048} required type="url" placeholder="https://" aria-describedby="portfolio-help" /></div>
-                    <p className={styles.help} id="portfolio-help">{selectedRole === 'Embedded Systems Engineer' ? 'A personal site, GitHub repository, engineering project or demo.' : 'A portfolio, case study, business project or example of your work.'} No CV needed.</p>
+                    <p className={styles.help} id="portfolio-help">A portfolio, personal site, GitHub repository, case study or example of your work. No CV needed.</p>
                   </div>
                   <div className={`${styles.field} ${styles.summary}`}>
                     <label htmlFor="projectSummary">A project you’re proud of</label>

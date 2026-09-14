@@ -126,10 +126,9 @@ for (const endpoint of ['contact', 'applications']) {
         '@/lib/notify': { sendSubmissionNotification() {} },
         '@/lib/career-openings': { getCareerOpenings: async () => ({ items: [{ job_title: 'Embedded Systems Engineer', is_open: true }] }) },
       }, { SUBMISSION_HASH_SECRET: 'test-only' })
-      const { JOB_TITLES } = load('lib/submission-constants.ts')
       const body = {
         name: 'Test Applicant', email: 'test@example.com', message: 'This is a test enquiry.',
-        jobTitle: JOB_TITLES[0], portfolioUrl: 'https://example.com/portfolio',
+        jobTitle: 'Embedded Systems Engineer', portfolioUrl: 'https://example.com/portfolio',
         projectSummary: 'This is an example project description used only for an isolated automated test. No data is sent.',
         rightToWork: 'yes', immigrationStatus: 'british_irish', privacyNoticeVersion: '2026-09-14',
         dataSharingAcknowledged: true, dataSharingStatementVersion: 'recruitment-data-sharing-v1',

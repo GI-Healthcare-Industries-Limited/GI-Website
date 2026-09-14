@@ -1,8 +1,14 @@
-import type { JOB_TITLES } from '@/lib/submission-constants'
-
-export type JobTitle = (typeof JOB_TITLES)[number]
+export const EMPLOYMENT_TYPES = ['Full-time', 'Part-time', 'Fixed-term contract', 'Internship'] as const
 export type CareerOpening = {
-  job_title: JobTitle
+  id: string
+  job_title: string
+  location: string
+  department: string
+  employment_type: (typeof EMPLOYMENT_TYPES)[number]
+  description: string
+  accepting_applications: boolean
+  created_at: string
+  updated_at: string
   closing_date: string | null
   start_date: string | null
   closes_at: string | null

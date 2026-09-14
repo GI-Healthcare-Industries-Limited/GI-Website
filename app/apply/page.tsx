@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 
 import { ApplyForm } from '@/app/apply/apply-form'
-import { JOB_TITLES } from '@/lib/submission-constants'
 import { getCareerOpenings } from '@/lib/career-openings'
 
 export const dynamic = 'force-dynamic'
@@ -14,16 +13,12 @@ export const metadata: Metadata = {
 export default async function ApplyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ role?: string }>
+  searchParams: Promise<{ job?: string; role?: string }>
 }) {
-  const { role } = await searchParams
-  const initialRole = JOB_TITLES.includes(role as (typeof JOB_TITLES)[number])
-    ? (role as (typeof JOB_TITLES)[number])
-    : 'Embedded Systems Engineer'
-
-  const openings = await getCareerOpenings().catch((error) => {
-    console.error('Application page availability failed', error)
+  const { job, role } = await searchParams
+  const openings = await getCareerOpenings().catch(() => {
+    console.error('Application page availability failed')
     return null
   })
-  return <ApplyForm initialRole={initialRole} initialOpenings={openings} />
+  return <ApplyForm requestedJob={typeof job === 'string' ? job : ''} requestedTitle={typeof role === 'string' ? role : ''} initialOpenings={openings} />
 }

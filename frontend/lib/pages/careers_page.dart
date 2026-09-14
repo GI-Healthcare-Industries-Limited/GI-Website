@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:frontend/themes/main_theme.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/job_posting.dart';
@@ -14,11 +17,50 @@ class CareersPage extends StatefulWidget {
 class _CareersPageState extends State<CareersPage> {
   final ScrollController _scrollController = ScrollController();
   bool _isAtTop = true;
+  List<Map<String, dynamic>>? _openings;
+  bool _loading = false;
+  bool _failed = false;
+  Timer? _refreshTimer;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _loadOpenings();
+    _refreshTimer =
+        Timer.periodic(const Duration(seconds: 60), (_) => _loadOpenings());
+  }
+
+  Future<void> _loadOpenings() async {
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      final response = await http.get(Uri.base.resolve('/api/careers/openings'),
+          headers: {
+            'Cache-Control': 'no-cache'
+          }).timeout(const Duration(seconds: 10));
+      if (response.statusCode != 200)
+        throw const FormatException('Unavailable');
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final items = (body['items'] as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+      if (items.any((item) =>
+          item['id'] is! String ||
+          item['job_title'] is! String ||
+          item['is_open'] is! bool)) {
+        throw const FormatException('Invalid openings');
+      }
+      if (mounted)
+        setState(() {
+          _openings = items;
+          _failed = false;
+        });
+    } catch (_) {
+      if (mounted) setState(() => _failed = true);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   void _onScroll() {
@@ -35,6 +77,7 @@ class _CareersPageState extends State<CareersPage> {
 
   @override
   void dispose() {
+    _refreshTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -53,33 +96,26 @@ class _CareersPageState extends State<CareersPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Join Us in Shaping\nthe Future",
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 32),
-                        ),
-                        SizedBox(
-                          width: 10, // Adjust as needed.
-                        ),
-                        SizedBox(
-                          height: 100, // Adjust as needed.
-                          child: const VerticalDivider(
-                            color: Colors.black,
-                            thickness: 2,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10, // Adjust as needed.
-                        ),
-                        Text(
-                          textAlign: TextAlign.left,
-                          'At GI Healthcare, we’re always on\nthe lookout for top talent across all fields.\nIf you\'re passionate about innovation and\nexcellence, we’d love to hear from you.',
-                        ),
-                      ],
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 32,
+                        runSpacing: 24,
+                        children: [
+                          SizedBox(
+                              width: 300,
+                              child: Text('Join Us in Shaping\nthe Future',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 32))),
+                          SizedBox(
+                              width: 320,
+                              child: Text(
+                                  'At GI Healthcare, we’re always on the lookout for top talent across all fields. If you’re passionate about innovation and excellence, we’d love to hear from you.',
+                                  textAlign: TextAlign.center)),
+                        ],
+                      ),
                     ),
                     SizedBox(
                       height: 80, // Adjust as needed.
@@ -125,28 +161,47 @@ class _CareersPageState extends State<CareersPage> {
                       style: TextStyle(fontSize: 32),
                     ),
                     const SizedBox(height: 20),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        JobPosting(
-                            title: "Embedded Systems Engineer",
-                            location: "Edinburgh",
-                            jobType: "Full-time",
-                            description:
-                                "Build reliable embedded technology for healthcare."),
-                        JobPosting(
-                            title: "Business Development and Operations Manager",
-                            location: "Edinburgh",
-                            jobType: "Full-time",
-                            description:
-                                "Grow partnerships and improve operations."),
-                        SizedBox(
-                          height: 50,
-                        ),
-                        Text(
-                            'Select Apply to share your details and a portfolio or project link. For other enquiries, email info@gihealthcare.co.uk.')
-                      ],
-                    ),
+                    if (_failed)
+                      Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(children: [
+                            const Text(
+                                'We cannot load job postings right now. Please try again shortly.',
+                                textAlign: TextAlign.center),
+                            TextButton(
+                                onPressed: _loading ? null : _loadOpenings,
+                                child:
+                                    Text(_loading ? 'Checking…' : 'Try again')),
+                          ]))
+                    else if (_openings == null)
+                      const Padding(
+                          padding: EdgeInsets.all(24),
+                          child: Text('Loading job postings…'))
+                    else if (_openings!.isEmpty)
+                      const Padding(
+                          padding: EdgeInsets.all(24),
+                          child: Text(
+                              'No job postings at the moment. Please check back later.',
+                              textAlign: TextAlign.center))
+                    else
+                      ..._openings!.map((job) => JobPosting(
+                            key: ValueKey(job['id']),
+                            id: job['id'],
+                            title: job['job_title'],
+                            location: job['location'],
+                            jobType: job['employment_type'],
+                            department: job['department'],
+                            description: job['description'],
+                            isOpen: job['is_open'],
+                            closingDate: job['closing_date'],
+                            startDate: job['start_date'],
+                          )),
+                    const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Text(
+                          'Select Apply to share your details and a portfolio or project link. For other enquiries, email info@gihealthcare.co.uk.',
+                          textAlign: TextAlign.center,
+                        )),
                     const SizedBox(height: 60),
                     Footer(),
                   ],

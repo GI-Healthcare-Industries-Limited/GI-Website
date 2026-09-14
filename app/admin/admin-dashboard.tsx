@@ -26,7 +26,7 @@ import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } fro
 import { applicationStatuses, contactStatuses } from '@/lib/submission-constants'
 import { clearStoredAdminSession, getSupabaseBrowserClient } from '@/lib/supabase/browser'
 import { AdminLogin } from '@/app/admin/admin-login'
-import { ApplicationDeadlines } from '@/app/admin/application-deadlines'
+import { JobPostings } from '@/app/admin/job-postings'
 import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
 import { RetentionNotice } from '@/app/admin/retention-notice'
 import { isWithinRetention } from '@/lib/privacy'
@@ -369,7 +369,7 @@ export function AdminDashboard() {
 
         {error && <p aria-live="polite" className="application-status error admin-error">{error}</p>}
 
-        {kind === 'application' && <ApplicationDeadlines session={session} />}
+        {kind === 'application' && <JobPostings session={session} />}
         <RetentionNotice session={session} />
 
         <div className="admin-filters">

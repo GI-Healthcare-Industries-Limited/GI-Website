@@ -28,7 +28,8 @@ export async function POST(request: Request) {
     if (input.company) return Response.json({ ok: true }, { status: 201 })
 
     const openings = await getCareerOpenings()
-    if (!openings.items.find((opening) => opening.job_title === input.jobTitle)?.is_open) {
+    const opening = openings.items.find((item) => input.openingId ? item.id === input.openingId : item.job_title === input.jobTitle)
+    if (!opening?.is_open) {
       return Response.json({ error: 'Applications for this role have closed.', code: 'APPLICATION_CLOSED' }, { status: 409 })
     }
 
@@ -42,7 +43,8 @@ export async function POST(request: Request) {
 
     const receivedAt = new Date().toISOString()
     const { data, error: insertError } = await getSupabaseAdmin().from('career_applications').insert({
-      job_title: input.jobTitle,
+      opening_id: opening.id,
+      job_title: opening.job_title,
       name: input.name,
       email: input.email.toLowerCase(),
       phone: input.phone || null,
@@ -59,7 +61,7 @@ export async function POST(request: Request) {
       request_fingerprint: fingerprint,
     }).select('id').single()
 
-    if (insertError?.message === 'APPLICATION_CLOSED') {
+    if (insertError?.message === 'APPLICATION_CLOSED' || insertError?.message === 'APPLICATION_OPENING_UNAVAILABLE') {
       return Response.json({ error: 'Applications for this role have closed.', code: 'APPLICATION_CLOSED' }, { status: 409 })
     }
     if (insertError) throw insertError

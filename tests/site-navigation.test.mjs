@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readFileSync, existsSync } from 'node:fs'
 import test from 'node:test'
 import ts from 'typescript'
 
@@ -13,8 +13,7 @@ function constants(path) {
 test('contact navigation links match the public-site section allow-list', () => {
   const { SITE_NAVIGATION } = constants('lib/site-navigation.ts')
   assert.deepEqual(SITE_NAVIGATION, [
-    { label: 'Home', href: '/' }, { label: 'About us', href: '/?page=about' },
-    { label: 'Military', href: '/?page=military' }, { label: 'Space', href: '/?page=space' },
+    { label: 'Home', href: '/' }, { label: 'Space', href: '/?page=space' },
     { label: 'Careers', href: '/?page=careers' }, { label: 'Contact us', href: '/contact' },
   ])
   const dart = readFileSync('frontend/lib/utils/site_routes.dart', 'utf8')
@@ -50,9 +49,9 @@ test('questions give context while leaving answers open and keeping failure unch
 })
 
 test('all public pages use the new header, without changing the application or admin shells', () => {
-  for (const name of ['home','about','military','space','careers']) {
+  for (const name of ['home','space','careers']) {
     const source = readFileSync(`frontend/lib/pages/${name}_page.dart`, 'utf8')
-    assert.match(source, /const NavBar\(\)/)
+    assert.match(source, /\bNavBar\(\)/)
     assert.doesNotMatch(source, /NavBar\(\s*isTransparent/)
   }
   const header = readFileSync('frontend/lib/widgets/navigation_bar.dart', 'utf8')
@@ -61,6 +60,35 @@ test('all public pages use the new header, without changing the application or a
   assert.match(header, /gi-healthcare-header-logo.webp/)
   assert.doesNotMatch(header, /white_butterfly|HoverUnderlineText|isTransparent/)
   assert.match(readFileSync('app/privacy/page.tsx','utf8'), /<SiteHeader activePath="\/privacy"/)
+})
+
+test('removed public pages redirect Home and leave no navigation or success link behind', async () => {
+  for (const name of ['about', 'military']) assert.equal(existsSync(`frontend/lib/pages/${name}_page.dart`), false)
+  const config = constants('next.config.ts').default
+  assert.deepEqual(await config.redirects(), [{
+    source: '/', has: [{ type: 'query', key: 'page', value: '(?:about|military)' }],
+    destination: '/?page=home', permanent: true,
+  }])
+  assert.doesNotMatch(readFileSync('frontend/lib/providers/navigation_provider.dart', 'utf8'), /AboutPage|MilitaryPage|ContactPage/)
+  assert.doesNotMatch(readFileSync('frontend/lib/widgets/navigation_bar.dart', 'utf8'), /About us|Military/)
+  assert.match(readFileSync('app/contact/contact-form.tsx', 'utf8'), /href="\/">Explore GI Healthcare/)
+})
+
+test('Home contains only the interactive map and supporters, and Careers reuses the original film', () => {
+  const home = readFileSync('frontend/lib/pages/home_page.dart', 'utf8')
+  assert.match(home, /children: \[MachineMapSection\(\), Supporters\(\)\]/)
+  assert.doesNotMatch(home, /BackgroundVideo|ProblemSection|SolutionSection|Footer|arrows?\.webp/)
+  const careers = readFileSync('frontend/lib/pages/careers_page.dart', 'utf8')
+  assert.match(careers, /CareersLocationVideo\(\)/)
+  assert.doesNotMatch(careers, /robo_tile|View Positions?/)
+  const video = readFileSync('frontend/lib/widgets/careers_location_video.dart', 'utf8')
+  assert.match(video, /assets\/videos\/bg_video\.mp4/)
+  assert.match(video, /setVolume\(0\)/)
+  assert.match(video, /setLooping\(true\)/)
+  assert.match(video, /MediaQuery.disableAnimationsOf/)
+  assert.match(video, /Pause video/)
+  assert.match(video, /_controller.dispose\(\)/)
+  assert.doesNotMatch(video, /View Positions?|On a mission|white_butterfly/)
 })
 
 test('main-page logo reuses the Contact rendering without a display-specific colour profile', () => {

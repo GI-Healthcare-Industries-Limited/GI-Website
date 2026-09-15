@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:frontend/themes/main_theme.dart';
+import 'package:frontend/widgets/careers_location_video.dart';
 import 'package:frontend/utils/helpers.dart';
 import 'package:frontend/widgets/footer.dart';
 import 'package:frontend/widgets/job_posting.dart';
@@ -128,21 +128,11 @@ class _CareersPageState extends State<CareersPage> {
                     const SizedBox(
                       height: 20, // Adjust as needed.
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Image.asset(
-                        'assets/images/robo_tile.webp',
-                        width: MediaQuery.of(context).size.width * 2 / 3,
-                        fit: BoxFit.contain,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 1000),
+                        child: const CareersLocationVideo(),
                       ),
                     ),
                     const SizedBox(

@@ -19,16 +19,18 @@ void main() {
     return navigation;
   }
 
-  testWidgets('desktop header keeps all six links, orbit logo and Contact routing', (tester) async {
+  testWidgets('desktop header has only the four requested links, orbit logo and Contact routing', (tester) async {
     final destinations = <String>[];
     final navigation = await mount(tester, 1440, destinations);
-    for (final label in ['Home','About us','Military','Space','Careers','Contact us']) {
+    for (final label in ['Home','Space','Careers','Contact us']) {
       expect(find.widgetWithText(TextButton, label), findsOneWidget);
     }
     expect(find.text('Menu'), findsNothing);
+    expect(find.text('About us'), findsNothing);
+    expect(find.text('Military'), findsNothing);
     expect((tester.widget<Image>(find.byType(Image)).image as AssetImage).assetName, 'assets/images/gi-healthcare-header-logo.webp');
     expect(tester.getSize(find.byType(NavBar)).height, 76);
-    await tester.tap(find.text('About us'));
+    await tester.tap(find.text('Space'));
     expect(navigation.currentIndex, 1);
     await tester.tap(find.text('Contact us'));
     expect(destinations, ['/contact']);
@@ -44,7 +46,7 @@ void main() {
     expect(find.text('Careers'), findsOneWidget);
     await tester.tap(find.text('Careers'));
     await tester.pumpAndSettle();
-    expect(navigation.currentIndex, 4);
+    expect(navigation.currentIndex, 2);
     expect(find.text('Careers'), findsNothing);
     await tester.tap(find.text('Menu'));
     await tester.pumpAndSettle();

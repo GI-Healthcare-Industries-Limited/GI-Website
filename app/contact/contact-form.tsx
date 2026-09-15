@@ -37,7 +37,7 @@ export function ContactForm() {
         {sent ? <div ref={result} tabIndex={-1} className={styles.success}>
           <CheckCircleIcon aria-hidden size={42} weight="light" />
           <h2>Message received.</h2><p>Thank you for getting in touch. We’ll reply to the email address you provided.</p>
-          <a className={styles.submit} href="/?page=about">Explore GI Healthcare <ArrowRightIcon aria-hidden size={19} /></a>
+          <a className={styles.submit} href="/">Explore GI Healthcare <ArrowRightIcon aria-hidden size={19} /></a>
         </div> : <>
           <h2 className={styles.formTitle}>Send us a message</h2>
           <form onSubmit={submit} aria-busy={sending}>

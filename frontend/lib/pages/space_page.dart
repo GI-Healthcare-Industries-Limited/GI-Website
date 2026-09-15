@@ -5,6 +5,7 @@ import 'package:frontend/widgets/navigation_bar.dart';
 import 'package:frontend/widgets/space_text_image.dart';
 import 'package:provider/provider.dart';
 import '../providers/navigation_provider.dart';
+import 'package:frontend/utils/site_routes.dart';
 
 class SpacePage extends StatefulWidget {
   const SpacePage({super.key});
@@ -144,7 +145,7 @@ class _SpacePageState extends State<SpacePage> {
                     padding: const EdgeInsets.only(bottom: 200),
                     child: TextButton(
                       onPressed: () {
-                        context.read<NavigationProvider>().updateIndex(5);
+                        context.read<NavigationProvider>().updateIndex(sitePageNames.length);
                       },
                       style: ButtonStyle(
                         backgroundColor:

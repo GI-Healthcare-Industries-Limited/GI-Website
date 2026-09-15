@@ -6,8 +6,9 @@ contact, careers and admin features.
 
 ## Routes
 
-- `/`: public GI Healthcare website; `/?page=about`, `/?page=military`,
-  `/?page=space` and `/?page=careers` open the corresponding main-site sections
+- `/`: Home, containing the interactive machine map and supporters only
+- `/?page=space` and `/?page=careers`: the remaining Flutter sections;
+  former About and Military URLs redirect Home
 - `/apply`: same-domain, portfolio-first career application form
 - `/contact`: responsive contact page with the main website navigation and footer;
   main-site contact navigation opens it in the same tab
@@ -83,13 +84,21 @@ Navigator history integration to avoid duplicate entries. Contact uses normal
 anchors when crossing between the Next.js form and the Flutter site.
 The distinct Contact illustration and its generation prompt are documented in
 `assets/contact/README.md`; the admin and application image is unchanged.
-All five Flutter main pages use the same red header design as Contact, with the
+All three Flutter main pages use the same red header design as Contact, with the
 orbit logo, locally served Inter font, selected-page underline and mobile menu.
 Privacy reuses the Contact header component; application and admin shells stay separate.
 The Flutter header uses `gi-healthcare-header-logo.webp`, the colour-normalised
 version already served by Contact's Next.js image optimiser. Do not replace it
 with the original monitor-profiled PNG: Safari/CanvasKit can render its red
 background differently. The source logo remains unchanged for other surfaces.
+
+Public navigation contains only Home, Space, Careers and Contact us. The Home
+banner, problem/solution sections, About page and Military page are removed;
+their previous source remains recoverable through Git history. The original
+`assets/videos/bg_video.mp4` now appears under Careers → Where are we?, replacing
+the old picture and its baked-in View Positions label. It plays muted and loops,
+with a pause/play control and no automatic playback when reduced motion is requested.
+The application, contact and admin data flows are unchanged.
 
 ### Application design and closing dates
 

@@ -1,0 +1,168 @@
+/* Scoped to the signed-in workspace; public pages and the approved login are unchanged. */
+.workspace {
+  --ink: #222b25;
+  --muted: #737b74;
+  --line: #e7eae4;
+  --line-strong: #d8ddd5;
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+  min-height: 100dvh;
+  background: #f5f6f3;
+  color: var(--ink);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+.workspace [hidden] { display: none !important; }
+.workspace :focus-visible { outline: 2px solid #557b60; outline-offset: 4px; }
+.workspace :global(.admin-sidebar) {
+  display: flex;
+  align-items: stretch;
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  padding: 34px 18px 22px;
+  background: #202923;
+  color: #f3f6f1;
+}
+.workspace :global(.admin-orbit-brand) { width: 181px; max-width: 100%; margin: 0 auto; }
+/* The existing white wordmark is rendered monochrome. Screen blending removes
+   its darkened rectangle without changing the source asset or introducing imagery. */
+.workspace :global(.admin-orbit-brand img) { filter: grayscale(1) contrast(3); mix-blend-mode: screen; }
+.workspace :global(.admin-sidebar nav) { display: grid; margin-top: 54px; gap: 7px; }
+.workspace :global(.admin-sidebar nav > p) { margin: 0 12px 12px; font-size: 10px; font-weight: 500; letter-spacing: .14em; color: #a4b0a5; }
+.workspace :global(.admin-sidebar nav button) { display: flex; justify-content: flex-start; gap: 11px; min-height: 44px; padding: 0 12px; width: 100%; border-radius: 8px; color: #c4cfc5; font-size: 13px; font-weight: 450;  }
+.workspace :global(.admin-sidebar nav button:hover) { background: #2d3830; color: #fff; }
+.workspace :global(.admin-sidebar nav button[aria-current=page]) { background: #e5edde; color: #263c2c; font-weight: 600; box-shadow: 0 1px 3px #0001; }
+.workspace :global(.admin-sidebar nav button svg) { width: 19px; height: 19px; flex-shrink: 0; }
+.websiteLink { display: flex; align-items: center; gap: 8px; color: #acb9ae; font-size: 12px; text-decoration: none; margin: 30px 12px; }
+.websiteLink:hover { color: #fff; }
+.workspace :global(.admin-account) { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; justify-items: stretch; border-color: #ffffff1c; padding-top: 20px; }
+.workspace :global(.admin-account-avatar) { display: grid; color: #b5c7b8; }
+.workspace :global(.admin-account > span:nth-child(2)) { display: grid; gap: 4px; }
+.workspace :global(.admin-account strong) { font-size: 12px; font-weight: 550; }
+.workspace :global(.admin-account small) { color: #a6b3a8; font-size: 10px; }
+.workspace :global(.admin-account button) { color: #b4c2b7; }
+.workspace :global(.admin-main) { width: 100%; max-width: 1660px; min-width: 0; margin: 0 auto; padding: 36px clamp(24px, 3vw, 50px) 36px; }
+.workspace :global(.admin-main-header) { align-items: center; gap: 20px; }
+.workspace :global(.admin-main-header .section-index) { color: #626f60; font-weight: 450; font-size: 11px; letter-spacing: .02em; text-transform: none; margin: 0 0 15px; }
+.workspace :global(.admin-main-header h1) { margin: 0 0 9px; font-size: 32px; font-weight: 550; letter-spacing: -.04em; line-height: 1.2; }
+.workspace :global(.admin-main-header > div > p:last-child) { color: #626f60; font-size: 13px; line-height: 1.6; }
+.workspace :global(.admin-refresh-button) { min-height: 38px; padding: 0 12px; border-radius: 8px; border-color: #dce1d8; color: #4c5d50; font-size: 12px; font-weight: 500; box-shadow: 0 1px 2px #28322504; }
+.workspace :global(.admin-refresh-button:hover:not(:disabled)) { background: #ecf1e8; }
+.workspace :global(.admin-inbox) { display: grid; grid-template-columns: minmax(250px, 30%) minmax(0, 1fr); min-height: 650px; margin-top: 0; border: 1px solid #dfe5db; border-radius: 14px; overflow: clip; background: #fff; box-shadow: 0 3px 14px #26322404; }
+.listPanel { min-width: 0; border-right: 1px solid #e7ebe3; background: #fcfdfb; }
+.listHeading { display: flex; align-items: center; justify-content: space-between; padding: 23px 20px 16px; gap: 10px; }
+.listHeading h2 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: -.02em; }
+.listHeading > span { font-size: 10px; color: #5e6f58; border: 1px solid #e3e9df; background: #f3f6ef; padding: 3px 7px; border-radius: 5px; }
+.workspace :global(.admin-filters) { display: grid; grid-template-columns: minmax(0, 1fr); justify-content: stretch; gap: 10px; padding: 0 16px 18px; margin: 0; }
+.workspace :global(.admin-search) { min-width: 0; min-height: 39px; padding: 0 10px; border-radius: 7px; border-color: #dfe4da; color: #81907e; gap: 8px; }
+.workspace :global(.admin-search svg) { flex-shrink: 0; width: 16px; }
+.workspace :global(.admin-search input) { min-width: 0; padding: 9px 0; font-size: 12px; color: #34422f; }
+.workspace :global(.admin-search input::placeholder) { color: #697761; }
+.workspace :global(.admin-search:focus-within) { border-color: #809776; box-shadow: 0 0 0 3px #5d7a4712; }
+.workspace :global(.admin-filter-select) { width: 100%; }
+.workspace :global(.admin-filter-select select) { width: 100%; min-height: 34px; border-color: #e3e8dd; border-radius: 6px; color: #65725d; font-size: 11px; background: #f7f9f3; }
+.workspace :global(.admin-filter-select svg) { width: 13px; color: #77896b; }
+.workspace :global(.admin-submission-list) { border: 0; border-top: 1px solid #e7ebe3; max-height: calc(100dvh - 370px); min-height: 200px; overflow-y: auto; }
+.workspace :global(.admin-submission-list > button) { padding: 21px 20px 18px; gap: 8px; background: transparent; border-bottom: 1px solid #edf0e9; }
+.workspace :global(.admin-submission-list > button:hover) { background: #f4f7ef; }
+.workspace :global(.admin-submission-list > button.selected) { background: #edf3e7; box-shadow: inset 3px 0 0 #6b8658; }
+.workspace :global(.admin-list-topline) { align-items: flex-start; gap: 10px; }
+.workspace :global(.admin-list-topline strong) { font-weight: 600; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; min-width: 0; }
+.workspace :global(.admin-list-topline .admin-status) { flex-shrink: 0; font-size: 9px; padding: 3px 6px; margin-top: 1px; }
+.workspace :global(.admin-list-subject) { font-size: 12px; font-weight: 500; line-height: 1.6; white-space: normal; overflow-wrap: anywhere; }
+.workspace :global(.admin-list-preview) { color: #5e6d56; font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+.listDate { font-size: 11px; color: #5e6d56; margin-top: 4px; line-height: 1.5; }
+.workspace :global(.admin-status) { padding: 4px 9px; border-radius: 5px; font-size: 10px; font-weight: 550; line-height: 1.5; }
+.workspace :global(.admin-status-new) { background: #fdeeea; color: #a24933; }
+.workspace :global(.admin-status-reviewing), .workspace :global(.admin-status-in_progress) { background: #edf0fb; color: #526497; }
+.workspace :global(.admin-status-interview) { background: #fbf3e1; color: #8c692d; }
+.workspace :global(.admin-status-hired), .workspace :global(.admin-status-resolved) { background: #e9f4e9; color: #427342; }
+.workspace :global(.admin-detail) { min-width: 0; padding: 30px clamp(22px, 2.5vw, 40px); container: admin-detail / inline-size; }
+.workspace :global(.admin-detail-header) { display: flex; flex-wrap: wrap; gap: 20px; padding-bottom: 24px; align-items: flex-start; }
+.workspace :global(.admin-detail-header > div:first-child) { flex: 1 1 210px; min-width: 0; }
+.workspace :global(.admin-detail-header h2) { margin: 12px 0 7px; font-size: 25px; line-height: 1.3; font-weight: 550; letter-spacing: -.035em; }
+.workspace :global(.admin-detail-header > div > p) { font-size: 12px; line-height: 1.7; color: #64705e; }
+.workspace :global(.admin-detail-actions) { width: auto; display: flex; align-items: flex-end; gap: 8px; }
+.workspace :global(.admin-status-select) { width: auto; min-width: 110px; gap: 6px; }
+.workspace :global(.admin-status-select span) { font-size: 10px; font-weight: 450; color: #64705e; }
+.workspace :global(.admin-status-select select) { min-height: 36px; min-width: 110px; max-width: 100%; padding: 0 26px 0 9px; border-radius: 7px; font-size: 11px; color: #3d5135; background: #f8faf5; border-color: #dce4d4; }
+.workspace :global(.admin-delete-button) { min-height: 36px; padding: 0 9px; gap: 5px; border-radius: 7px; border-color: #e9dcd6; font-size: 11px; font-weight: 500; color: #985b48; }
+.workspace :global(.admin-delete-button svg) { width: 15px; }
+.workspace :global(.admin-application-facts) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 22px 0; }
+.workspace :global(.admin-application-facts > span) { align-items: flex-start; gap: 9px; font-size: 12px; line-height: 1.7; }
+.workspace :global(.admin-application-facts small) { font-weight: 450; font-size: 10px; color: #64705e; text-transform: none; }
+.workspace :global(.admin-application-facts > span:first-child) { display: none; } /* Role already appears in the detail heading. */
+.workspace :global(.admin-message-body) { padding: 24px 0; border-bottom: 1px solid #edf0e9; }
+.workspace :global(.admin-message-body .section-index) { margin: 0; font-size: 12px; font-weight: 600; text-transform: none; letter-spacing: 0; line-height: 1.8; color: #33482b; }
+.workspace :global(.admin-message-body > p:not(.section-index)) { margin: 12px 0 0; color: #5b6853; font-size: 14px; line-height: 1.85; white-space: pre-wrap; }
+.workspace :global(.admin-work-links a) { font-size: 12px; line-height: 1.8; color: #50753f; }
+.workspace :global(.admin-award-list) { margin: 12px 0 0; padding: 0; list-style-position: inside; color: #5b6853; font-size: 12px; }
+.workspace :global(.admin-award-list li) { background: #f7f9f4; border-color: #e8ede2; margin: 8px 0 0; padding: 12px; line-height: 1.8; }
+.workspace :global(.admin-portfolio-actions) { border: 0; padding-top: 22px; }
+.workspace :global(.admin-portfolio-actions a:first-child) { min-height: 38px; border: 1px solid #dce5d4; border-radius: 7px; color: #526f40; background: #f6f9f2; font-size: 11px; font-weight: 500; }
+.workspace :global(.admin-retention-copy) { margin: 12px 0 0; padding: 10px 0; border: 0; border-radius: 0; background: transparent; font-size: 11px; color: #64705e; }
+.recordPrivacy { margin-top: 24px; padding-top: 20px; border-top: 1px solid #e8ede1; color: #64705e; font-size: 11px; line-height: 1.8; }
+.recordPrivacy summary { display: flex; align-items: center; gap: 7px; list-style: none; cursor: pointer; }
+.recordPrivacy summary::-webkit-details-marker { display: none; }
+.recordPrivacy summary > svg:last-child { margin-left: auto; }
+.recordPrivacy p { margin: 10px 0 0; }
+.recordPrivacy a { text-underline-offset: 3px; }
+.workspace :global(.admin-empty) { padding: 40px 20px; font-size: 12px; line-height: 1.8; }
+.workspace :global(.admin-detail-empty) { min-height: 430px; font-size: 13px; font-weight: 450; color: #62705e; }
+.workspace :global(.admin-detail-empty strong) { font-weight: 450; }
+.workspace :global(.admin-account-settings) { margin-top: 24px; border: 0; padding: 0; background: transparent; color: #62705e; }
+.workspace :global(.admin-account-settings summary) { font-size: 11px; font-weight: 450; padding: 8px 0; }
+.workspace :global(.admin-account-settings form) { max-width: 720px; background: #fff; border: 1px solid #e2e8dc; border-radius: 10px; padding: 20px; }
+.workspace :global(.admin-account-settings form label), .workspace :global(.admin-account-settings form > p) { font-size: 12px; font-weight: 450; }
+.workspace :global(.admin-account-settings input) { border-radius: 7px; font-size: 14px; }
+.workspace :global(.admin-account-settings .admin-sign-in-button) { background: #506947; border-radius: 7px; color: #fff; border: 0; padding: 10px 16px; font-size: 12px; }
+.workspace :global(.admin-error) { margin: 20px 0; }
+@media (min-width: 1500px) { .workspace :global(.admin-inbox) { grid-template-columns: 340px minmax(0, 1fr); } }
+@media (max-width: 1150px) {
+  .workspace { grid-template-columns: 190px minmax(0, 1fr); }
+  .workspace :global(.admin-sidebar) { padding-inline: 14px; }
+  .workspace :global(.admin-main) { padding-inline: 24px; }
+  .workspace :global(.admin-inbox) { grid-template-columns: 245px minmax(0, 1fr); }
+  .workspace :global(.admin-detail-header h2) { font-size: 23px; }
+}
+@media (max-width: 950px) {
+  .workspace { grid-template-columns: minmax(0, 1fr); }
+  .workspace :global(.admin-sidebar) { position: static; height: auto; display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 18px 24px 0; gap: 18px; }
+  .workspace :global(.admin-orbit-brand) { width: 166px; margin: 0; }
+  .workspace :global(.admin-sidebar nav) { grid-column: 1 / -1; grid-row: 2; display: flex; margin: 0; gap: 12px; padding-bottom: 14px; }
+  .workspace :global(.admin-sidebar nav > p), .websiteLink { display: none; }
+  .workspace :global(.admin-sidebar nav button) { width: auto; padding: 0 14px; min-height: 38px; font-size: 12px; }
+  .workspace :global(.admin-account) { display: flex; margin: 0; padding: 0; border: 0; }
+  .workspace :global(.admin-account-avatar) { display: none; }
+  .workspace :global(.admin-account > span:nth-child(2)) { display: grid; }
+  .workspace :global(.admin-main) { padding: 28px 24px; }
+  .workspace :global(.admin-inbox) { grid-template-columns: 255px minmax(0, 1fr); }
+  .workspace :global(.admin-submission-list) { max-height: 680px; }
+}
+@media (max-width: 700px) {
+  .workspace :global(.admin-inbox) { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .listPanel { border-right: 0; border-bottom: 1px solid #dfe6d8; }
+  .workspace :global(.admin-filters) { grid-template-columns: minmax(0, 1fr) 115px; align-items: center; }
+  .workspace :global(.admin-submission-list) { max-height: 270px; min-height: 0; }
+  .workspace :global(.admin-list-preview) { -webkit-line-clamp: 1; }
+  .workspace :global(.admin-submission-list > button) { padding: 17px 20px; gap: 5px; }
+  .workspace :global(.admin-detail) { padding: 26px 22px; }
+  .workspace :global(.admin-detail-header) { display: flex; }
+  .workspace :global(.admin-detail-header > div:first-child) { flex-basis: 100%; }
+  .workspace :global(.admin-detail-actions) { width: 100%; }
+  .workspace :global(.admin-status-select) { flex: 1; }
+  .workspace :global(.admin-search input), .workspace :global(.admin-filter-select select), .workspace :global(.admin-status-select select) { font-size: 16px; }
+  .workspace :global(.admin-password-fields) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  .workspace :global(.admin-sidebar) { padding: 17px 16px 0; gap: 16px; }
+  .workspace :global(.admin-sidebar nav) { gap: 5px; justify-content: space-between; }
+  .workspace :global(.admin-sidebar nav button) { font-size: 11px; padding: 0 9px; gap: 6px; }
+  .workspace :global(.admin-sidebar nav button svg) { width: 16px; height: 16px; }
+  .workspace :global(.admin-account > span:nth-child(2)) { display: none; }
+  .workspace :global(.admin-main) { padding: 24px 14px; }
+  .workspace :global(.admin-main-header h1) { font-size: 28px; }
+  .workspace :global(.admin-refresh-button) { font-size: 0; gap: 0; }
+  .workspace :global(.admin-filters) { grid-template-columns: minmax(0, 1fr); }
+}

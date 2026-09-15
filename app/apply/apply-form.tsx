@@ -1,5 +1,7 @@
 'use client'
 
+import { LINKEDIN_PROFILE_ERROR, normalizeLinkedInProfileUrl } from '@/lib/linkedin'
+
 import { ArrowRightIcon, ArrowUpRightIcon, BriefcaseIcon, CalendarBlankIcon, CheckCircleIcon, CircleIcon, MapPinIcon, ShieldCheckIcon } from '@phosphor-icons/react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -100,7 +102,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           openingId: opening!.id, jobTitle: opening!.job_title, name: formData.get('name'), email: formData.get('email'),
-          phone: formData.get('phone'), portfolioUrl: formData.get('portfolioUrl'),
+          linkedInUrl: formData.get('linkedInUrl'), portfolioUrl: formData.get('portfolioUrl'),
           projectSummary: formData.get('projectSummary'), ...eligibility,
           workLinks: formData.getAll('workLink').map(value => String(value).trim()).filter(Boolean),
           awardsStatus: formData.get('awardsStatus'), awardEntries: formData.getAll('awardEntry'),
@@ -174,7 +176,13 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                   <div className={styles.fields}>
                     <div className={styles.field}><label htmlFor="name">Full name</label><input ref={detailsRef} autoComplete="name" id="name" name="name" minLength={2} maxLength={120} required /></div>
                     <div className={styles.field}><label htmlFor="email">Email address</label><input autoComplete="email" id="email" name="email" maxLength={254} required type="email" /></div>
-                    <div className={`${styles.field} ${styles.full}`}><label htmlFor="phone">Phone number <span>Optional</span></label><input autoComplete="tel" id="phone" name="phone" maxLength={50} type="tel" /></div>
+                    <div className={`${styles.field} ${styles.full}`}>
+                      <label htmlFor="linkedInUrl">LinkedIn profile <span>Required</span></label>
+                      <input id="linkedInUrl" name="linkedInUrl" maxLength={2048} type="url" required autoComplete="url" autoCapitalize="none" spellCheck={false} placeholder="https://www.linkedin.com/in/your-name" onInput={event => {
+                        const field = event.currentTarget
+                        field.setCustomValidity(!field.value.trim() || normalizeLinkedInProfileUrl(field.value.trim()) ? '' : LINKEDIN_PROFILE_ERROR)
+                      }} />
+                    </div>
                   </div>
                 </fieldset>
                 <ApplicationQuestions disabled={!canApply || !eligibility || submitting} />

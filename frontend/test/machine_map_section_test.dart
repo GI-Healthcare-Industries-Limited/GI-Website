@@ -22,6 +22,10 @@ void main() {
       await tester.pumpAndSettle();
       final mission = find.textContaining('Our mission is to make');
       expect(mission, findsOneWidget);
+      final style = tester.widget<Text>(mission).style!;
+      expect(style.fontFamily, 'Inter');
+      expect(style.fontStyle, FontStyle.italic);
+      expect(style.fontSize, width < 1000 ? 20 : (width * .015).clamp(15.0, 25.0));
       expect(find.byType(ButterflySpot), width < 1000 ? findsNothing : findsNWidgets(15));
       final rect = tester.getRect(mission);
       expect(rect.left, greaterThanOrEqualTo(0));

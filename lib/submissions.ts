@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import { ANSWER_WORD_LIMITS, APPLICATION_QUESTIONS_VERSION, FAILURE_QUESTION, GROWTH_QUESTION, MAX_AWARDS, MAX_WORK_LINKS, WORK_QUESTION, countWords, isSafeWorkLink } from '@/lib/application-questions'
 import { rightToWorkSchema } from '@/lib/right-to-work'
+import { LINKEDIN_PROFILE_ERROR, normalizeLinkedInProfileUrl } from '@/lib/linkedin'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
 export const contactSchema = z.object({
@@ -27,11 +28,14 @@ export const applicationSchema = z.object({
   dataSharingAcknowledged: z.literal(true, { error: 'Please tick the box to agree to the use of your information for this application.' }),
   dataSharingStatementVersion: z.literal(APPLICATION_DATA_SHARING_VERSION, { error: 'Please reload the page to view the current data-sharing statement.' }),
   applicationQuestionsVersion: z.literal(APPLICATION_QUESTIONS_VERSION, { error: 'Please reload the application to see the current questions.' }),
+  privacyNoticeVersion: z.literal(APPLICATION_PRIVACY_NOTICE_VERSION, { error: 'The application form has changed. Please keep a copy of your answers, then reload to see the current form and privacy notice.' }),
   jobTitle: z.string().trim().min(2).max(120),
   openingId: z.uuid().optional(),
   name: z.string().trim().min(2, 'Please enter your name.').max(120),
   email: z.string().trim().email('Please enter a valid email address.').max(254),
-  phone: z.string().trim().max(50).optional().default(''),
+  linkedInUrl: z.string({ error: LINKEDIN_PROFILE_ERROR }).trim().min(1, LINKEDIN_PROFILE_ERROR).max(2048)
+    .refine(value => normalizeLinkedInProfileUrl(value) !== null, LINKEDIN_PROFILE_ERROR)
+    .transform(value => normalizeLinkedInProfileUrl(value)!),
   portfolioUrl: z.string().trim().max(2048).refine((value) => {
     if (!value) return true
     try { return ['http:', 'https:'].includes(new URL(value).protocol) } catch { return false }
@@ -44,7 +48,6 @@ export const applicationSchema = z.object({
   awardEntries: z.array(shortAnswer(ANSWER_WORD_LIMITS.award, 'Award')).max(MAX_AWARDS),
   biggestFailure: shortAnswer(ANSWER_WORD_LIMITS.failure, FAILURE_QUESTION),
   growthArea: shortAnswer(ANSWER_WORD_LIMITS.growth, GROWTH_QUESTION),
-  privacyNoticeVersion: z.literal(APPLICATION_PRIVACY_NOTICE_VERSION, { error: 'Please reload the page to view the current privacy notice before submitting.' }),
   company: z.string().max(0).optional().default(''),
 }).superRefine((input, context) => {
   if (input.awardsStatus === 'listed' && input.awardEntries.length === 0) {

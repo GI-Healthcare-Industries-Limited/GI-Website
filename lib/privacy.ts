@@ -2,7 +2,7 @@
 // of information, not consent, agreement to processing, or proof it was read.
 export const PRIVACY_NOTICE_VERSION = '2026-09-14'
 // Recruitment-specific addendum. Contact clients keep the base notice version.
-export const APPLICATION_PRIVACY_NOTICE_VERSION = '2026-09-15-applications-v3'
+export const APPLICATION_PRIVACY_NOTICE_VERSION = '2026-09-15-applications-v4'
 
 // Separate from the notice version and the processing bases in that notice.
 // Keep each statement version immutable so recorded confirmations are traceable.

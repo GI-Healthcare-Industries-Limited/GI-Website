@@ -45,7 +45,8 @@ class _CareersLocationVideoState extends State<CareersLocationVideo> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _reduceMotion = motion.prefersReducedMotion || MediaQuery.disableAnimationsOf(context);
+    _reduceMotion =
+        motion.prefersReducedMotion || MediaQuery.disableAnimationsOf(context);
     if (_reduceMotion && _controller.value.isPlaying) _togglePlayback();
   }
 
@@ -77,44 +78,51 @@ class _CareersLocationVideoState extends State<CareersLocationVideo> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: ColoredBox(
-                  color: const Color(0xFF202621),
-                  child: unavailable
-                      ? const Center(child: Padding(
-                          padding: EdgeInsets.all(24),
-                          child: Text('Video unavailable. Please reload to try again.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white)),
-                        ))
-                      : value.isInitialized
-                          ? Semantics(
-                              label: 'The National Robotarium in Edinburgh',
-                              child: Center(child: AspectRatio(
-                                aspectRatio: value.aspectRatio,
-                                child: VideoPlayer(_controller),
-                              )),
-                            )
-                          : const Center(child: CircularProgressIndicator(
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              // The web player is a native HTML element. Round that element in
+              // web/index.html, not with Flutter's separately positioned SVG
+              // ClipRRect: Safari can composite the clip out of step on scroll.
+              child: value.isInitialized && !unavailable
+                  ? Semantics(
+                      label: 'The National Robotarium in Edinburgh',
+                      child: VideoPlayer(_controller),
+                    )
+                  : DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF202621),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: unavailable
+                          ? const Center(
+                              child: Padding(
+                              padding: EdgeInsets.all(24),
+                              child: Text(
+                                  'Video unavailable. Please reload to try again.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.white)),
+                            ))
+                          : const Center(
+                              child: CircularProgressIndicator(
                               color: Colors.white,
                               semanticsLabel: 'Loading location video',
                             )),
-                ),
-              ),
+                    ),
             ),
             const SizedBox(height: 12),
             Row(children: [
-              const Expanded(child: Text('The National Robotarium, Edinburgh',
-                  style: TextStyle(fontSize: 14, color: Color(0xFF62685F)))),
+              const Expanded(
+                  child: Text('The National Robotarium, Edinburgh',
+                      style:
+                          TextStyle(fontSize: 14, color: Color(0xFF62685F)))),
               if (value.isInitialized && !unavailable)
                 TextButton.icon(
                   onPressed: _togglePlayback,
-                  icon: Icon(value.isPlaying ? Icons.pause : Icons.play_arrow, size: 18),
+                  icon: Icon(value.isPlaying ? Icons.pause : Icons.play_arrow,
+                      size: 18),
                   label: Text(value.isPlaying ? 'Pause video' : 'Play video'),
-                  style: TextButton.styleFrom(foregroundColor: const Color(0xFF30382D)),
+                  style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF30382D)),
                 ),
             ]),
           ],

@@ -107,6 +107,21 @@ test('main-page logo reuses the Contact rendering without a display-specific col
   assert.deepEqual(readFileSync('docs/assets/assets/images/gi-healthcare-header-logo.webp'), logo)
 })
 
+test('Careers rounds the native video itself, not an independently composited SVG clip', () => {
+  const dart = readFileSync('frontend/lib/widgets/careers_location_video.dart', 'utf8')
+  assert.doesNotMatch(dart, /\bClipRRect\(/)
+  const html = readFileSync('frontend/web/index.html', 'utf8')
+  assert.match(html, /flutter-view video\s*\{[^}]*display: block;[^}]*object-fit: cover;[^}]*border-radius: 16px;/)
+})
+
+test('the map includes the mission, with responsive copy and all fifteen hotspots retained', () => {
+  const dart = readFileSync('frontend/lib/widgets/machine_map_section.dart', 'utf8')
+  assert.match(dart, /Our mission is to make freshly cooked, healthy meals easily accessible/)
+  assert.match(dart, /to anyone, anytime, anywhere — even beyond planet Earth/)
+  assert.match(dart, /if \(isMobile\)/)
+  assert.equal((dart.match(/const ButterflySpot\(/g) || []).length, 15)
+})
+
 test('award cards override the tall global textarea minimum and added work links are optional', () => {
   const css = readFileSync('app/apply/apply-form.module.css', 'utf8')
   assert.match(css, /\.awardCard textarea \{[^}]*min-height: 0;[^}]*height: 2.8em/)

@@ -71,6 +71,7 @@ void main() {
     expect(platform.volume, 0);
     expect(platform.loop, true);
     expect(platform.played, true);
+    expect(find.ancestor(of: find.byKey(const Key('video-frame')), matching: find.byType(ClipRRect)), findsNothing);
     expect(find.text('The National Robotarium, Edinburgh'), findsOneWidget);
     expect(find.textContaining('View Position'), findsNothing);
     await tester.tap(find.text('Pause video'));

@@ -86,6 +86,10 @@ The distinct Contact illustration and its generation prompt are documented in
 All five Flutter main pages use the same red header design as Contact, with the
 orbit logo, locally served Inter font, selected-page underline and mobile menu.
 Privacy reuses the Contact header component; application and admin shells stay separate.
+The Flutter header uses `gi-healthcare-header-logo.webp`, the colour-normalised
+version already served by Contact's Next.js image optimiser. Do not replace it
+with the original monitor-profiled PNG: Safari/CanvasKit can render its red
+background differently. The source logo remains unchanged for other surfaces.
 
 ### Application design and closing dates
 

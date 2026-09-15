@@ -73,7 +73,10 @@ class _NavBarState extends State<NavBar> {
                   children: [
                     Semantics(container: true, label: 'GI Healthcare home', button: true, child: InkWell(
                       onTap: () => navigate(0),
-                      child: ExcludeSemantics(child: Image.asset('assets/images/gi-healthcare-logo.png', width: compact ? 155 : 180)),
+                      // Reuse Contact's colour-normalised logo. The source PNG
+                      // has a monitor ICC profile that Safari/CanvasKit can
+                      // interpret differently from the flat header colour.
+                      child: ExcludeSemantics(child: Image.asset('assets/images/gi-healthcare-header-logo.webp', width: compact ? 155 : 180)),
                     )),
                     if (mobile) TextButton(
                       focusNode: menuFocus,

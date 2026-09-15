@@ -26,7 +26,7 @@ void main() {
       expect(find.widgetWithText(TextButton, label), findsOneWidget);
     }
     expect(find.text('Menu'), findsNothing);
-    expect((tester.widget<Image>(find.byType(Image)).image as AssetImage).assetName, 'assets/images/gi-healthcare-logo.png');
+    expect((tester.widget<Image>(find.byType(Image)).image as AssetImage).assetName, 'assets/images/gi-healthcare-header-logo.webp');
     expect(tester.getSize(find.byType(NavBar)).height, 76);
     await tester.tap(find.text('About us'));
     expect(navigation.currentIndex, 1);

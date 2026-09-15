@@ -58,9 +58,25 @@ test('all public pages use the new header, without changing the application or a
   const header = readFileSync('frontend/lib/widgets/navigation_bar.dart', 'utf8')
   assert.match(header, /0xFFE82127/)
   assert.match(header, /fontFamily: 'Inter'/)
-  assert.match(header, /gi-healthcare-logo.png/)
+  assert.match(header, /gi-healthcare-header-logo.webp/)
   assert.doesNotMatch(header, /white_butterfly|HoverUnderlineText|isTransparent/)
   assert.match(readFileSync('app/privacy/page.tsx','utf8'), /<SiteHeader activePath="\/privacy"/)
+})
+
+test('main-page logo reuses the Contact rendering without a display-specific colour profile', () => {
+  const logo = readFileSync('frontend/assets/images/gi-healthcare-header-logo.webp')
+  assert.equal(logo.subarray(0, 4).toString(), 'RIFF')
+  assert.equal(logo.subarray(8, 12).toString(), 'WEBP')
+  // Inspect container chunks, not decoded pixels: no device-specific ICC profile
+  // may be reintroduced into the Flutter canvas header.
+  for (let offset = 12; offset + 8 <= logo.length;) {
+    const chunk = logo.subarray(offset, offset + 4).toString()
+    assert.notEqual(chunk, 'ICCP')
+    const size = logo.readUInt32LE(offset + 4)
+    offset += 8 + size + (size % 2)
+  }
+  assert.match(readFileSync('frontend/pubspec.yaml', 'utf8'), /assets\/images\/gi-healthcare-header-logo.webp/)
+  assert.deepEqual(readFileSync('docs/assets/assets/images/gi-healthcare-header-logo.webp'), logo)
 })
 
 test('award cards override the tall global textarea minimum and added work links are optional', () => {

@@ -80,6 +80,7 @@ flutter:
   assets:
    - assets/fonts/LICENSE-Inter.txt
    - assets/images/gi-healthcare-logo.png
+   - assets/images/gi-healthcare-header-logo.webp
    - assets/fonts/LICENSE-Roboto.txt
    - assets/fonts/LICENSE-NotoSansSymbols.txt
    - assets/images/butterfly.webp

@@ -66,6 +66,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter.ttf
     - family: Roboto
       fonts:
         - asset: assets/fonts/Roboto-Regular.ttf
@@ -75,6 +78,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+   - assets/fonts/LICENSE-Inter.txt
+   - assets/images/gi-healthcare-logo.png
    - assets/fonts/LICENSE-Roboto.txt
    - assets/fonts/LICENSE-NotoSansSymbols.txt
    - assets/images/butterfly.webp

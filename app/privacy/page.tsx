@@ -1,16 +1,14 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 
-import logo from '@/assets/brand/gi-healthcare-logo.png'
+import { SiteHeader } from '@/app/contact/site-header'
 import { APPLICATION_PRIVACY_NOTICE_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import styles from './privacy.module.css'
 
 export const metadata: Metadata = { title: 'Privacy notice' }
 
 export default function PrivacyPage() {
-  return <main className={styles.page}>
-    <header><Link href="/" aria-label="GI Healthcare home"><Image src={logo} alt="GI Healthcare" width={200} height={58} /></Link><Link href="/">Back to website ↗</Link></header>
+  return <><SiteHeader activePath="/privacy" contentId="privacy-main" /><main id="privacy-main" tabIndex={-1} className={styles.page}>
     <article>
       <p className={styles.eyebrow}>Your information</p>
       <h1>Privacy, in plain language.</h1>
@@ -63,5 +61,5 @@ export default function PrivacyPage() {
       </section>
     </article>
     <footer><Link href="/apply">Careers</Link><Link href="/contact">Contact us</Link></footer>
-  </main>
+  </main></>
 }

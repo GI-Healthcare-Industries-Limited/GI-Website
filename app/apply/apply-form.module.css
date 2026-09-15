@@ -136,14 +136,21 @@
 .awardsSection { border: 0; margin: 0; padding: 0 0 28px; min-width: 0; border-bottom: 1px solid #e8e9e4; }
 .section .awardsSection legend { font-size: 15px; line-height: 1.6; margin-bottom: 0; letter-spacing: 0; font-weight: 500; }
 .awardCards { display: grid; gap: 12px; margin-top: 19px; }
-.awardCard { position: relative; border: 1px solid #dfe4d8; border-radius: 11px; background: #f8f9f5; padding: 17px 18px 11px; }
+.awardCard { position: relative; border: 1px solid #dfe4d8; border-radius: 11px; background: #f8f9f5; padding: 12px 16px 8px; }
 .shortAnswer { min-width: 0; }
 .shortAnswer label { display: block; font-size: 15px; font-weight: 500; line-height: 1.6; margin-bottom: 11px; }
 .shortAnswer textarea { display: block; width: 100%; border: 1px solid #dddfd7; border-radius: 7px; padding: 12px; background: #fff; color: var(--text); font-size: 14px; line-height: 1.6; resize: vertical; }
 .shortAnswer textarea:hover { border-color: #9ca48e; }
 .shortAnswer textarea[aria-invalid="true"] { border-color: #a52b32; }
-.awardCard label { margin-right: 35px; font-size: 12px; color: #69755c; }
-.awardCard textarea { background: transparent; padding: 0; border: 0; border-radius: 0; }
+.awardCard label { margin-right: 35px; margin-bottom: 6px; font-size: 12px; color: #69755c; }
+.awardCard textarea { background: transparent; padding: 0; border: 0; border-radius: 0; min-height: 0; height: 2.8em; line-height: 1.4; }
+.awardCard .wordCount { margin-top: 3px; }
+.workLinks { margin-top: 3px; }
+.linkHelp { margin: 12px 0; font-size: 11px; line-height: 1.6; color: #69755c; }
+.workLinkRow { display: flex; align-items: flex-end; gap: 8px; margin-top: 12px; }
+.workLinkRow .field { flex: 1; min-width: 0; }
+.removeLink { display: grid; place-items: center; width: 40px; height: 46px; flex-shrink: 0; background: transparent; color: #737c69; border: 0; border-radius: 6px; }
+.removeLink:hover { background: #e9ede3; }
 .wordCount { margin: 7px 0 0; text-align: right; color: #747b67; font-size: 11px; }
 .overLimit { color: #a52b32; }
 .removeAward { position: absolute; right: 9px; top: 9px; display: grid; place-items: center; width: 34px; height: 34px; background: transparent; color: #737c69; border: 0; border-radius: 6px; }

@@ -12,6 +12,7 @@ const response = await fetch('https://supabase-downloads.s3-ap-southeast-1.amazo
 if (!response.ok) throw new Error('Cannot load database certificate authority')
 const db = new pg.Client({ connectionString: url.href, ssl: { ca: await response.text(), rejectUnauthorized: true }, connectionTimeoutMillis: 10000 })
 await db.connect()
+let phase = 'schema inspection'
 try {
   const countSql = 'select (select count(*)::int from public.career_applications) applications, (select count(*)::int from public.contact_submissions) enquiries'
   const before = (await db.query(countSql)).rows[0]
@@ -39,20 +40,26 @@ try {
     if (!concise.rows[0].installed) {
       await db.query(await readFile(new URL('../supabase/migrations/20260915001000_concise_application_answers.sql', import.meta.url), 'utf8'))
     }
+    const workLinks = await db.query("select exists (select 1 from information_schema.columns where table_schema='public' and table_name='career_applications' and column_name='work_links') installed")
+    if (!workLinks.rows[0].installed) {
+      phase = 'work-links migration'
+      await db.query(await readFile(new URL('../supabase/migrations/20260915013000_application_work_links.sql', import.meta.url), 'utf8'))
+    }
     // Historical regression fixtures must still run after the owner removes or
     // renames the original roles. These rows/changes are rolled back too.
     await db.query("insert into public.career_openings(job_title) values ('Embedded Systems Engineer'), ('Business Development and Operations Manager') on conflict do nothing")
     await db.query("update public.career_openings set accepting_applications = true where job_title in ('Embedded Systems Engineer', 'Business Development and Operations Manager')")
-    for (const file of ['submission-privacy.sql', 'career-closing-dates.sql', 'right-to-work.sql', 'application-data-sharing.sql', 'job-postings.sql', 'application-personal-answers.sql', 'concise-application-answers.sql']) {
+    for (const file of ['submission-privacy.sql', 'career-closing-dates.sql', 'right-to-work.sql', 'application-data-sharing.sql', 'job-postings.sql', 'application-personal-answers.sql', 'concise-application-answers.sql', 'application-work-links.sql']) {
+      phase = file
       await db.query(await readFile(new URL(`../tests/${file}`, import.meta.url), 'utf8'))
     }
-    console.log('PASS: calendar boundaries, permissions, evidence minimisation, all-status purge, fingerprint expiry, immutable retention, role dates, confirmations, job posting lifecycle and personal answers')
+    console.log('PASS: calendar boundaries, permissions, evidence minimisation, all-status purge, fingerprint expiry, immutable retention, role dates, confirmations, job posting lifecycle, personal answers and optional work links')
   } finally { await db.query('rollback') }
   const after = (await db.query(countSql)).rows[0]
   assert.deepEqual(after, before)
   console.log('PASS: transaction rolled back; original submission counts unchanged')
 } catch (error) {
   // PostgreSQL error details can include rows; never print them or credentials.
-  console.error('Database verification failed; rolled back.', { code: error.code || error.name })
+  console.error('Database verification failed; rolled back.', { phase, code: error.code || error.name })
   process.exitCode = 1
 } finally { await db.end() }

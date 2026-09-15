@@ -102,6 +102,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
           openingId: opening!.id, jobTitle: opening!.job_title, name: formData.get('name'), email: formData.get('email'),
           phone: formData.get('phone'), portfolioUrl: formData.get('portfolioUrl'),
           projectSummary: formData.get('projectSummary'), ...eligibility,
+          workLinks: formData.getAll('workLink').map(value => String(value).trim()).filter(Boolean),
           awardsStatus: formData.get('awardsStatus'), awardEntries: formData.getAll('awardEntry'),
           biggestFailure: formData.get('biggestFailure'), growthArea: formData.get('growthArea'),
           applicationQuestionsVersion: APPLICATION_QUESTIONS_VERSION,

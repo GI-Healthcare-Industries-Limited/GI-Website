@@ -1184,6 +1184,11 @@ p {
   white-space: pre-wrap;
 }
 
+.admin-work-links { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 10px; }
+.admin-work-links a { display: flex; align-items: center; gap: 9px; color: #4b5c38; font-size: 13px; }
+.admin-work-links a span { min-width: 0; overflow-wrap: anywhere; }
+.admin-work-links svg { flex-shrink: 0; }
+
 .admin-portfolio-actions {
   display: flex;
   flex-wrap: wrap;

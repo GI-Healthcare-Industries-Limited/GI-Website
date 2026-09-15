@@ -188,10 +188,7 @@ class _SpacePageState extends State<SpacePage> {
               ),
             ),
           ),
-          NavBar(
-            isTransparent: _isAtTop,
-            color: Colors.black,
-          ),
+          const NavBar(),
         ],
       ),
     );

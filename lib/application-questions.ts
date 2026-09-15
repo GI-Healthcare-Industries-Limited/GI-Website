@@ -8,6 +8,15 @@ export const FAILURE_QUESTION = 'What’s your biggest failure?'
 export const GROWTH_QUESTION = 'What’s one thing your friends would say you need to work on? Why do you think they’d pick it?'
 export const ANSWER_WORD_LIMITS = { award: 20, work: 80, failure: 50, growth: 40 } as const
 export const MAX_AWARDS = 10
+export const MAX_WORK_LINKS = 5
+
+export function isSafeWorkLink(value: string) {
+  if (!/^https?:\/\/[^\s]+$/iu.test(value)) return false
+  try {
+    const url = new URL(value)
+    return ['https:', 'http:'].includes(url.protocol) && Boolean(url.hostname) && !url.username && !url.password
+  } catch { return false }
+}
 
 // Shared by browser counters and server validation. No input monitoring.
 export function countWords(value: string) {

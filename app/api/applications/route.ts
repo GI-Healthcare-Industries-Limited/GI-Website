@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       phone: input.phone || null,
       portfolio_url: input.portfolioUrl || null,
       project_summary: input.projectSummary,
+      work_links: input.workLinks,
       awards_status: input.awardsStatus,
       award_entries: input.awardEntries,
       biggest_failure: input.biggestFailure,

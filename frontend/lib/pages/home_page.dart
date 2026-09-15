@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          NavBar(isTransparent: _isAtTop, color: MainTheme.giRed,),
+          const NavBar(),
         ],
       ),
     );
@@ -109,7 +109,7 @@ class _HomePageState extends State<HomePage> {
               Footer(),
             ],
           ),
-          NavBar(isTransparent: _isAtTop, color: MainTheme.giRed,),
+          const NavBar(),
         ],
       ),
     );

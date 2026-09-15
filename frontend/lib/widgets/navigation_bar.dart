@@ -1,159 +1,107 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/hamburger_button.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend/providers/navigation_provider.dart';
-import 'package:frontend/themes/main_theme.dart';
 
-class NavBar extends StatelessWidget {
-  final bool isTransparent;
-  final Color color;
-
-  const NavBar({super.key, required this.isTransparent, required this.color});
+// Matches the public Contact header; the application/admin keep their own shell.
+class NavBar extends StatefulWidget {
+  const NavBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    if (MediaQuery.of(context).size.width < 800) {
-      return buildMobile(context);
-    } else {
-      return buildDesktop(context);
-    }
+  State<NavBar> createState() => _NavBarState();
+}
+
+class _NavBarState extends State<NavBar> {
+  static const red = Color(0xFFE82127);
+  static const labels = ['Home', 'About us', 'Military', 'Space', 'Careers', 'Contact us'];
+  bool menuOpen = false;
+  final menuFocus = FocusNode();
+
+  @override
+  void dispose() { menuFocus.dispose(); super.dispose(); }
+
+  void navigate(int index) {
+    setState(() => menuOpen = false);
+    context.read<NavigationProvider>().updateIndex(index);
   }
 
-  Widget buildMobile(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 700),
-      decoration: BoxDecoration(
-        color: isTransparent ? Colors.transparent : color,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/images/white_butterfly.webp',
-              height: 50,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: HamburgerButton(isTransparent: isTransparent,),
-          )
-        ],
+  Widget navLink(int index, double fontSize, {bool mobile = false}) {
+    final active = context.watch<NavigationProvider>().currentIndex == index;
+    return Semantics(
+      selected: active,
+      child: TextButton(
+        onPressed: () => navigate(index),
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.white,
+          alignment: Alignment.centerLeft,
+          minimumSize: Size(0, mobile ? 46 : 44),
+          padding: EdgeInsets.symmetric(vertical: mobile ? 13 : 12),
+          shape: const RoundedRectangleBorder(),
+          textStyle: TextStyle(fontFamily: 'Inter', fontSize: fontSize, fontWeight: FontWeight.w400),
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: active ? Colors.white : Colors.transparent))),
+          child: Padding(padding: const EdgeInsets.only(bottom: 5), child: Text(labels[index])),
+        ),
       ),
     );
   }
 
-  Widget buildDesktop(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 700),
-      decoration: BoxDecoration(
-        color: isTransparent ? Colors.transparent : color,
-        border: const Border(bottom: BorderSide(color: Colors.white)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: InkWell(
-              onTap: () => context.read<NavigationProvider>().updateIndex(0),
-              child: Image.asset(
-                'assets/images/white_butterfly.webp',
-                height: 50,
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final mobile = width <= 760;
+    final compact = width <= 960;
+    final gap = compact ? 18.0 : (width * .025).clamp(18.0, 40.0);
+    return Align(
+      alignment: Alignment.topCenter,
+      heightFactor: 1,
+      child: CallbackShortcuts(
+        bindings: {const SingleActivator(LogicalKeyboardKey.escape): () {
+          if (menuOpen) { setState(() => menuOpen = false); menuFocus.requestFocus(); }
+        }},
+        child: Material(
+          color: red,
+          elevation: menuOpen && mobile ? 5 : 0,
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Center(child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1320),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: compact ? 24 : 40),
+                child: SizedBox(height: mobile ? 68 : 76, child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Semantics(container: true, label: 'GI Healthcare home', button: true, child: InkWell(
+                      onTap: () => navigate(0),
+                      child: ExcludeSemantics(child: Image.asset('assets/images/gi-healthcare-logo.png', width: compact ? 155 : 180)),
+                    )),
+                    if (mobile) TextButton(
+                      focusNode: menuFocus,
+                      onPressed: () { setState(() => menuOpen = !menuOpen); menuFocus.requestFocus(); },
+                      style: TextButton.styleFrom(foregroundColor: Colors.white, padding: const EdgeInsets.only(left: 12), minimumSize: const Size(0, 44)),
+                      child: Semantics(expanded: menuOpen, child: const Row(children: [
+                        Icon(Icons.menu, size: 17), SizedBox(width: 5),
+                        Text('Menu', style: TextStyle(fontFamily: 'Inter', fontSize: 13, fontWeight: FontWeight.w400)),
+                      ])),
+                    ) else Row(children: [
+                      for (var index = 0; index < labels.length; index++) ...[
+                        if (index > 0) SizedBox(width: gap),
+                        navLink(index, compact ? 12 : 14),
+                      ],
+                    ]),
+                  ],
+                )),
               ),
+            )),
+            if (mobile && menuOpen) Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+              decoration: const BoxDecoration(border: Border(top: BorderSide(color: Color(0x40FFFFFF)))),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                for (var index = 0; index < labels.length; index++) navLink(index, 15, mobile: true),
+              ]),
             ),
-          ),
-          HoverUnderlineText(
-            text: 'Home',
-            onTap: () {
-              context.read<NavigationProvider>().updateIndex(0);
-            },
-            style: MainTheme.bodyText,
-          ),
-          HoverUnderlineText(
-            text: 'About us',
-            onTap: () {
-              context.read<NavigationProvider>().updateIndex(1);
-            },
-            style: MainTheme.bodyText,
-          ),
-          HoverUnderlineText(
-            text: 'Military',
-            onTap: () {
-              context.read<NavigationProvider>().updateIndex(2);
-            },
-            style: MainTheme.bodyText,
-          ),
-          HoverUnderlineText(
-            text: 'Space',
-            onTap: () {
-              context.read<NavigationProvider>().updateIndex(3);
-            },
-            style: MainTheme.bodyText,
-          ),
-          HoverUnderlineText(
-            text: 'Careers',
-            onTap: () {
-              context.read<NavigationProvider>().updateIndex(4);
-            },
-            style: MainTheme.bodyText,
-          ),
-          HoverUnderlineText(
-            text: 'Contact us',
-            onTap: () {
-              context.read<NavigationProvider>().updateIndex(5);
-            },
-            style: MainTheme.bodyText,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class HoverUnderlineText extends StatefulWidget {
-  final String text;
-  final VoidCallback onTap;
-  final TextStyle style;
-
-  const HoverUnderlineText({
-    Key? key,
-    required this.text,
-    required this.onTap,
-    required this.style,
-  }) : super(key: key);
-
-  @override
-  _HoverUnderlineTextState createState() => _HoverUnderlineTextState();
-}
-
-class _HoverUnderlineTextState extends State<HoverUnderlineText> {
-  bool _isHovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() {
-          _isHovering = true;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          _isHovering = false;
-        });
-      },
-      child: InkWell(
-        onTap: widget.onTap,
-        child: Text(
-          '${widget.text} ${_isHovering ? '+' : '-'}',
-          style: widget.style.copyWith(
-            decoration:
-                _isHovering ? TextDecoration.underline : TextDecoration.none,
-            decorationColor: Colors.white,
-            decorationThickness: 2,
-          ),
+          ]),
         ),
       ),
     );

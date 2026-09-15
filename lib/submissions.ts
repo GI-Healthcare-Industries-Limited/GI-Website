@@ -5,7 +5,7 @@ import { createHmac } from 'node:crypto'
 import { z } from 'zod'
 
 import { APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
-import { ANSWER_WORD_LIMITS, APPLICATION_QUESTIONS_VERSION, FAILURE_QUESTION, GROWTH_QUESTION, MAX_AWARDS, WORK_QUESTION, countWords } from '@/lib/application-questions'
+import { ANSWER_WORD_LIMITS, APPLICATION_QUESTIONS_VERSION, FAILURE_QUESTION, GROWTH_QUESTION, MAX_AWARDS, MAX_WORK_LINKS, WORK_QUESTION, countWords, isSafeWorkLink } from '@/lib/application-questions'
 import { rightToWorkSchema } from '@/lib/right-to-work'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
@@ -39,6 +39,7 @@ export const applicationSchema = z.object({
     message: 'Your portfolio link must start with http:// or https://.',
   }).optional().default(''),
   projectSummary: shortAnswer(ANSWER_WORD_LIMITS.work, WORK_QUESTION),
+  workLinks: z.array(z.string().trim().min(1).max(2048).refine(isSafeWorkLink, 'Work links must start with http:// or https:// and must not contain login details.')).max(MAX_WORK_LINKS).optional().default([]),
   awardsStatus: z.enum(['listed', 'none_yet'], { error: 'List your awards, or choose “No competitions or awards yet”.' }),
   awardEntries: z.array(shortAnswer(ANSWER_WORD_LIMITS.award, 'Award')).max(MAX_AWARDS),
   biggestFailure: shortAnswer(ANSWER_WORD_LIMITS.failure, FAILURE_QUESTION),

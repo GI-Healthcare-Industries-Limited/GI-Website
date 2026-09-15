@@ -29,6 +29,7 @@ import { AdminLogin } from '@/app/admin/admin-login'
 import { JobPostings } from '@/app/admin/job-postings'
 import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
 import { RetentionNotice } from '@/app/admin/retention-notice'
+import { WorkLinkList } from '@/app/admin/work-link-list'
 import { isWithinRetention } from '@/lib/privacy'
 import { ACTIVITY_DETAIL_QUESTION, AWARD_DETAIL_QUESTION, AWARDS_QUESTION, FAILURE_QUESTION, GROWTH_QUESTION, NO_AWARDS_LABEL, WORK_QUESTION } from '@/lib/application-questions'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
@@ -50,6 +51,7 @@ type Submission = {
   job_title?: string
   portfolio_url?: string | null
   project_summary?: string | null
+  work_links?: string[] | null
   awards_status?: 'listed' | 'none_yet' | null
   competition_awards?: string | null
   award_entries?: string[] | null
@@ -476,6 +478,7 @@ export function AdminDashboard() {
                 <article className="admin-message-body">
                   <p className="section-index">{kind === 'contact' ? 'Message' : selectedItem.application_questions_version ? WORK_QUESTION : 'Project highlight'}</p>
                   <p>{getSubmissionPreview(selectedItem)}</p>
+                  {kind === 'application' && Boolean(selectedItem.work_links?.length) && <WorkLinkList links={selectedItem.work_links!} />}
                 </article>
 
                 {kind === 'application' && (selectedItem.application_questions_version ? <>

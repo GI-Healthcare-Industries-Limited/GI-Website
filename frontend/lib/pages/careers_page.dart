@@ -216,10 +216,7 @@ class _CareersPageState extends State<CareersPage> {
               ),
             ),
           ),
-          const NavBar(
-            isTransparent: false,
-            color: MainTheme.giRed,
-          ),
+          const NavBar(),
         ],
       ),
     );

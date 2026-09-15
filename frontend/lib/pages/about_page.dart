@@ -144,7 +144,7 @@ class _AboutPageState extends State<AboutPage> {
               ),
             ),
           ),
-          const NavBar(isTransparent: false, color: MainTheme.giRed,),
+          const NavBar(),
         ],
       ),
     );

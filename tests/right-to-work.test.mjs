@@ -51,6 +51,41 @@ function request(body) {
   return new Request('https://example.invalid/api/applications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 }
 
+test('work links are optional and do not consume the work-answer word limit', async () => {
+  for (const workLinks of [undefined, [], ['https://example.invalid/one', 'http://example.invalid/two?demo=1']]) {
+    const f = harness()
+    const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, projectSummary: Array(80).fill('word').join(' '), workLinks }))
+    assert.equal(response.status, 201)
+    assert.deepEqual(f.writes[0].work_links, workLinks ?? [])
+    assert.doesNotMatch(JSON.stringify(f.emails), /example.invalid|one|two/)
+  }
+})
+
+test('work links validate count, scheme, length, login details and malformed input before storage', async () => {
+  for (const workLinks of [null, 'https://example.invalid', [''], ['not-a-url'], ['javascript:alert(1)'], ['data:text/plain,hello'], ['ftp://example.invalid'], ['https://user:password@example.invalid'], [null], Array(6).fill('https://example.invalid'), ['https://example.invalid/' + 'a'.repeat(2048)]]) {
+    const f = harness()
+    const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, workLinks }))
+    assert.equal(response.status, 400, JSON.stringify(workLinks))
+    assert.equal(f.writes.length, 0)
+    assert.equal(f.emails.length, 0)
+  }
+  const f = harness()
+  const workLinks = Array.from({ length: 5 }, (_, index) => ` https://example.invalid/${index} `)
+  const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, workLinks }))
+  assert.equal(response.status, 201)
+  assert.deepEqual(f.writes[0].work_links, workLinks.map(value => value.trim()))
+})
+
+test('admin work links remain under authentication and expiry filtering', async () => {
+  const f = harness()
+  await f.load('app/api/admin/submissions/route.ts').GET(new Request('https://example.invalid?kind=application'))
+  assert(f.reads.some(value => value.includes('work_links')))
+  assert(f.reads.some(value => value.startsWith('retention_expires_at:')))
+  const denied = harness({ admin: false })
+  assert.equal((await denied.load('app/api/admin/submissions/route.ts').GET(new Request('https://example.invalid?kind=application'))).status, 401)
+  assert.equal(denied.reads.length, 0)
+})
+
 test('British and Irish citizen route needs neither code nor DOB and discards irrelevant evidence', () => {
   const { rightToWorkSchema } = harness().load('lib/right-to-work.ts')
   const data = rightToWorkSchema.parse({ ...base, ...visa, immigrationStatus: 'british_irish' })

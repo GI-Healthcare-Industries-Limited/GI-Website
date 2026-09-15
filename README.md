@@ -63,6 +63,10 @@ The current form uses repeatable award cards (20 words each, up to 10), work exa
 (80 words), biggest failure (50 words), and a short self-reflection answer (40 words).
 The questions are required; an explicit no-awards choice is valid. The portfolio URL
 and phone number are optional. Word limits are enforced in the browser, API and database.
+Below the work answer, applicants can add up to five optional HTTP(S) links. These
+are separate from the 80-word description, appear as clickable links in the private
+admin inbox, and are deleted with the application. URLs are not fetched automatically.
+Apply `20260915013000_application_work_links.sql` before deploying the link fields.
 There is no paste restriction, writing pledge, follow-up question or input surveillance.
 Earlier applications retain their original answers and metadata without backfilling.
 
@@ -79,6 +83,9 @@ Navigator history integration to avoid duplicate entries. Contact uses normal
 anchors when crossing between the Next.js form and the Flutter site.
 The distinct Contact illustration and its generation prompt are documented in
 `assets/contact/README.md`; the admin and application image is unchanged.
+All five Flutter main pages use the same red header design as Contact, with the
+orbit logo, locally served Inter font, selected-page underline and mobile menu.
+Privacy reuses the Contact header component; application and admin shells stay separate.
 
 ### Application design and closing dates
 

@@ -48,3 +48,27 @@ test('questions give context while leaving answers open and keeping failure unch
   assert.deepEqual(questions.ANSWER_WORD_LIMITS, { award: 20, work: 80, failure: 50, growth: 40 })
   for (const question of [questions.AWARDS_QUESTION, questions.WORK_QUESTION, questions.GROWTH_QUESTION]) assert(question.split(/\s+/).length <= 30)
 })
+
+test('all public pages use the new header, without changing the application or admin shells', () => {
+  for (const name of ['home','about','military','space','careers']) {
+    const source = readFileSync(`frontend/lib/pages/${name}_page.dart`, 'utf8')
+    assert.match(source, /const NavBar\(\)/)
+    assert.doesNotMatch(source, /NavBar\(\s*isTransparent/)
+  }
+  const header = readFileSync('frontend/lib/widgets/navigation_bar.dart', 'utf8')
+  assert.match(header, /0xFFE82127/)
+  assert.match(header, /fontFamily: 'Inter'/)
+  assert.match(header, /gi-healthcare-logo.png/)
+  assert.doesNotMatch(header, /white_butterfly|HoverUnderlineText|isTransparent/)
+  assert.match(readFileSync('app/privacy/page.tsx','utf8'), /<SiteHeader activePath="\/privacy"/)
+})
+
+test('award cards override the tall global textarea minimum and added work links are optional', () => {
+  const css = readFileSync('app/apply/apply-form.module.css', 'utf8')
+  assert.match(css, /\.awardCard textarea \{[^}]*min-height: 0;[^}]*height: 2.8em/)
+  const questions = readFileSync('app/apply/application-questions.tsx', 'utf8')
+  assert.match(questions, /name="workLink" type="url"/)
+  assert.doesNotMatch(questions, /name="workLink"[^>]*required/)
+  assert.match(questions, /Remove link/)
+  assert.match(readFileSync('app/apply/apply-form.tsx','utf8'), /workLinks: formData.getAll\('workLink'\)/)
+})

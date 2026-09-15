@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/about_page.dart';
 import 'package:frontend/pages/careers_page.dart';
-import 'package:frontend/pages/contact_page.dart';
 import 'package:frontend/pages/home_page.dart';
-import 'package:frontend/pages/military_page.dart';
 import 'package:frontend/pages/space_page.dart';
 import 'package:frontend/utils/helpers.dart';
 import 'package:frontend/utils/site_location.dart' as location;
@@ -38,11 +35,8 @@ class NavigationProvider with ChangeNotifier {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const AboutPage(),
-    const MilitaryPage(),
     const SpacePage(),
     const CareersPage(),
-    const ContactPage(),
   ];
 
   // Get the current index
@@ -53,11 +47,11 @@ class NavigationProvider with ChangeNotifier {
 
   // Function to update the current index and notify listeners
   void updateIndex(int newIndex) {
-    if (newIndex < 0 || newIndex >= _pages.length) return;
-    if (newIndex == 5) {
+    if (newIndex == sitePageNames.length) {
       _openContact('/contact');
       return;
     }
+    if (newIndex < 0 || newIndex >= _pages.length) return;
     if (newIndex == _currentIndex) return;
     _currentIndex = newIndex;
     _location = locationForPage(_location, newIndex);

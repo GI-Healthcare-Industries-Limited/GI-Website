@@ -10,6 +10,14 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [{
+      source: '/',
+      has: [{ type: 'query', key: 'page', value: '(?:about|military)' }],
+      destination: '/?page=home',
+      permanent: true,
+    }]
+  },
   async rewrites() {
     return [{ source: '/', destination: '/index.html' }]
   },

@@ -13,7 +13,7 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   static const red = Color(0xFFE82127);
-  static const labels = ['Home', 'About us', 'Military', 'Space', 'Careers', 'Contact us'];
+  static const labels = ['Home', 'Space', 'Careers', 'Contact us'];
   bool menuOpen = false;
   final menuFocus = FocusNode();
 

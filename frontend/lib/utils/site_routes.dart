@@ -1,4 +1,4 @@
-const sitePageNames = ['home', 'about', 'military', 'space', 'careers'];
+const sitePageNames = ['home', 'space', 'careers'];
 
 int pageIndexFromLocation(Uri uri) {
   final index = sitePageNames.indexOf(uri.queryParameters['page'] ?? 'home');

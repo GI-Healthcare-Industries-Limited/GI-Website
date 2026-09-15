@@ -6,13 +6,11 @@ import {
   BriefcaseIcon,
   CaretDownIcon,
   CheckCircleIcon,
-  ClockIcon,
   EnvelopeSimpleIcon,
   FolderOpenIcon,
   LinkSimpleIcon,
   LockKeyIcon,
   MagnifyingGlassIcon,
-  PhoneIcon,
   SignOutIcon,
   TrashIcon,
   UserCircleIcon,
@@ -30,6 +28,8 @@ import { JobPostings } from '@/app/admin/job-postings'
 import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
 import { RetentionNotice } from '@/app/admin/retention-notice'
 import { WorkLinkList } from '@/app/admin/work-link-list'
+import { SubmissionContact } from '@/app/admin/submission-contact'
+import styles from './admin-workspace.module.css'
 import { isWithinRetention } from '@/lib/privacy'
 import { ACTIVITY_DETAIL_QUESTION, AWARD_DETAIL_QUESTION, AWARDS_QUESTION, FAILURE_QUESTION, GROWTH_QUESTION, NO_AWARDS_LABEL, WORK_QUESTION } from '@/lib/application-questions'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
@@ -108,6 +108,7 @@ export function AdminDashboard() {
   const [session, setSession] = useState<Session | null>(null)
   const [checkingSession, setCheckingSession] = useState(true)
   const [kind, setKind] = useState<Kind>('contact')
+  const [showJobs, setShowJobs] = useState(false)
   const [items, setItems] = useState<Submission[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState('all')
@@ -245,6 +246,8 @@ export function AdminDashboard() {
   const selectedItem = filteredItems.find((item) => item.id === selectedId) ?? filteredItems[0] ?? null
 
   function changeKind(nextKind: Kind) {
+    setShowJobs(false)
+    if (nextKind === kind) return
     loadRequest.current++
     setItems([])
     setKind(nextKind)
@@ -343,21 +346,26 @@ export function AdminDashboard() {
   const statuses = kind === 'contact' ? contactStatuses : applicationStatuses
 
   return (
-    <main className="admin-console">
+    <main className={`admin-console ${styles.workspace}`}>
       <aside className="admin-sidebar">
         <Link className="admin-orbit-brand" href="/">
           <Image alt="GI Healthcare" height={58} src={logo} width={200} />
         </Link>
 
-        <nav aria-label="Website inbox">
-          <p>Inbox</p>
-          <button aria-current={kind === 'contact' ? 'page' : undefined} onClick={() => changeKind('contact')} type="button">
+        <nav aria-label="Admin navigation">
+          <p>Workspace</p>
+          <button aria-current={!showJobs && kind === 'contact' ? 'page' : undefined} onClick={() => changeKind('contact')} type="button">
             <EnvelopeSimpleIcon aria-hidden size={21} /> Messages
           </button>
-          <button aria-current={kind === 'application' ? 'page' : undefined} onClick={() => changeKind('application')} type="button">
+          <button aria-current={!showJobs && kind === 'application' ? 'page' : undefined} onClick={() => changeKind('application')} type="button">
             <UsersThreeIcon aria-hidden size={21} /> Applications
           </button>
+          <button aria-current={showJobs ? 'page' : undefined} onClick={() => setShowJobs(true)} type="button">
+            <BriefcaseIcon aria-hidden size={21} /> Job postings
+          </button>
         </nav>
+
+        <Link className={styles.websiteLink} href="/" target="_blank" rel="noreferrer">View website <ArrowSquareOutIcon aria-hidden size={16} /></Link>
 
         <div className="admin-account">
           <span className="admin-account-avatar"><UserCircleIcon aria-hidden size={32} weight="fill" /></span>
@@ -369,20 +377,25 @@ export function AdminDashboard() {
       <section className="admin-main">
         <header className="admin-main-header">
           <div>
-            <p className="section-index">GI Healthcare website</p>
-            <h1>{kind === 'contact' ? 'Messages' : 'Applications'}</h1>
-            <p>{kind === 'contact' ? 'Conversations started through the contact page.' : 'Portfolio-first candidates ready for review.'}</p>
+            <p className="section-index">GI Healthcare / Workspace</p>
+            <h1>{showJobs ? 'Job postings' : kind === 'contact' ? 'Messages' : 'Applications'}</h1>
+            <p>{showJobs ? 'Manage open roles, closing dates and start dates.' : kind === 'contact' ? 'Every conversation, thoughtfully organised.' : 'Get to know the people behind the applications.'}</p>
           </div>
-          <button className="admin-refresh-button" disabled={loading} onClick={() => void loadSubmissions()} type="button">
+          {!showJobs && <button aria-label="Refresh submissions" className="admin-refresh-button" disabled={loading} onClick={() => void loadSubmissions()} type="button">
             <ArrowsClockwiseIcon aria-hidden size={19} /> {loading ? 'Refreshing…' : 'Refresh'}
-          </button>
+          </button>}
         </header>
 
         {error && <p aria-live="polite" className="application-status error admin-error">{error}</p>}
 
-        {kind === 'application' && <JobPostings session={session} />}
+        {/* Keep the editor mounted while navigating so unsaved posting edits survive. */}
+        <div hidden={!showJobs}><JobPostings session={session} /></div>
+        <div hidden={showJobs}>
         <RetentionNotice session={session} />
 
+        <div className="admin-inbox">
+          <div className={styles.listPanel}>
+          <div className={styles.listHeading}><h2>{kind === 'contact' ? 'Inbox' : 'Candidates'}</h2><span>{filteredItems.length} shown</span></div>
         <div className="admin-filters">
           <label className="admin-search">
             <MagnifyingGlassIcon aria-hidden size={19} />
@@ -399,7 +412,6 @@ export function AdminDashboard() {
           </label>
         </div>
 
-        <div className="admin-inbox">
           <section aria-label={`${kind} list`} className="admin-submission-list">
             {loading && items.length === 0 ? (
               <p className="admin-empty">Loading…</p>
@@ -408,20 +420,22 @@ export function AdminDashboard() {
             ) : filteredItems.map((item) => (
               <button
                 className={selectedItem?.id === item.id ? 'selected' : ''}
+                aria-pressed={selectedItem?.id === item.id}
                 key={item.id}
                 onClick={() => setSelectedId(item.id)}
                 type="button"
               >
                 <span className="admin-list-topline">
                   <strong>{item.name}</strong>
-                  <time dateTime={item.created_at}>{formatDate(item.created_at)}</time>
+                  <SubmissionStatus status={item.status} />
                 </span>
                 <span className="admin-list-subject">{item.job_title || item.email}</span>
                 <span className="admin-list-preview">{getSubmissionPreview(item)}</span>
-                <SubmissionStatus status={item.status} />
+                <time className={styles.listDate} dateTime={item.created_at}>{formatDate(item.created_at)}</time>
               </button>
             ))}
           </section>
+          </div>
 
           <section aria-live="polite" className="admin-detail">
             {!selectedItem ? (
@@ -456,16 +470,7 @@ export function AdminDashboard() {
                   </div>
                 </header>
 
-                <div className="admin-contact-grid">
-                  <a href={`mailto:${selectedItem.email}`}><EnvelopeSimpleIcon aria-hidden size={19} /><span><small>Email</small>{selectedItem.email}</span></a>
-                  {selectedItem.phone ? (
-                    <a href={`tel:${selectedItem.phone}`}><PhoneIcon aria-hidden size={19} /><span><small>Phone</small>{selectedItem.phone}</span></a>
-                  ) : (
-                    <span><PhoneIcon aria-hidden size={19} /><span><small>Phone</small>Not provided</span></span>
-                  )}
-                  <span><ClockIcon aria-hidden size={19} /><span><small>Received</small>{formatDate(selectedItem.created_at)}</span></span>
-                  <span><TrashIcon aria-hidden size={19} /><span><small>Deleted by</small>{formatDate(selectedItem.retention_expires_at)}</span></span>
-                </div>
+                <SubmissionContact email={selectedItem.email} phone={selectedItem.phone} received={formatDate(selectedItem.created_at)} expires={formatDate(selectedItem.retention_expires_at)} />
 
                 {kind === 'application' && (
                   <div className="admin-application-facts">
@@ -499,13 +504,17 @@ export function AdminDashboard() {
                     {!selectedItem.portfolio_url && <p className="admin-retention-copy">Portfolio link not provided (optional).</p>}
                   </div>
                 )}
+                <details className={styles.recordPrivacy}>
+                  <summary><LockKeyIcon aria-hidden size={15} /> Privacy record <CaretDownIcon aria-hidden size={14} /></summary>
+                  {kind === 'application' && <p>Data-sharing confirmation: {selectedItem.data_sharing_acknowledged_at ? `Confirmed ${formatDate(selectedItem.data_sharing_acknowledged_at)} · ${selectedItem.data_sharing_statement_version}` : 'Not recorded for this application'}.</p>}
+                  <p>Notice supplied: {selectedItem.privacy_notice_version || 'Legacy submission — no version recorded'}. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy notice</Link></p>
+                </details>
               </>
             )}
           </section>
         </div>
 
-        {kind === 'application' && selectedItem && <p className="admin-retention-copy">Data-sharing confirmation: {selectedItem.data_sharing_acknowledged_at ? `Confirmed ${formatDate(selectedItem.data_sharing_acknowledged_at)} · ${selectedItem.data_sharing_statement_version}` : 'Not recorded for this application'}.</p>}
-        <p className="admin-retention-copy">Notice supplied: {selectedItem ? selectedItem.privacy_notice_version || 'Legacy submission — no version recorded' : 'Select a submission to view its notice version'}. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy notice</Link></p>
+        </div>
         <details className="admin-account-settings">
           <summary><LockKeyIcon aria-hidden size={19} /> Change admin password</summary>
           <form onSubmit={changePassword}>

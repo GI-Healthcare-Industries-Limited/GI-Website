@@ -2,6 +2,8 @@
 
 import type { Session } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
+import { CaretDownIcon, ShieldCheckIcon, WarningCircleIcon } from '@phosphor-icons/react'
+import styles from './retention-notice.module.css'
 
 export function RetentionNotice({ session }: { session: Session }) {
   const [status, setStatus] = useState<{ healthy: boolean; lastSuccessAt?: string } | null>(null)
@@ -18,11 +20,19 @@ export function RetentionNotice({ session }: { session: Session }) {
     const interval = window.setInterval(refresh, 60_000)
     return () => { controller.abort(); window.clearInterval(interval) }
   }, [session.access_token])
-  return <aside className="admin-retention-copy" role="status">
+  return <details className={styles.notice} data-warning={status?.healthy === false}>
+    <summary>
+      {status?.healthy === false ? <WarningCircleIcon aria-hidden size={18} /> : <ShieldCheckIcon aria-hidden size={18} />}
+      <span>Three-month data retention</span>
+      <span className={styles.state} role="status">{status === null ? 'Checking…' : status.healthy ? 'Automatic deletion active' : 'Needs attention — deletion unverified'}</span>
+      <CaretDownIcon className={styles.caret} aria-hidden size={14} />
+    </summary>
+    <div className={styles.body}>
     <strong>Automatic deletion · Three calendar months</strong>
     <p>Applies to messages and applications, including archived and hired. Status changes do not extend retention. Avoid downloads or email copies; those are not automatically removed by this portal.</p>
     <p>{status === null ? 'Checking the deletion scheduler…' : status.healthy
       ? `Deletion job running. Last success: ${new Date(status.lastSuccessAt!).toLocaleString('en-GB')}.`
       : 'Attention: automatic deletion is delayed or could not be verified. Check Supabase → Cron before relying on the scheduler.'}</p>
-  </aside>
+    </div>
+  </details>
 }

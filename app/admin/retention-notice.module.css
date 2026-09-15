@@ -1,0 +1,17 @@
+.notice { margin: 24px 0 20px; color: #4c6352; font-size: 12px; line-height: 1.6; }
+.notice summary { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; cursor: pointer; list-style: none; }
+.notice summary::-webkit-details-marker { display: none; }
+.notice summary > svg { flex-shrink: 0; }
+.notice summary:focus-visible { outline: 2px solid #476c54; outline-offset: 5px; border-radius: 4px; }
+.state { color: #606f61; border-left: 1px solid #d9dfd7; padding-left: 10px; font-size: 11px; }
+.caret { transition: transform .15s; }
+.notice[open] .caret { transform: rotate(180deg); }
+.body { padding: 16px 20px; margin-top: 12px; background: #edf2eb; border-radius: 10px; }
+.body p { margin: 8px 0 0; }
+.notice[data-warning=true] { color: #943915; padding: 13px 16px; border-radius: 10px; background: #fff1e7; border: 1px solid #efd3bd; }
+.notice[data-warning=true] .state { color: #943915; border-color: #efd3bd; }
+@media (max-width: 600px) {
+  .notice summary { display: grid; grid-template-columns: 18px minmax(0, 1fr) 14px; gap: 5px 9px; }
+  .state { grid-column: 2; grid-row: 2; padding: 0; border: 0; }
+  .caret { grid-column: 3; grid-row: 1; }
+}

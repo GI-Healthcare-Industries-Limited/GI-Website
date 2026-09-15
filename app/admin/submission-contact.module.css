@@ -1,0 +1,9 @@
+.contact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 28px; margin: 0; padding: 26px 0; border-bottom: 1px solid #e9ebe7; }
+.contact > div { min-width: 0; }
+.contact dt { display: flex; align-items: center; gap: 7px; color: #626e64; font-size: 12px; font-weight: 500; line-height: 1.5; }
+.contact dt svg { flex-shrink: 0; }
+.contact dd { min-width: 0; margin: 8px 0 0; font-size: 14px; line-height: 1.7; color: #28322c; overflow-wrap: anywhere; }
+.contact a { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+.contact a:hover { text-decoration: underline; text-underline-offset: 4px; }
+@container admin-detail (max-width: 420px) { .contact { grid-template-columns: minmax(0, 1fr); gap: 18px; } }
+@media (max-width: 600px) { .contact { grid-template-columns: minmax(0, 1fr); } }

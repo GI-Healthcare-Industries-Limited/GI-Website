@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       job_title: opening.job_title,
       name: input.name,
       email: input.email.toLowerCase(),
-      phone: input.phone || null,
+      linkedin_url: input.linkedInUrl,
       portfolio_url: input.portfolioUrl || null,
       project_summary: input.projectSummary,
       work_links: input.workLinks,

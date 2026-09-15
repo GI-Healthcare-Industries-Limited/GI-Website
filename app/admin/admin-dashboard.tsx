@@ -46,6 +46,7 @@ type Submission = {
   name: string
   email: string
   phone: string | null
+  linkedin_url?: string | null
   status: string
   message?: string
   job_title?: string
@@ -470,7 +471,7 @@ export function AdminDashboard() {
                   </div>
                 </header>
 
-                <SubmissionContact email={selectedItem.email} phone={selectedItem.phone} received={formatDate(selectedItem.created_at)} expires={formatDate(selectedItem.retention_expires_at)} />
+                <SubmissionContact kind={kind} email={selectedItem.email} phone={selectedItem.phone} linkedInUrl={selectedItem.linkedin_url} received={formatDate(selectedItem.created_at)} expires={formatDate(selectedItem.retention_expires_at)} />
 
                 {kind === 'application' && (
                   <div className="admin-application-facts">

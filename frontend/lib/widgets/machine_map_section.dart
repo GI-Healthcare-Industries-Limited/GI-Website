@@ -16,7 +16,7 @@ class MachineMapSection extends StatelessWidget {
             color: Color(0xFFEDF4F3),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 28, vertical: 32),
-              child: _MissionStatement(fontSize: 24, color: Color(0xFF183D43)),
+              child: _MissionStatement(fontSize: 20, color: Color(0xFF183D43)),
             ),
           ),
         Center(
@@ -63,7 +63,7 @@ class MachineMapSection extends StatelessWidget {
                             left: mapWidth * 0.032,
                             width: mapWidth * 0.24,
                             child: _MissionStatement(
-                              fontSize: (mapWidth * 0.018).clamp(18.0, 30.0),
+                              fontSize: (mapWidth * 0.015).clamp(15.0, 25.0),
                               color: Colors.white,
                             ),
                           ),
@@ -231,7 +231,8 @@ class _MissionStatement extends StatelessWidget {
           fontFamily: 'Inter',
           fontSize: fontSize,
           height: 1.4,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
+          fontStyle: FontStyle.italic,
           color: color,
         ),
       ),

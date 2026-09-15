@@ -1,7 +1,8 @@
 // Synthetic examples only. No real applicant data.
 export const personalAnswers = {
   applicationQuestionsVersion: 'application-questions-v2',
-  privacyNoticeVersion: '2026-09-15-applications-v3',
+  privacyNoticeVersion: '2026-09-15-applications-v4',
+  linkedInUrl: 'https://www.linkedin.com/in/synthetic-applicant-test/',
   dataSharingStatementVersion: 'recruitment-data-sharing-v2',
   awardsStatus: 'listed',
   awardEntries: ['Synthetic engineering challenge, QA organiser, 2025, first prize for a sensor test rig.'],

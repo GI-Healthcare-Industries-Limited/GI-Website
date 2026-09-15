@@ -13,6 +13,14 @@ const compile = file => ts.transpileModule(readFileSync(file, 'utf8'), {
 const icons = new Proxy({}, { get: () => () => null })
 const css = new Proxy({}, { get: (_, key) => String(key) })
 
+function loadContact() {
+  const linkedin = { exports: {} }
+  new Function('exports', compile('lib/linkedin.ts'))(linkedin.exports)
+  const module = { exports: {} }
+  new Function('require', 'module', 'exports', compile('app/admin/submission-contact.tsx'))(name => name === '@/lib/linkedin' ? linkedin.exports : name === '@phosphor-icons/react' ? icons : name.endsWith('.css') ? css : require(name), module, module.exports)
+  return module.exports.SubmissionContact
+}
+
 function fixture() {
   const session = { access_token: 'synthetic-token', user: { id: 'synthetic-admin' } }
   const items = ['Alex Morgan', 'Sam Taylor'].map((name, index) => ({
@@ -115,16 +123,28 @@ test('confirmed deletion retains its explicit warning and only removes the selec
 })
 
 test('contact metadata separates labels and full values, including long email addresses', () => {
-  const module = { exports: {} }
-  new Function('require', 'module', 'exports', compile('app/admin/submission-contact.tsx'))(name => name === '@phosphor-icons/react' ? icons : name.endsWith('.css') ? css : require(name), module, module.exports)
   const email = 'a'.repeat(64) + '@very-long-research-department.example.invalid'
-  const markup = renderToStaticMarkup(React.createElement(module.exports.SubmissionContact, { email, phone: null, received: '15 Sept 2026', expires: '15 Dec 2026' }))
+  const markup = renderToStaticMarkup(React.createElement(loadContact(), { email, phone: null, received: '15 Sept 2026', expires: '15 Dec 2026' }))
   assert.match(markup, /<dl[^>]+aria-label="Submission contact details"/)
   assert.equal((markup.match(/<dt>/g) || []).length, 4)
   assert.equal((markup.match(/<dd>/g) || []).length, 4)
   assert.ok(markup.includes(`href="mailto:${email}">${email}</a>`))
   assert.match(markup, /<dd>Not provided<\/dd>/)
   assert.equal(markup.includes('tel:'), false)
+})
+
+test('applications show a safe LinkedIn link; legacy phone details remain available', () => {
+  const render = props => renderToStaticMarkup(React.createElement(loadContact(), { kind: 'application', email: 'qa@example.invalid', phone: null, received: 'Today', expires: 'Later', ...props }))
+  const markup = render({ linkedInUrl: 'https://uk.linkedin.com/in/qa-test?tracking=test' })
+  assert.match(markup, /href="https:\/\/www.linkedin.com\/in\/qa-test\/" target="_blank" rel="noopener noreferrer"/)
+  assert.doesNotMatch(markup, /Phone number|tel:|tracking/)
+  const legacy = render({ phone: '+440000000000' })
+  assert.match(legacy, /Not collected on the earlier form/)
+  assert.match(legacy, /Phone number \(earlier application\)/)
+  assert.match(legacy, /tel:\+440000000000/)
+  for (const linkedInUrl of ['javascript:alert(1)', 'https://linkedin.com.evil.invalid/in/test', 'https://www.linkedin.com/company/test']) {
+    assert.doesNotMatch(render({ linkedInUrl }), /href="(?:javascript|https)/)
+  }
 })
 
 test('contact layout wraps values instead of truncating them and all new workspace rules are scoped', () => {

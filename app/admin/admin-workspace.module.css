@@ -130,7 +130,7 @@
   .workspace { grid-template-columns: minmax(0, 1fr); }
   .workspace :global(.admin-sidebar) { position: static; height: auto; display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 18px 24px 0; gap: 18px; }
   .workspace :global(.admin-orbit-brand) { width: 166px; margin: 0; }
-  .workspace :global(.admin-sidebar nav) { grid-column: 1 / -1; grid-row: 2; display: flex; margin: 0; gap: 12px; padding-bottom: 14px; }
+  .workspace :global(.admin-sidebar nav) { grid-column: 1 / -1; grid-row: 2; display: flex; flex-wrap: wrap; margin: 0; gap: 12px; padding-bottom: 14px; }
   .workspace :global(.admin-sidebar nav > p), .websiteLink { display: none; }
   .workspace :global(.admin-sidebar nav button) { width: auto; padding: 0 14px; min-height: 38px; font-size: 12px; }
   .workspace :global(.admin-account) { display: flex; margin: 0; padding: 0; border: 0; }

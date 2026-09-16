@@ -5,6 +5,7 @@ import {
   ArrowSquareOutIcon,
   ArrowsClockwiseIcon,
   BriefcaseIcon,
+  ChartBarIcon,
   CaretDownIcon,
   CheckCircleIcon,
   EnvelopeSimpleIcon,
@@ -26,6 +27,7 @@ import { applicationStatuses, contactStatuses } from '@/lib/submission-constants
 import { clearStoredAdminSession, getSupabaseBrowserClient } from '@/lib/supabase/browser'
 import { AdminLogin } from '@/app/admin/admin-login'
 import { JobPostings } from '@/app/admin/job-postings'
+import { WebsiteAnalytics } from '@/app/admin/website-analytics'
 import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
 import { RetentionNotice } from '@/app/admin/retention-notice'
 import { WorkLinkList } from '@/app/admin/work-link-list'
@@ -115,6 +117,7 @@ export function AdminDashboard() {
   const [checkingSession, setCheckingSession] = useState(true)
   const [kind, setKind] = useState<Kind>('contact')
   const [showJobs, setShowJobs] = useState(false)
+  const [showAnalytics, setShowAnalytics] = useState(false)
   const [items, setItems] = useState<Submission[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState('all')
@@ -254,6 +257,7 @@ export function AdminDashboard() {
 
   function changeKind(nextKind: Kind) {
     setShowJobs(false)
+    setShowAnalytics(false)
     if (nextKind === kind) return
     loadRequest.current++
     setItems([])
@@ -361,15 +365,16 @@ export function AdminDashboard() {
 
         <nav aria-label="Admin navigation">
           <p>Workspace</p>
-          <button aria-current={!showJobs && kind === 'contact' ? 'page' : undefined} onClick={() => changeKind('contact')} type="button">
+          <button aria-current={!showJobs && !showAnalytics && kind === 'contact' ? 'page' : undefined} onClick={() => changeKind('contact')} type="button">
             <EnvelopeSimpleIcon aria-hidden size={21} /> Messages
           </button>
-          <button aria-current={!showJobs && kind === 'application' ? 'page' : undefined} onClick={() => changeKind('application')} type="button">
+          <button aria-current={!showJobs && !showAnalytics && kind === 'application' ? 'page' : undefined} onClick={() => changeKind('application')} type="button">
             <UsersThreeIcon aria-hidden size={21} /> Applications
           </button>
-          <button aria-current={showJobs ? 'page' : undefined} onClick={() => setShowJobs(true)} type="button">
+          <button aria-current={showJobs ? 'page' : undefined} onClick={() => {setShowJobs(true);setShowAnalytics(false)}} type="button">
             <BriefcaseIcon aria-hidden size={21} /> Job postings
           </button>
+          <button aria-current={showAnalytics ? 'page' : undefined} onClick={() => {setShowAnalytics(true);setShowJobs(false)}} type="button"><ChartBarIcon aria-hidden size={21}/> Website analytics</button>
         </nav>
 
         <Link className={styles.websiteLink} href="/" target="_blank" rel="noreferrer">View website <ArrowSquareOutIcon aria-hidden size={16} /></Link>
@@ -385,10 +390,10 @@ export function AdminDashboard() {
         <header className="admin-main-header">
           <div>
             <p className="section-index">GI Healthcare / Workspace</p>
-            <h1>{showJobs ? 'Job postings' : kind === 'contact' ? 'Messages' : 'Applications'}</h1>
-            <p>{showJobs ? 'Manage open roles, closing dates and start dates.' : kind === 'contact' ? 'Every conversation, thoughtfully organised.' : 'Get to know the people behind the applications.'}</p>
+            <h1>{showAnalytics ? 'Website analytics' : showJobs ? 'Job postings' : kind === 'contact' ? 'Messages' : 'Applications'}</h1>
+            <p>{showAnalytics ? 'A clearer picture of how your website is used.' : showJobs ? 'Manage open roles, closing dates and start dates.' : kind === 'contact' ? 'Every conversation, thoughtfully organised.' : 'Get to know the people behind the applications.'}</p>
           </div>
-          {!showJobs && <button aria-label="Refresh submissions" className="admin-refresh-button" disabled={loading} onClick={() => void loadSubmissions()} type="button">
+          {!showJobs && !showAnalytics && <button aria-label="Refresh submissions" className="admin-refresh-button" disabled={loading} onClick={() => void loadSubmissions()} type="button">
             <ArrowsClockwiseIcon aria-hidden size={19} /> {loading ? 'Refreshing…' : 'Refresh'}
           </button>}
         </header>
@@ -397,7 +402,8 @@ export function AdminDashboard() {
 
         {/* Keep the editor mounted while navigating so unsaved posting edits survive. */}
         <div hidden={!showJobs}><JobPostings session={session} /></div>
-        <div hidden={showJobs}>
+        {showAnalytics && <WebsiteAnalytics session={session}/>}
+        <div hidden={showJobs || showAnalytics}>
         <RetentionNotice session={session} />
 
         <div className="admin-inbox">

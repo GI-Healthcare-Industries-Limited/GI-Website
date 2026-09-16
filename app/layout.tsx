@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import type { ReactNode } from 'react'
+import Script from 'next/script'
 
 import './globals.css'
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html className={inter.variable} lang="en">
-      <body>{children}</body>
+      <body>{children}<Script src="/gi-privacy.js" strategy="afterInteractive" /></body>
     </html>
   )
 }

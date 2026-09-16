@@ -13,12 +13,17 @@ const fields = z.object({
   acceptingApplications: z.boolean(),
   educationEligibility: z.enum(EDUCATION_ELIGIBILITY),
   closingDate: date,
+  extendedClosingDate: date.optional(),
   startDate: date,
 }).strict()
-export const createJobSchema = fields.extend({ educationEligibility: z.enum(EDUCATION_ELIGIBILITY).default('all') })
+function validExtension(input: {closingDate?: string | null;extendedClosingDate?: string | null}) {
+  return !input.extendedClosingDate || (input.closingDate === undefined || Boolean(input.closingDate && input.extendedClosingDate > input.closingDate))
+}
+export const createJobSchema = fields.extend({ educationEligibility: z.enum(EDUCATION_ELIGIBILITY).default('all') }).refine(validExtension,'The extended deadline must be later than the original closing date.')
 export const jobIdentitySchema = z.object({ id: z.uuid(), expectedUpdatedAt: z.iso.datetime({ offset: true }) }).strict()
 export const updateJobSchema = fields.partial().extend(jobIdentitySchema.shape).strict()
   .refine((input) => Object.keys(input).length > 2, 'Choose a field to update.')
+  .refine(validExtension,'The extended deadline must be later than the original closing date.')
 
 export function jobFields(input: Partial<z.infer<typeof fields>>) {
   return {
@@ -31,6 +36,7 @@ export function jobFields(input: Partial<z.infer<typeof fields>>) {
     ...(input.acceptingApplications !== undefined ? { accepting_applications: input.acceptingApplications } : {}),
     ...(input.educationEligibility !== undefined ? { education_eligibility: input.educationEligibility } : {}),
     ...(input.closingDate !== undefined ? { closing_date: input.closingDate } : {}),
+    ...(input.extendedClosingDate !== undefined ? { extended_closing_date: input.extendedClosingDate } : {}),
     ...(input.startDate !== undefined ? { start_date: input.startDate } : {}),
   }
 }

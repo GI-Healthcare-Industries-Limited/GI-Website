@@ -7,7 +7,7 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin'
 export async function getCareerOpenings(): Promise<OpeningsSnapshot> {
   const { data, error } = await getSupabaseAdmin()
     .from('career_opening_availability')
-    .select('id, job_title, location, department, employment_type, description, accepting_applications, created_at, updated_at, closing_date, closes_at, is_open, start_date, education_eligibility, section_three_questions')
+    .select('id, job_title, location, department, employment_type, description, accepting_applications, created_at, updated_at, closing_date, closes_at, is_open, start_date, education_eligibility, section_three_questions, original_closing_date, extended_closing_date')
     .order('created_at').order('job_title')
   if (error) throw error
   const items = data ?? []

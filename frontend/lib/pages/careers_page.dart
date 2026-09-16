@@ -185,6 +185,7 @@ class _CareersPageState extends State<CareersPage> {
                             description: job['description'],
                             isOpen: job['is_open'],
                             closingDate: job['closing_date'],
+                            extendedClosingDate: job['extended_closing_date'],
                             startDate: job['start_date'],
                           )),
                     Padding(

@@ -20,6 +20,8 @@ export type CareerOpening = {
   created_at: string
   updated_at: string
   closing_date: string | null
+  original_closing_date?: string | null
+  extended_closing_date?: string | null
   start_date: string | null
   closes_at: string | null
   is_open: boolean

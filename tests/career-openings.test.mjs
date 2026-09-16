@@ -104,6 +104,23 @@ test('closed applications cannot be submitted or notify the team', async () => {
   assert.equal(f.notifications, 0)
 })
 
+test('announced extensions save independently and can be removed without rewriting the original deadline',async()=>{
+  for(const patch of [{closingDate:'2026-09-20',extendedClosingDate:'2026-10-01'},{extendedClosingDate:'2026-10-05'},{extendedClosingDate:null},{closingDate:'2026-09-22'}]){
+    const f=loadRoute('app/api/admin/openings/route.ts')
+    assert.equal((await f.route.PATCH(request('PATCH',{...identity,...patch}))).status,200)
+    if('extendedClosingDate' in patch)assert.equal(f.update.extended_closing_date,patch.extendedClosingDate)
+    else assert(!('extended_closing_date' in f.update))
+    if(!('closingDate' in patch))assert(!('closing_date' in f.update))
+    assert.deepEqual(f.tables,['career_openings'])
+  }
+})
+test('extensions require a later valid date and keep admin authorization',async()=>{
+  for(const patch of [{closingDate:null,extendedClosingDate:'2026-10-01'},{closingDate:'2026-10-01',extendedClosingDate:'2026-10-01'},{closingDate:'2026-10-01',extendedClosingDate:'2026-09-01'},{extendedClosingDate:'2026-02-30'}]){
+    const f=loadRoute('app/api/admin/openings/route.ts');assert.equal((await f.route.PATCH(request('PATCH',{...identity,...patch}))).status,400);assert.equal(f.writes,0)
+  }
+  const f=loadRoute('app/api/admin/openings/route.ts',{admin:false});assert.equal((await f.route.PATCH(request('PATCH',{...identity,extendedClosingDate:'2026-10-01'}))).status,401);assert.equal(f.writes,0)
+})
+
 test('all education policy/status combinations are enforced using the selected posting', async () => {
   for (const policy of ['all', 'student', 'graduate', 'invalid']) for (const status of ['student', 'graduate']) {
     const f = loadRoute('app/api/applications/route.ts', { policy })

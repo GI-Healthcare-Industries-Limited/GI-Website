@@ -73,6 +73,12 @@
         }
       }
     </script>
+    <script>
+      // Record readiness even if the consent script loads after Flutter's first frame.
+      window.addEventListener('flutter-first-frame', function () {
+        document.documentElement.dataset.giFlutterReady = 'true';
+      }, {once: true});
+    </script>
     <script src="flutter_bootstrap.js" async></script>
     <script src="/gi-privacy.js" defer></script>
   </head>

@@ -28,7 +28,7 @@ function harness(options = {}) {
     'server-only': {},
     '@/lib/admin-auth': { requireWebsiteAdmin: async () => options.admin === false ? null : { userId: 'synthetic-admin' } },
     '@/lib/supabase/admin': { getSupabaseAdmin: () => ({ from: () => query }) },
-    '@/lib/career-openings': { getCareerOpenings: async () => ({ items: [{ job_title: base.jobTitle, is_open: true }] }) },
+    '@/lib/career-openings': { getCareerOpenings: async () => ({ items: [{ job_title: base.jobTitle, is_open: true, education_eligibility: 'all' }] }) },
     'next/server': { after: async (callback) => callback() },
     '@/lib/notify': { sendSubmissionNotification: async (value) => emails.push(value) },
   }

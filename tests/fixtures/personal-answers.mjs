@@ -1,7 +1,7 @@
 // Synthetic examples only. No real applicant data.
 export const personalAnswers = {
   applicationQuestionsVersion: 'application-questions-v2',
-  privacyNoticeVersion: '2026-09-16-applications-v5',
+  privacyNoticeVersion: '2026-09-16-applications-v6',
   education: { status: 'graduate', graduationYear: '2025' },
   linkedInUrl: 'https://www.linkedin.com/in/synthetic-applicant-test/',
   dataSharingStatementVersion: 'recruitment-data-sharing-v2',

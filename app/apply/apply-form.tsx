@@ -9,7 +9,7 @@ import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 
 import cookingStudio from '@/assets/admin/cooking-studio.webp'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
-import { formatClosingDate, type OpeningsSnapshot } from '@/lib/career-opening-types'
+import { EDUCATION_ELIGIBILITY_LABELS, formatClosingDate, isEducationEligible, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import { APPLICATION_DATA_SHARING_STATEMENT, APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import { APPLICATION_QUESTIONS_VERSION } from '@/lib/application-questions'
 import type { RightToWorkDeclaration } from '@/lib/right-to-work'
@@ -24,6 +24,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
   const [selectedId, setSelectedId] = useState(requestedJob || (requestedTitle ? initialOpenings?.items.find((item) => item.job_title === requestedTitle)?.id : initialOpenings?.items[0]?.id) || '')
   const [submittedTitle, setSubmittedTitle] = useState('')
   const [eligibility, setEligibility] = useState<RightToWorkDeclaration | null>(null)
+  const [educationStatus, setEducationStatus] = useState('')
   const [dataSharingAcknowledged, setDataSharingAcknowledged] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -80,14 +81,15 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
   const closed = Boolean(opening && (!opening.is_open || (opening.closes_at && now >= Date.parse(opening.closes_at))))
   const unavailable = availabilityError || !opening
   const canApply = !closed && !unavailable
+  const educationMismatch = Boolean(educationStatus && !isEducationEligible(opening?.education_eligibility, educationStatus))
 
   async function submitApplication(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (submittingRef.current) return
     setError(null)
-    if (!canApply || !eligibility) {
+    if (!canApply || !eligibility || educationMismatch) {
       setError(closed ? 'Applications for this role have closed.' : unavailable
-        ? 'Please check availability before submitting.' : 'Please confirm your right to work in the UK.')
+        ? 'Please check availability before submitting.' : educationMismatch ? 'Your education status does not match this role’s eligibility. Contact us if you need a human review.' : 'Please confirm your right to work in the UK.')
       return
     }
     const formData = new FormData(event.currentTarget)
@@ -118,7 +120,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
         }),
       })
       const payload = await response.json().catch(() => ({})) as { error?: string; code?: string; ok?: boolean }
-      if (payload.code === 'APPLICATION_CLOSED') void refreshOpenings()
+      if (payload.code === 'APPLICATION_CLOSED' || payload.code === 'EDUCATION_NOT_ELIGIBLE') void refreshOpenings()
       if (!response.ok || !payload.ok) throw new Error(payload.error || 'We could not confirm your application. Please try again.')
       setSubmittedTitle(opening!.job_title)
       setSubmitted(true)
@@ -168,6 +170,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                 </fieldset>
                 {opening && <><div className={styles.roleMeta}><span><MapPinIcon aria-hidden size={15} />{opening.location}</span><span>{opening.employment_type}</span></div><p className={styles.description}>{opening.description}</p></>}
                 {!unavailable && opening && <p className={styles.deadline}><CalendarBlankIcon aria-hidden size={16} /><span>Proposed start: {opening.start_date ? formatClosingDate(opening.start_date) : 'To be agreed'}</span></p>}
+                {!unavailable && opening && <p className={styles.help}>Eligible applicants: {EDUCATION_ELIGIBILITY_LABELS[opening.education_eligibility]}</p>}
                 {!unavailable && opening && <p className={`${styles.deadline} ${closed ? styles.closedLabel : ''}`}><CalendarBlankIcon aria-hidden size={16} />{closed ? 'Applications closed' : opening.closing_date ? <span>Apply by {formatClosingDate(opening.closing_date)} · 11:59 pm UK time</span> : 'Applications open · No closing date'}</p>}
               </div>
               {unavailable && <div role="status" className={styles.notice}><p>{availabilityError ? 'We’re unable to check application availability right now. Please try again shortly.' : openings?.items.length ? 'This job is no longer available. Please choose another posting above.' : 'There are no job postings at the moment. Please check back later.'}</p><button disabled={checking} type="button" onClick={() => void refreshOpenings()}>{checking ? 'Checking…' : 'Check again'}</button></div>}
@@ -187,10 +190,10 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                         field.setCustomValidity(!field.value.trim() || normalizeLinkedInProfileUrl(field.value.trim()) ? '' : LINKEDIN_PROFILE_ERROR)
                       }} />
                     </div>
-                    <EducationQuestions />
+                    <EducationQuestions status={educationStatus} onChange={setEducationStatus} policy={opening?.education_eligibility || 'all'} />
                   </div>
                 </fieldset>
-                <ApplicationQuestions disabled={!canApply || !eligibility || submitting} />
+                <ApplicationQuestions disabled={!canApply || !eligibility || educationMismatch || submitting} />
                 <div className="hp-field" aria-hidden="true"><label htmlFor="company">Company</label><input autoComplete="off" id="company" name="company" tabIndex={-1} /></div>
                 <label className={styles.consent} htmlFor="dataSharingAcknowledged">
                   <input ref={dataSharingRef} id="dataSharingAcknowledged" name="dataSharingAcknowledged" type="checkbox" value="yes" required checked={dataSharingAcknowledged} onChange={(event) => { setDataSharingAcknowledged(event.target.checked); setError(null) }} disabled={submitting || !canApply || !eligibility} aria-describedby="data-sharing-help" />
@@ -198,7 +201,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                 </label>
                 <p className={styles.help} id="data-sharing-help"><Link href="/privacy" target="_blank" rel="noreferrer">Read the privacy notice</Link></p>
                 {error && <p role="alert" className={styles.error}>{error}</p>}
-                <button className={styles.submit} disabled={submitting || !canApply || !eligibility} type="submit">{submitting ? 'Sending application…' : closed ? 'Applications closed' : 'Send application'}<ArrowRightIcon aria-hidden size={20} /></button>
+                <button className={styles.submit} disabled={submitting || !canApply || !eligibility || educationMismatch} type="submit">{submitting ? 'Sending application…' : closed ? 'Applications closed' : 'Send application'}<ArrowRightIcon aria-hidden size={20} /></button>
                 <p className={styles.privacy}><ShieldCheckIcon aria-hidden size={17} /><span>No marketing or talent-pool enrolment. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy & your rights</Link></span></p>
               </form>
               <footer className={styles.footer}>Have a question? <Link href="/contact">Let’s talk <ArrowUpRightIcon aria-hidden size={14} /></Link></footer>

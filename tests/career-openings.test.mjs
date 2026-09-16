@@ -27,7 +27,7 @@ function loadRoute(file, overrides = {}) {
     '@/lib/supabase/admin': { getSupabaseAdmin: () => ({ from: (table) => { tables.push(table); return query } }) },
     '@/lib/career-openings': { getCareerOpenings: async () => {
       if (overrides.unavailable) throw new Error('Unavailable')
-      return { items: overrides.empty ? [] : [{ id: identity.id, job_title: overrides.title || title, is_open: overrides.open !== false }], checkedAt: new Date().toISOString() }
+      return { items: overrides.empty ? [] : [{ id: identity.id, job_title: overrides.title || title, is_open: overrides.open !== false, education_eligibility: overrides.policy ?? 'all' }], checkedAt: new Date().toISOString() }
     } },
     'next/server': { after: () => notifications++ },
     '@/lib/notify': { sendSubmissionNotification() {} },
@@ -59,6 +59,49 @@ test('closed applications cannot be submitted or notify the team', async () => {
   assert.equal((await response.json()).code, 'APPLICATION_CLOSED')
   assert.equal(f.writes, 0)
   assert.equal(f.notifications, 0)
+})
+
+test('all education policy/status combinations are enforced using the selected posting', async () => {
+  for (const policy of ['all', 'student', 'graduate', 'invalid']) for (const status of ['student', 'graduate']) {
+    const f = loadRoute('app/api/applications/route.ts', { policy })
+    const education = status === 'student' ? { status, degree: 'BSc Computing', studyYear: 'Year 2' } : { status, graduationYear: '2025' }
+    const eligible = policy === 'all' || policy === status
+    const response = await f.route.POST(request('POST', { ...validApplication, education, educationEligibility: 'all' }))
+    assert.equal(response.status, eligible ? 201 : 409)
+    assert.equal(f.writes, eligible ? 1 : 0)
+    assert.equal(f.notifications, eligible ? 1 : 0)
+    if (!eligible) assert.equal((await response.json()).code, 'EDUCATION_NOT_ELIGIBLE')
+  }
+})
+
+test('policy change between checking and insertion fails clearly without notification', async () => {
+  const f = loadRoute('app/api/applications/route.ts', { insertError: 'EDUCATION_NOT_ELIGIBLE' })
+  const response = await f.route.POST(request('POST', validApplication))
+  assert.equal(response.status, 409)
+  assert.equal((await response.json()).code, 'EDUCATION_NOT_ELIGIBLE')
+  assert.equal(f.notifications, 0)
+})
+
+test('admin can create and update each eligibility policy without altering other fields', async () => {
+  for (const educationEligibility of ['all', 'student', 'graduate']) {
+    const f = loadRoute('app/api/admin/openings/route.ts')
+    assert.equal((await f.route.POST(request('POST', { ...posting, educationEligibility }))).status, 201)
+    assert.equal(f.update.education_eligibility, educationEligibility)
+    assert.equal((await f.route.PATCH(request('PATCH', { ...identity, educationEligibility }))).status, 200)
+    assert.deepEqual(Object.keys(f.update).sort(), ['education_eligibility', 'updated_at'])
+    assert(f.tables.every(table => table === 'career_openings'))
+    const denied = loadRoute('app/api/admin/openings/route.ts', { admin: false })
+    assert.equal((await denied.route.PATCH(request('PATCH', { ...identity, educationEligibility }))).status, 401)
+    assert.equal(denied.writes, 0)
+  }
+  for (const educationEligibility of [null, '', 'everyone', ['student'], true]) {
+    const f = loadRoute('app/api/admin/openings/route.ts')
+    assert.equal((await f.route.PATCH(request('PATCH', { ...identity, educationEligibility }))).status, 400)
+    assert.equal(f.writes, 0)
+  }
+  const other = loadRoute('app/api/admin/openings/route.ts')
+  await other.route.PATCH(request('PATCH', { ...identity, startDate: null }))
+  assert.equal(other.update.education_eligibility, undefined)
 })
 
 test('deadline passing between availability check and insert is still reported as closed', async () => {

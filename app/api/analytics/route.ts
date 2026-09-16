@@ -20,6 +20,8 @@ export async function POST(request: Request) {
     if (!parsed.success || !analyticsConsent(request.headers.get('cookie'),parsed.data.consentAt)) return new Response(null,{status:400,headers})
     const ua=request.headers.get('user-agent')||''
     if (/bot|crawler|spider|headless/i.test(ua)) return new Response(null,{status:204,headers})
+    // Development and preview visits must never contaminate the live dashboard.
+    if (process.env.VERCEL !== '1' || !['gihealthcare.co.uk','www.gihealthcare.co.uk'].includes(new URL(request.url).hostname)) return new Response(null,{status:204,headers})
     const secret=process.env.SUBMISSION_HASH_SECRET
     if(!secret)throw new Error('Unavailable')
     // IP is used transiently for abuse prevention only, never stored with analytics.

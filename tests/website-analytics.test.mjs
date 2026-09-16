@@ -20,7 +20,7 @@ function fixture(options={}) {
       if(name==='@/lib/admin-auth')return {requireWebsiteAdmin:async()=>options.admin===true?{userId:'test'}:null}
       if(name.startsWith('@/'))return load(`${name.slice(2)}.ts`)
       return require(name)
-    },mod,mod.exports,{env:{SUBMISSION_HASH_SECRET:'test-secret',VERCEL:'1'}})
+    },mod,mod.exports,{env:{SUBMISSION_HASH_SECRET:'test-secret',VERCEL:options.local?'0':'1'}})
     cache.set(path,mod.exports);return mod.exports
   }
   return {load,calls}
@@ -56,6 +56,10 @@ test('accepted page views store only allowlisted fields, coarse metadata and a s
 })
 test('database failure and rate limiting do not claim collection succeeded',async()=>{
   for(const [opts,status]of [[{fail:true},503],[{limit:true},429]])assert.equal((await fixture(opts).load('app/api/analytics/route.ts').POST(request())).status,status)
+})
+test('local and preview visits cannot populate production statistics',async()=>{
+  const f=fixture({local:true});assert.equal((await f.load('app/api/analytics/route.ts').POST(request())).status,204);assert.equal(f.calls.length,0)
+  const g=fixture();const req=new Request('https://preview.vercel.app/api/analytics',request(event,{origin:'https://preview.vercel.app'}));assert.equal((await g.load('app/api/analytics/route.ts').POST(req)).status,204);assert.equal(g.calls.length,0)
 })
 test('analytics reports require administrator authentication before touching data',async()=>{
   const f=fixture();const r=await f.load('app/api/admin/analytics/route.ts').GET(new Request('https://gihealthcare.co.uk/api/admin/analytics'));assert.equal(r.status,401);assert.equal(f.calls.length,0)

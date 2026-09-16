@@ -74,8 +74,14 @@ test('public navigation waits three seconds instead of reopening immediately',()
   f.tick(1);assert.equal(f.elements.dialog.open,true)
 })
 test('dock uses genuine library assets mirrored for Flutter builds, with Accept first and labelled Manage icon',()=>{
-  assert(source.indexOf('data-action="accept"')<source.indexOf('data-action="reject"'))
+  const summaryMarkup=source.split('<div class="layout" id="summary">')[1].split('<div class="manage"')[0]
+  assert(summaryMarkup.indexOf('data-action="accept"')<summaryMarkup.indexOf('data-action="reject"'))
   assert.match(source,/aria-label="Manage cookie choices"/)
   for(const name of ['cookie','sliders'])assert.equal(readFileSync(`docs/privacy-icons/${name}.svg`,'utf8'),readFileSync(`frontend/web/privacy-icons/${name}.svg`,'utf8'))
   for(const path of ['docs/index.html','frontend/web/index.html'])assert.match(readFileSync(path,'utf8'),/dataset.giFlutterReady = 'true'/)
+})
+test('Reject is white and clearly outlined without reducing its button size',()=>{
+  assert.match(source,/\.choice\[data-action="reject"\]\{background:#fff;color:#20221f;border-color:#20221f\}/)
+  assert.match(source,/\.choice\{background:#20221f;color:#fff;border-color:#20221f;min-width:98px\}/)
+  assert.equal(source,readFileSync('frontend/web/gi-privacy.js','utf8'))
 })

@@ -21,6 +21,22 @@ function loadContact() {
   return module.exports.SubmissionContact
 }
 
+test('education details display students, graduates and historical records without guessing', () => {
+  const module = { exports: {} }
+  new Function('require', 'module', 'exports', compile('app/admin/submission-education.tsx'))(require, module, module.exports)
+  const render = education => renderToStaticMarkup(React.createElement(module.exports.SubmissionEducation, { education }))
+  assert.match(render(null), /Not collected on the earlier form/)
+  const student = render({ status: 'student', degree: 'BSc <Computing>', studyYear: 'Year 2' })
+  assert.match(student, /Current student/)
+  assert.match(student, /BSc &lt;Computing&gt;/)
+  assert.match(student, /Year 2/)
+  assert.doesNotMatch(student, /Year of graduation/)
+  const graduate = render({ status: 'graduate', graduationYear: '2025' })
+  assert.match(graduate, /Graduate/)
+  assert.match(graduate, /Year of graduation: 2025/)
+  assert.doesNotMatch(graduate, /Degree:|Year of study/)
+})
+
 function fixture() {
   const session = { access_token: 'synthetic-token', user: { id: 'synthetic-admin' } }
   const items = ['Alex Morgan', 'Sam Taylor'].map((name, index) => ({

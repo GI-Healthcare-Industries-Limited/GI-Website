@@ -51,6 +51,42 @@ function request(body) {
   return new Request('https://example.invalid/api/applications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 }
 
+test('education answers are required, conditional, bounded and validated before writes', async () => {
+  for (const education of [undefined, null, {}, { status: 'other' }, { status: 'student' },
+    { status: 'student', degree: ' ', studyYear: '2' }, { status: 'student', degree: 'BSc', studyYear: '' },
+    { status: 'student', degree: 'a'.repeat(121), studyYear: '2' }, { status: 'student', degree: 'BSc', studyYear: 'x'.repeat(41) },
+    { status: 'graduate' }, ...['', '25', '2025.5', '1899', String(new Date().getUTCFullYear() + 1)].map(graduationYear => ({ status: 'graduate', graduationYear })),
+  ]) {
+    const f = harness()
+    const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, education }))
+    assert.equal(response.status, 400, JSON.stringify(education))
+    assert.equal(f.writes.length, 0)
+    assert.equal(f.emails.length, 0)
+  }
+})
+
+test('education saves only the selected branch, trims answers and keeps them out of notifications', async () => {
+  for (const [education, expected] of [
+    [{ status: 'student', degree: ' BSc Computing ', studyYear: ' Year 2 ', graduationYear: '2020' }, { status: 'student', degree: 'BSc Computing', studyYear: 'Year 2' }],
+    [{ status: 'graduate', graduationYear: ' 2025 ', degree: 'irrelevant', studyYear: '3' }, { status: 'graduate', graduationYear: '2025' }],
+  ]) {
+    const f = harness()
+    assert.equal((await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, education }))).status, 201)
+    assert.deepEqual(f.writes[0].education, expected)
+    assert.deepEqual(f.emails, ['application'])
+  }
+})
+
+test('education remains behind admin authentication and retention filters', async () => {
+  const f = harness()
+  await f.load('app/api/admin/submissions/route.ts').GET(new Request('https://example.invalid?kind=application'))
+  assert(f.reads.some(value => value.includes(', education,')))
+  assert(f.reads.some(value => value.startsWith('retention_expires_at:')))
+  const contact = harness()
+  await contact.load('app/api/admin/submissions/route.ts').GET(new Request('https://example.invalid?kind=contact'))
+  assert(!contact.reads.some(value => value.includes('education')))
+})
+
 test('LinkedIn is required and invalid or non-profile links never reach storage', async () => {
   for (const linkedInUrl of [undefined, null, '', '   ', 'not-a-url', 'http://www.linkedin.com/in/test', 'https://linkedin.com.evil.invalid/in/test', 'https://evil.invalid/linkedin.com/in/test', 'https://www.linkedin.com/company/test', 'https://www.linkedin.com/in/', 'https://u:p@www.linkedin.com/in/test', 'https://www.linkedin.com:444/in/test', 'https://www.linkedin.com/in/%2Ftest', 'javascript:alert(1)', 'https://www.linkedin.com/in/' + 'a'.repeat(2048)]) {
     const f = harness()

@@ -1,3 +1,44 @@
+# White cookie dock — 16 September 2026, evening revision
+
+final result: passed
+
+## Source and rendered evidence
+
+- Source visual truth: `/var/folders/nf/y0bjgpm530n_g2dp6dngbrqr0000gn/T/TemporaryItems/NSIRD_screencaptureui_dyXiGO/Screenshot 2026-09-16 at 17.49.10.png`, 2242 × 1382 pixels. This contains two enlarged crops of a pill banner, not a complete page or a measurable CSS viewport. Compare the component's typography, capsule shape, icon treatment and compact horizontal rhythm rather than claiming pixel-exact fidelity to its magnification.
+- Desktop implementation: `compliance/cookie-dock-desktop.png`, 1280 × 720 pixels, CSS viewport 1280 × 720, DPR 1. Dock measures 1120 × 72 at x80/y624. Route `http://127.0.0.1:3110/contact`, first visit, summary open. In-app browser and isolated Chrome captures agree.
+- Mobile implementation: `compliance/cookie-dock-mobile.png`, 390 × 844 pixels/CSS pixels, DPR 1. Brief copy above a single action row; no horizontal overflow.
+- Preferences: `compliance/cookie-dock-manage-desktop.png` and `compliance/cookie-dock-manage-mobile.png`; homepage: `compliance/cookie-dock-home.png`.
+- Full-view comparison: source and rendered screenshots opened together in the same tool input, both before and after corrections. The dock and its text/actions are already readable in these full views, so no additional enlarged crop is necessary. No unframed-to-browser-chrome or density comparison was used.
+
+## Fidelity surfaces
+
+- Typography: restrained 14px Inter/system sans-serif, 13px mobile summary, normal readable line height; no visible banner heading. Existing Next font token is inherited. Copy remains one line on desktop and wraps naturally on mobile.
+- Layout: white floating capsule, subtle outer ring and shadow, circular cookie badge, Accept first, Reject next, labelled sliders icon last. Desktop buttons are equally sized 98 × 46. Mobile options panel uses full-width explanations and compact single-line action labels.
+- Colours: white surface and near-black type/actions, soft neutral icon circle, muted green optional-switch states. Blur remains behind the modal and disappears on dismissal. Equal Accept/Reject styling intentionally differs from the reference's outlined Reject, following ICO equal-prominence guidance.
+- Assets: genuine Phosphor Cookie and SlidersHorizontal SVG assets exported from the installed library, not handcrafted icon approximations. Existing photographs and logos are unchanged.
+- Copy: one concise analytics purpose and Privacy policy link; necessary processing, optional fields, providers and retention remain disclosed in Manage and the notice. No hidden collection, preselected analytics, or invented cookie categories.
+
+## Comparison history
+
+1. P2: browser default focus ring surrounded the whole capsule. Removed only the dialog's automatic outline; keyboard focus remains visible on every interactive control. Recaptured desktop shows the intended neutral edge.
+2. P2: mobile preferences explanation was constrained beside the toggle, making the panel unnecessarily tall. Moved descriptions below their header/switch row on mobile.
+3. P2: mobile Save choices wrapped onto two lines. Reduced management-action horizontal padding; final capture has all actions on one line and visible at the tested viewport.
+4. Repeated paired comparison after fixes: no remaining actionable P0/P1/P2 differences. Responsive management layout is an adaptation because no preferences/mobile source was supplied.
+
+## Behaviour and data safety
+
+- 123 automated tests and the production build passed. Eight new isolated consent tests cover load/first-frame ordering, exact three-second threshold, cached Flutter readiness, both saved decisions, navigation, manual management, withdrawal and asset mirroring.
+- Real browser measured 3010.9ms from load completion to opening. Flutter waits for both load and its first-frame event before starting its three-second timer.
+- Accept, Reject, Back, Manage switch, Save, reload persistence, privacy-page withdrawal, six public routes and admin exclusion passed. No browser exceptions. No floating settings control remains and no footer control was added.
+- Existing consent version and 180-day lifetime retained: visitors with valid choices are not prompted by this redesign. Expired/deleted cookies, new browsers and future purpose changes can require a new choice; this is not a promise to suppress consent forever.
+- All browser analytics requests intercepted locally. No form submissions, database changes, candidate/enquiry access, or authentication changes.
+
+## Deferred footer preference
+
+The user does not want a floating Cookie settings control or a new footer control now. Revisit a discreet privacy-preferences link only when the footer is developed later. Preserve the current management link inside the privacy notice so consent can still be withdrawn.
+
+## Historical consent QA (superseded visual direction, preserved)
+
 # Cookie consent and website analytics — 16 September 2026
 
 final result: passed

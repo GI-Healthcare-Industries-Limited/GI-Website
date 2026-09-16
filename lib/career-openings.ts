@@ -1,4 +1,5 @@
 import 'server-only'
+import { questionSetSchema } from '@/lib/role-questions'
 
 import { EDUCATION_ELIGIBILITY, type CareerOpening, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
@@ -6,10 +7,11 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin'
 export async function getCareerOpenings(): Promise<OpeningsSnapshot> {
   const { data, error } = await getSupabaseAdmin()
     .from('career_opening_availability')
-    .select('id, job_title, location, department, employment_type, description, accepting_applications, created_at, updated_at, closing_date, closes_at, is_open, start_date, education_eligibility')
+    .select('id, job_title, location, department, employment_type, description, accepting_applications, created_at, updated_at, closing_date, closes_at, is_open, start_date, education_eligibility, section_three_questions')
     .order('created_at').order('job_title')
   if (error) throw error
   const items = data ?? []
+  for (const row of items) if (row.section_three_questions != null) row.section_three_questions=questionSetSchema.parse(row.section_three_questions)
   if (items.some((row) => !row.id || typeof row.is_open !== 'boolean' || !EDUCATION_ELIGIBILITY.includes(row.education_eligibility))) {
     throw new Error('Career opening configuration is incomplete')
   }

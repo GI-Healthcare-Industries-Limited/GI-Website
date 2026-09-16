@@ -3,6 +3,7 @@ import 'server-only'
 import { createHmac } from 'node:crypto'
 
 import { z } from 'zod'
+import { ROLE_QUESTIONS_VERSION, questionSetSchema, roleAnswersSchema } from '@/lib/role-questions'
 
 import { APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import { ANSWER_WORD_LIMITS, APPLICATION_QUESTIONS_VERSION, FAILURE_QUESTION, GROWTH_QUESTION, MAX_AWARDS, MAX_WORK_LINKS, WORK_QUESTION, countWords, isSafeWorkLink } from '@/lib/application-questions'
@@ -25,7 +26,7 @@ function shortAnswer(maxWords: number, label: string) {
     .refine(value => countWords(value) <= maxWords, `Please use ${maxWords} words or fewer.`)
 }
 
-export const applicationSchema = z.object({
+const applicationFields = z.object({
   dataSharingAcknowledged: z.literal(true, { error: 'Please tick the box to agree to the use of your information for this application.' }),
   dataSharingStatementVersion: z.literal(APPLICATION_DATA_SHARING_VERSION, { error: 'Please reload the page to view the current data-sharing statement.' }),
   applicationQuestionsVersion: z.literal(APPLICATION_QUESTIONS_VERSION, { error: 'Please reload the application to see the current questions.' }),
@@ -51,7 +52,8 @@ export const applicationSchema = z.object({
   biggestFailure: shortAnswer(ANSWER_WORD_LIMITS.failure, FAILURE_QUESTION),
   growthArea: shortAnswer(ANSWER_WORD_LIMITS.growth, GROWTH_QUESTION),
   company: z.string().max(0).optional().default(''),
-}).superRefine((input, context) => {
+})
+const legacyApplicationSchema = applicationFields.superRefine((input, context) => {
   if (input.awardsStatus === 'listed' && input.awardEntries.length === 0) {
     context.addIssue({ code: 'custom', path: ['awardEntries'], message: 'Add an award, or choose “No competitions or awards yet”.' })
   }
@@ -59,6 +61,18 @@ export const applicationSchema = z.object({
     context.addIssue({ code: 'custom', path: ['awardEntries'], message: 'Choose either award cards or “No competitions or awards yet”.' })
   }
 }).and(rightToWorkSchema)
+
+const roleApplicationSchema = applicationFields.omit({projectSummary:true,workLinks:true,portfolioUrl:true,awardsStatus:true,awardEntries:true,biggestFailure:true,growthArea:true,applicationQuestionsVersion:true}).extend({
+  applicationQuestionsVersion:z.literal(ROLE_QUESTIONS_VERSION),
+  questionSet:questionSetSchema,
+  roleAnswers:roleAnswersSchema,
+}).and(rightToWorkSchema)
+export const applicationSchema = {
+  parse(input: unknown) {
+    return input && typeof input === 'object' && 'applicationQuestionsVersion' in input && input.applicationQuestionsVersion === ROLE_QUESTIONS_VERSION
+      ? roleApplicationSchema.parse(input) : legacyApplicationSchema.parse(input)
+  },
+}
 
 export function getRequestFingerprint(request: Request) {
   const secret = process.env.SUBMISSION_HASH_SECRET

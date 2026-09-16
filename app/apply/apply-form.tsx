@@ -14,7 +14,8 @@ import { APPLICATION_DATA_SHARING_STATEMENT, APPLICATION_DATA_SHARING_VERSION, A
 import { APPLICATION_QUESTIONS_VERSION } from '@/lib/application-questions'
 import type { RightToWorkDeclaration } from '@/lib/right-to-work'
 import { EligibilityCheck } from './eligibility-check'
-import { ApplicationQuestions } from './application-questions'
+import { SectionThree } from './role-questions'
+import { ROLE_QUESTIONS_VERSION } from '@/lib/role-questions'
 import { EducationQuestions } from './education-questions'
 import styles from './apply-form.module.css'
 
@@ -105,22 +106,25 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           openingId: opening!.id, jobTitle: opening!.job_title, name: formData.get('name'), email: formData.get('email'),
-          linkedInUrl: formData.get('linkedInUrl'), portfolioUrl: formData.get('portfolioUrl'),
+          linkedInUrl: formData.get('linkedInUrl'),
           education: formData.get('educationStatus') === 'student'
             ? { status: 'student', degree: formData.get('degree'), studyYear: formData.get('studyYear') }
             : { status: formData.get('educationStatus'), graduationYear: formData.get('graduationYear') },
-          projectSummary: formData.get('projectSummary'), ...eligibility,
+          ...eligibility,
+          ...(formData.has('questionSet') ? {
+            questionSet:JSON.parse(String(formData.get('questionSet'))),roleAnswers:JSON.parse(String(formData.get('roleAnswers'))),applicationQuestionsVersion:ROLE_QUESTIONS_VERSION,
+          } : {portfolioUrl:formData.get('portfolioUrl'),projectSummary: formData.get('projectSummary'),
           workLinks: formData.getAll('workLink').map(value => String(value).trim()).filter(Boolean),
           awardsStatus: formData.get('awardsStatus'), awardEntries: formData.getAll('awardEntry'),
           biggestFailure: formData.get('biggestFailure'), growthArea: formData.get('growthArea'),
-          applicationQuestionsVersion: APPLICATION_QUESTIONS_VERSION,
+          applicationQuestionsVersion: APPLICATION_QUESTIONS_VERSION,}),
           privacyNoticeVersion: APPLICATION_PRIVACY_NOTICE_VERSION, company: formData.get('company'),
           dataSharingAcknowledged: formData.get('dataSharingAcknowledged') === 'yes',
           dataSharingStatementVersion: APPLICATION_DATA_SHARING_VERSION,
         }),
       })
       const payload = await response.json().catch(() => ({})) as { error?: string; code?: string; ok?: boolean }
-      if (payload.code === 'APPLICATION_CLOSED' || payload.code === 'EDUCATION_NOT_ELIGIBLE') void refreshOpenings()
+      if (['APPLICATION_CLOSED','EDUCATION_NOT_ELIGIBLE','QUESTIONS_CHANGED'].includes(payload.code || '')) void refreshOpenings()
       if (!response.ok || !payload.ok) throw new Error(payload.error || 'We could not confirm your application. Please try again.')
       setSubmittedTitle(opening!.job_title)
       setSubmitted(true)
@@ -193,7 +197,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                     <EducationQuestions status={educationStatus} onChange={setEducationStatus} policy={opening?.education_eligibility || 'all'} />
                   </div>
                 </fieldset>
-                <ApplicationQuestions disabled={!canApply || !eligibility || educationMismatch || submitting} />
+                <SectionThree key={opening?.id} questions={opening?.section_three_questions ?? null} disabled={!canApply || !eligibility || educationMismatch || submitting} />
                 <div className="hp-field" aria-hidden="true"><label htmlFor="company">Company</label><input autoComplete="off" id="company" name="company" tabIndex={-1} /></div>
                 <label className={styles.consent} htmlFor="dataSharingAcknowledged">
                   <input ref={dataSharingRef} id="dataSharingAcknowledged" name="dataSharingAcknowledged" type="checkbox" value="yes" required checked={dataSharingAcknowledged} onChange={(event) => { setDataSharingAcknowledged(event.target.checked); setError(null) }} disabled={submitting || !canApply || !eligibility} aria-describedby="data-sharing-help" />

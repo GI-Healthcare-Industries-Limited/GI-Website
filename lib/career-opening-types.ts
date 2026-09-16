@@ -8,6 +8,7 @@ export function isEducationEligible(policy: unknown, status: unknown) {
   return (status === 'student' || status === 'graduate') && (policy === 'all' || policy === status)
 }
 export type CareerOpening = {
+  section_three_questions?: import('./role-questions').RoleQuestion[] | null
   id: string
   job_title: string
   location: string

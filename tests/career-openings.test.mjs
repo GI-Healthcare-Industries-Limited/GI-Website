@@ -27,7 +27,7 @@ function loadRoute(file, overrides = {}) {
     '@/lib/supabase/admin': { getSupabaseAdmin: () => ({ from: (table) => { tables.push(table); return query } }) },
     '@/lib/career-openings': { getCareerOpenings: async () => {
       if (overrides.unavailable) throw new Error('Unavailable')
-      return { items: overrides.empty ? [] : [{ id: identity.id, job_title: overrides.title || title, is_open: overrides.open !== false, education_eligibility: overrides.policy ?? 'all' }], checkedAt: new Date().toISOString() }
+      return { items: overrides.empty ? [] : [{ id: identity.id, job_title: overrides.title || title, is_open: overrides.open !== false, education_eligibility: overrides.policy ?? 'all', section_three_questions: overrides.questions ?? null }], checkedAt: new Date().toISOString() }
     } },
     'next/server': { after: () => notifications++ },
     '@/lib/notify': { sendSubmissionNotification() {} },
@@ -51,6 +51,49 @@ function loadRoute(file, overrides = {}) {
 function request(method, body) {
   return new Request('https://example.com/api/test', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 }
+
+const customQuestions = [
+  {id:'work',label:'What have you built?',type:'work',required:true,wordLimit:20,options:[]},
+  {id:'choice',label:'Which environment interests you?',type:'choice',required:true,wordLimit:20,options:['Space','Earth']},
+  {id:'link',label:'Your portfolio',type:'url',required:false,wordLimit:20,options:[]},
+  {id:'awards',label:'What have you won?',type:'awards',required:true,wordLimit:20,options:[]},
+]
+const customApplication = {...validApplication,applicationQuestionsVersion:'role-questions-v1',questionSet:customQuestions,roleAnswers:{
+  work:{text:'A small robot.',entries:['https://example.invalid/project'],none:false},
+  choice:{text:'Space',entries:[],none:false},link:{text:'',entries:[],none:false},awards:{text:'',entries:[],none:true},
+}}
+test('custom role answers save a server-owned question snapshot and preserve canonical role identity', async()=>{
+  const f=loadRoute('app/api/applications/route.ts',{questions:customQuestions})
+  assert.equal((await f.route.POST(request('POST',customApplication))).status,201)
+  assert.deepEqual(f.update.question_snapshot,{questions:customQuestions,answers:customApplication.roleAnswers})
+  assert.equal(f.update.project_summary,null)
+  assert.equal(f.notifications,1)
+})
+test('custom questions cannot bypass required answers, limits, choices or safe links',async()=>{
+  for(const patch of [{work:{text:'',entries:[],none:false}},{work:{text:'word '.repeat(21),entries:[],none:false}},{choice:{text:'Unknown',entries:[],none:false}},{link:{text:'javascript:alert(1)',entries:[],none:false}},{awards:{text:'',entries:[],none:false}},{extra:{text:'Injected',entries:[],none:false}}]){
+    const f=loadRoute('app/api/applications/route.ts',{questions:customQuestions})
+    assert.equal((await f.route.POST(request('POST',{...customApplication,roleAnswers:{...customApplication.roleAnswers,...patch}}))).status,400)
+    assert.equal(f.writes,0);assert.equal(f.notifications,0)
+  }
+})
+test('stale question sets, legacy forms on customised jobs and concurrent edits fail without notifications',async()=>{
+  for(const [questions,body,insertError] of [[customQuestions,validApplication,null],[null,customApplication,null],[customQuestions.map(q=>({...q,label:q.label+' Updated'})),customApplication,null],[customQuestions,customApplication,'QUESTIONS_CHANGED']]){
+    const f=loadRoute('app/api/applications/route.ts',{questions,insertError})
+    const r=await f.route.POST(request('POST',body));assert.equal(r.status,409);assert.equal((await r.json()).code,'QUESTIONS_CHANGED');assert.equal(f.notifications,0)
+  }
+})
+test('question builder validates definitions and keeps edits scoped to one posting',async()=>{
+  for(const questions of [customQuestions,null]){
+    const f=loadRoute('app/api/admin/openings/route.ts')
+    assert.equal((await f.route.PATCH(request('PATCH',{...identity,sectionThreeQuestions:questions}))).status,200)
+    assert.deepEqual(f.update.section_three_questions,questions);assert.deepEqual(f.tables,['career_openings'])
+  }
+  for(const questions of [[],[...customQuestions,customQuestions[0]],[{...customQuestions[0],wordLimit:0}],[{...customQuestions[1],options:['same','same']}],[{...customQuestions[0],type:'file'}]]){
+    const f=loadRoute('app/api/admin/openings/route.ts')
+    assert.equal((await f.route.PATCH(request('PATCH',{...identity,sectionThreeQuestions:questions}))).status,400);assert.equal(f.writes,0)
+  }
+  const f=loadRoute('app/api/admin/openings/route.ts',{admin:false});assert.equal((await f.route.PATCH(request('PATCH',{...identity,sectionThreeQuestions:customQuestions}))).status,401);assert.equal(f.writes,0)
+})
 
 test('closed applications cannot be submitted or notify the team', async () => {
   const f = loadRoute('app/api/applications/route.ts', { open: false })

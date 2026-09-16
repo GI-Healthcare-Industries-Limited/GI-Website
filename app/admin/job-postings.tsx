@@ -5,6 +5,7 @@ import type { Session } from '@supabase/supabase-js'
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { EDUCATION_ELIGIBILITY, EDUCATION_ELIGIBILITY_LABELS, EMPLOYMENT_TYPES, formatClosingDate, type CareerOpening, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import styles from './job-postings.module.css'
+import { QuestionEditor } from './question-editor'
 
 async function savePosting(session: Session, method: string, body: unknown) {
   const response = await fetch('/api/admin/openings', {
@@ -19,6 +20,7 @@ function JobEditor({ opening, session, onSaved, onCancel }: {
   opening?: CareerOpening; session: Session; onSaved: () => void; onCancel: () => void
 }) {
   const [closingDate, setClosingDate] = useState(opening?.closing_date || '')
+  const [questions, setQuestions] = useState(opening?.section_three_questions ?? null)
   const [startDate, setStartDate] = useState(opening?.start_date || '')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -40,6 +42,7 @@ function JobEditor({ opening, session, onSaved, onCancel }: {
         employmentType: data.get('employmentType'), description: data.get('description'),
         acceptingApplications: data.get('acceptingApplications') === 'yes',
         educationEligibility: data.get('educationEligibility'),
+        sectionThreeQuestions: questions,
         closingDate: closingDate || null, startDate: startDate || null,
       })
       onSaved()
@@ -60,6 +63,7 @@ function JobEditor({ opening, session, onSaved, onCancel }: {
       <div><label htmlFor="job-closing-date">Application closing date</label><div className={styles.dateRow}><input id="job-closing-date" aria-describedby="job-closing-help" name="closingDate" type="date" min="2020-01-01" max="2099-12-31" value={closingDate} onInput={(event) => setClosingDate(event.currentTarget.value)} onChange={(event) => setClosingDate(event.target.value)} /><button aria-label="Clear closing date" type="button" disabled={!closingDate} onClick={() => setClosingDate('')}>Clear</button></div><p id="job-closing-help" className={styles.help}>Includes the full UK calendar day. Leave blank for no deadline.</p></div>
       <div><label htmlFor="job-start-date">Proposed start date</label><div className={styles.dateRow}><input id="job-start-date" aria-describedby="job-start-help" name="startDate" type="date" min="2020-01-01" max="2099-12-31" value={startDate} onInput={(event) => setStartDate(event.currentTarget.value)} onChange={(event) => setStartDate(event.target.value)} /><button aria-label="Clear start date" type="button" disabled={!startDate} onClick={() => setStartDate('')}>Clear</button></div><p id="job-start-help" className={styles.help}>Leave blank for “To be agreed”.</p></div>
       <label className={`${styles.toggle} ${styles.wide}`}><input type="checkbox" name="acceptingApplications" value="yes" defaultChecked={opening?.accepting_applications ?? true} /><span>Accept applications<span className={styles.help}>Switch off to close this role immediately. A past closing date also closes it.</span></span></label>
+      <QuestionEditor value={questions} onChange={setQuestions} />
     </fieldset>
     {error && <p role="alert" className={styles.error}>{error}</p>}
     <div className={styles.actions}><button disabled={busy} className={styles.primary} type="submit">{busy ? 'Saving…' : opening ? 'Save changes' : 'Publish job'}</button><button disabled={busy} type="button" onClick={onCancel}>Cancel</button></div>

@@ -19,7 +19,9 @@ async function savePosting(session: Session, method: string, body: unknown) {
 function JobEditor({ opening, session, onSaved, onCancel }: {
   opening?: CareerOpening; session: Session; onSaved: () => void; onCancel: () => void
 }) {
-  const [closingDate, setClosingDate] = useState(opening?.closing_date || '')
+  const [closingDate, setClosingDate] = useState((opening && 'original_closing_date' in opening ? opening.original_closing_date : opening?.closing_date) || '')
+  const [extensionEnabled, setExtensionEnabled] = useState(Boolean(opening?.extended_closing_date))
+  const [extendedDate, setExtendedDate] = useState(opening?.extended_closing_date || '')
   const [questions, setQuestions] = useState(opening?.section_three_questions ?? null)
   const [startDate, setStartDate] = useState(opening?.start_date || '')
   const [busy, setBusy] = useState(false)
@@ -32,6 +34,10 @@ function JobEditor({ opening, session, onSaved, onCancel }: {
     event.preventDefault()
     if (saving.current) return
     const data = new FormData(event.currentTarget)
+    if (extensionEnabled && (!closingDate || !extendedDate || extendedDate <= closingDate)) {
+      setError('Choose an extended deadline later than the original closing date.')
+      return
+    }
     saving.current = true
     setBusy(true)
     setError('')
@@ -44,6 +50,7 @@ function JobEditor({ opening, session, onSaved, onCancel }: {
         educationEligibility: data.get('educationEligibility'),
         sectionThreeQuestions: questions,
         closingDate: closingDate || null, startDate: startDate || null,
+        extendedClosingDate: extensionEnabled ? extendedDate : null,
       })
       onSaved()
     } catch (failure) { setError(failure instanceof Error ? failure.message : 'Could not save the job posting.') }
@@ -63,6 +70,11 @@ function JobEditor({ opening, session, onSaved, onCancel }: {
       <div><label htmlFor="job-closing-date">Application closing date</label><div className={styles.dateRow}><input id="job-closing-date" aria-describedby="job-closing-help" name="closingDate" type="date" min="2020-01-01" max="2099-12-31" value={closingDate} onInput={(event) => setClosingDate(event.currentTarget.value)} onChange={(event) => setClosingDate(event.target.value)} /><button aria-label="Clear closing date" type="button" disabled={!closingDate} onClick={() => setClosingDate('')}>Clear</button></div><p id="job-closing-help" className={styles.help}>Includes the full UK calendar day. Leave blank for no deadline.</p></div>
       <div><label htmlFor="job-start-date">Proposed start date</label><div className={styles.dateRow}><input id="job-start-date" aria-describedby="job-start-help" name="startDate" type="date" min="2020-01-01" max="2099-12-31" value={startDate} onInput={(event) => setStartDate(event.currentTarget.value)} onChange={(event) => setStartDate(event.target.value)} /><button aria-label="Clear start date" type="button" disabled={!startDate} onClick={() => setStartDate('')}>Clear</button></div><p id="job-start-help" className={styles.help}>Leave blank for “To be agreed”.</p></div>
       <label className={`${styles.toggle} ${styles.wide}`}><input type="checkbox" name="acceptingApplications" value="yes" defaultChecked={opening?.accepting_applications ?? true} /><span>Accept applications<span className={styles.help}>Switch off to close this role immediately. A past closing date also closes it.</span></span></label>
+      <div className={styles.wide}>
+        <label className={styles.toggle}><input type="checkbox" checked={extensionEnabled} onChange={event=>setExtensionEnabled(event.target.checked)} /><span>Announce a deadline extension<span className={styles.help}>Show “Deadline extended to” on this role’s job post and application form.</span></span></label>
+        {extensionEnabled && <div className={styles.fields}><label>Extended application deadline<input type="date" required min={closingDate || '2020-01-01'} max="2099-12-31" value={extendedDate} onInput={event=>setExtendedDate(event.currentTarget.value)} onChange={event=>setExtendedDate(event.target.value)} /><span className={styles.help}>Must be later than the original date above. Applications stay open through this date, until 11:59 pm UK time, unless “Accept applications” is switched off.</span></label></div>}
+        <p className={styles.help}>When unchecked, only the original closing date applies. To change a date without announcing an extension, leave this unchecked and edit “Application closing date”.</p>
+      </div>
       <QuestionEditor value={questions} onChange={setQuestions} />
     </fieldset>
     {error && <p role="alert" className={styles.error}>{error}</p>}
@@ -125,7 +137,7 @@ export function JobPostings({ session }: { session: Session }) {
         <div className={styles.cardHeading}><h3>{opening.job_title}</h3><span className={opening.is_open ? styles.open : styles.closed}>{opening.is_open ? 'Open' : 'Closed'}</span></div>
         <p className={styles.meta}>{opening.department} · {opening.location} · {opening.employment_type}</p>
         <p className={styles.meta}>Eligible applicants: {EDUCATION_ELIGIBILITY_LABELS[opening.education_eligibility]}</p>
-        <p className={styles.dates}>Closes: {opening.closing_date ? formatClosingDate(opening.closing_date) : 'No deadline'}<br />Starts: {opening.start_date ? formatClosingDate(opening.start_date) : 'To be agreed'}</p>
+        <p className={styles.dates}>{opening.extended_closing_date ? 'Deadline extended to: ' : 'Closes: '}{opening.closing_date ? formatClosingDate(opening.closing_date) : 'No deadline'}{opening.extended_closing_date && opening.original_closing_date && <><br />Original deadline: {formatClosingDate(opening.original_closing_date)}</>}<br />Starts: {opening.start_date ? formatClosingDate(opening.start_date) : 'To be agreed'}</p>
         {removing === opening.id ? <div className={styles.confirm} role="group" aria-label={`Confirm removal of ${opening.job_title}`}><strong>Remove this posting?</strong><p>It will disappear from the careers page and stop accepting applications. Applications already received will stay in your inbox until their usual deletion date.</p><div className={styles.actions}><button className={styles.danger} type="button" disabled={busy} onClick={() => void remove(opening)}>{busy ? 'Removing…' : 'Remove job'}</button><button disabled={busy} type="button" onClick={() => setRemoving(null)}>Cancel removal</button></div></div> : <div className={styles.actions}><button disabled={busy || loading || Boolean(error)} type="button" onClick={() => { setEditing(opening); setRemoving(null); setMessage('') }} aria-label={`Edit ${opening.job_title}`}>Edit posting</button><button disabled={busy || loading || Boolean(error)} type="button" className={styles.remove} onClick={() => { setRemoving(opening.id); setMessage('') }} aria-label={`Remove ${opening.job_title}`}>Remove</button></div>}
       </article>)}</div>
     </>}

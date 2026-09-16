@@ -11,6 +11,7 @@ class JobPosting extends StatelessWidget {
   final String description;
   final bool isOpen;
   final String? closingDate;
+  final String? extendedClosingDate;
   final String? startDate;
 
   const JobPosting({
@@ -23,6 +24,7 @@ class JobPosting extends StatelessWidget {
     required this.description,
     required this.isOpen,
     this.closingDate,
+    this.extendedClosingDate,
     this.startDate,
   });
 
@@ -52,7 +54,7 @@ class JobPosting extends StatelessWidget {
         const SizedBox(height: 18),
         Text(closingDate == null
             ? 'No closing date'
-            : 'Apply by ${_date(closingDate!)} · 11:59 pm UK time'),
+            : '${extendedClosingDate == null ? 'Apply by' : 'Deadline extended to'} ${_date(closingDate!)} · 11:59 pm UK time'),
         const SizedBox(height: 6),
         Text(startDate == null
             ? 'Proposed start: To be agreed'

@@ -7,6 +7,7 @@ import { getSupabaseAdmin } from '@/lib/supabase/admin'
 const headers = { 'Cache-Control': 'private, no-store', Vary: 'Authorization' }
 const reply = (body: unknown, status = 200) => Response.json(body, { status, headers })
 function failure(error: unknown) {
+  if (error && typeof error === 'object' && 'code' in error && error.code === '23514' && (('constraint' in error && error.constraint === 'career_openings_extension_after_deadline') || ('message' in error && typeof error.message === 'string' && error.message.includes('career_openings_extension_after_deadline')))) return reply({error:'The extended deadline must be later than an existing original closing date. Check both dates.'},400)
   if (error && typeof error === 'object' && 'code' in error && error.code === '23505') {
     return reply({ error: 'A posting with that title already exists. Please use a different title.' }, 409)
   }

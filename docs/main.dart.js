@@ -19751,7 +19751,7 @@ D7:function D7(a){this.a=a},
 Uw:function Uw(){},
 Ux:function Ux(){},
 Uy:function Uy(){},
-oV:function oV(a,b,c,d,e,f,g,h,i,j){var _=this
+oV:function oV(a,b,c,d,e,f,g,h,i,j,k){var _=this
 _.c=a
 _.d=b
 _.e=c
@@ -19761,7 +19761,8 @@ _.w=f
 _.x=g
 _.y=h
 _.z=i
-_.a=j},
+_.Q=j
+_.a=k},
 Ww:function Ww(a){this.a=a},
 oY:function oY(a,b,c){this.c=a
 this.d=b
@@ -61866,7 +61867,7 @@ $0(){this.a.e=!1},
 $S:0}
 A.a7n.prototype={
 $1(a){var s=J.aH(a),r=s.i(a,"id")
-return new A.oV(s.i(a,"id"),s.i(a,"job_title"),s.i(a,"location"),s.i(a,"employment_type"),s.i(a,"department"),s.i(a,"description"),s.i(a,"is_open"),s.i(a,"closing_date"),s.i(a,"start_date"),new A.kZ(r,t.Nf))},
+return new A.oV(s.i(a,"id"),s.i(a,"job_title"),s.i(a,"location"),s.i(a,"employment_type"),s.i(a,"department"),s.i(a,"description"),s.i(a,"is_open"),s.i(a,"closing_date"),s.i(a,"extended_closing_date"),s.i(a,"start_date"),new A.kZ(r,t.Nf))},
 $S:399}
 A.a7o.prototype={
 $0(){return A.mg("/contact")},
@@ -62162,8 +62163,10 @@ p=A.d7(q,j,B.Lw,j)
 o=A.d7(k.e+" \xb7 "+k.f+" \xb7 "+k.r,j,B.Lp,j)
 n=A.d7(k.w,j,j,j)
 m=k.y
-m=A.d7(m==null?"No closing date":"Apply by "+A.aie(i).oP(A.aij(m))+" \xb7 11:59 pm UK time",j,j,j)
-l=k.z
+if(m==null)m="No closing date"
+else{l=k.z==null?"Apply by":"Deadline extended to"
+m=l+" "+A.aie(i).oP(A.aij(m))+" \xb7 11:59 pm UK time"}m=A.d7(m,j,j,j)
+l=k.Q
 p=A.a([p,B.uQ,o,B.J6,n,B.uR,m,B.J8,A.d7(l==null?"Proposed start: To be agreed":"Proposed start: "+A.aie(i).oP(A.aij(l)),j,j,j),B.uR],t.p)
 if(k.x)p.push(A.auj(B.AD,A.d7("Apply for "+q,j,j,j),new A.Ww(k)))
 else p.push(B.Nl)

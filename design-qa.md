@@ -1,3 +1,34 @@
+# Cookie consent and website analytics — 16 September 2026
+
+final result: passed
+
+## Current reference and rendered evidence
+
+- Source: `/var/folders/nf/y0bjgpm530n_g2dp6dngbrqr0000gn/T/TemporaryItems/NSIRD_screencaptureui_OWvre3/Screenshot 2026-09-16 at 14.50.15.png` (2950 × 282; bottom-banner crop).
+- Implementation: `http://127.0.0.1:3110/contact`, first visit, dark bottom dialog and blurred backdrop. `compliance/cookie-desktop-reference-size.png` is 2950 × 1700 at 1475 × 850 CSS px, DPR 2; compare its bottom-banner region to the same-width source. Both images were opened in the same comparison input. The reference contains only the banner, not the surrounding page.
+- Further evidence: `compliance/cookie-manage-desktop.png`, `compliance/cookie-mobile.png`, `compliance/cookie-manage-mobile.png`; mobile 390 × 844, DPR 1.
+- Admin analytics: `compliance/analytics-empty-desktop.png`, `compliance/analytics-populated-desktop.png` (1440 × 1000), `compliance/analytics-populated-mobile.png` (390 × 844). Populated data is a local-only network fixture, not production traffic.
+
+## Fidelity and findings
+
+- Typography: the existing site's Inter/system sans-serif, restrained heading weights, readable 15px consent explanation and 14px action labels. The reference's left-copy/right-actions hierarchy is retained. GI-specific copy is intentionally not identical to Onric.
+- Layout: full-width bottom bar; three actions alongside the explanation on desktop and stacked on mobile. Necessary and optional categories are distinct. The management dialog scrolls on small screens; controls remain reachable with no horizontal overflow. The focus outline is intentionally visible.
+- Colours: near-black with a slight green cast to suit the existing GI workspace, warm off-white text and actions. Reject and Accept have equal filled styling intentionally, to avoid privileging acceptance. Blur is behind the dialog only and clears on either decision.
+- Assets: no image assets are part of the selected cookie reference. Existing public photographs and branding unchanged; admin uses existing Phosphor icons and colours. Charts show actual report values, with accessible daily figures.
+- Copy: professional summary with detailed analytics fields and providers in Manage and the Privacy Notice. One real optional category, off by default. No invented marketing/personalisation toggles, hidden full-IP directory or blanket consent to recruitment.
+- No remaining actionable P0/P1/P2 visual issues. Minor spacing differences from the cropped reference are expected for the adapted copy and equal-prominence choices.
+
+## Comparison history and verification
+
+1. Initial full-view paired comparison matched the dark banner, action ordering, type hierarchy and blur.
+2. P2 fixed: the privacy page's inline Manage link wrapped across lines, leaving its rectangular centre outside the visible link text. Made that control inline-block. After rebuilding, real browser clicks open the panel reliably.
+3. Re-captured and compared the final banner at the reference width; desktop/mobile checks passed. No further material visual changes were needed.
+4. Local browser checks passed first visit, default-off toggle, Reject persistence, Accept, changing preferences, withdrawal without flushing queued activity, privacy-page control, all six public routes and admin exclusion. Analytics requests were intercepted locally; no test visits or form submissions were stored.
+5. Admin empty/populated layouts, period filter, refresh and returning to Messages tested with local-only mocked responses. No browser exceptions; no horizontal overflow on either viewport.
+6. 113 automated tests and the production build passed. The additive database migration passed a rollback dry run and committed with existing application/enquiry/job fingerprints unchanged. Synthetic database tests were rolled back before commit.
+
+## Historical login QA (preserved)
+
 # Minimal admin login — design QA
 
 final result: passed

@@ -1,4 +1,5 @@
 import { after } from 'next/server'
+import { questionSetSchema, validateRoleAnswers, type QuestionSnapshot } from '@/lib/role-questions'
 
 import { sendSubmissionNotification } from '@/lib/notify'
 import { getCareerOpenings } from '@/lib/career-openings'
@@ -37,6 +38,19 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Your student or graduate status does not match this role’s current eligibility. Check the role details or contact us to request a human review.', code: 'EDUCATION_NOT_ELIGIBLE' }, { status: 409 })
     }
 
+    let questionSnapshot: QuestionSnapshot | null = null
+    if ('questionSet' in input) {
+      if (!opening.section_three_questions) return Response.json({error:'This role has returned to its default questions. Please reload the form.',code:'QUESTIONS_CHANGED'},{status:409})
+      const questions=questionSetSchema.parse(opening.section_three_questions)
+      if (JSON.stringify(input.questionSet)!==JSON.stringify(questions)) return Response.json({error:'The role’s questions have changed. Please review the updated questions in Section 3 before submitting.',code:'QUESTIONS_CHANGED'},{status:409})
+      try {
+        const answers=Object.fromEntries(Object.entries(input.roleAnswers).map(([id,a])=>[id,{...a,entries:a.entries.filter(Boolean)}]))
+        questionSnapshot={questions,answers:validateRoleAnswers(questions,answers)}
+      } catch (error) { return Response.json({error:error instanceof Error?error.message:'Please check Section 3.'},{status:400}) }
+    } else if (opening.section_three_questions != null) {
+      return Response.json({error:'This role has updated questions. Please reload the application form.',code:'QUESTIONS_CHANGED'},{status:409})
+    }
+
     const fingerprint = getRequestFingerprint(request)
     if (await isRateLimited('career_applications', fingerprint, 24 * 60, 3)) {
       return Response.json(
@@ -53,13 +67,14 @@ export async function POST(request: Request) {
       email: input.email.toLowerCase(),
       linkedin_url: input.linkedInUrl,
       education: input.education,
-      portfolio_url: input.portfolioUrl || null,
-      project_summary: input.projectSummary,
-      work_links: input.workLinks,
-      awards_status: input.awardsStatus,
-      award_entries: input.awardEntries,
-      biggest_failure: input.biggestFailure,
-      growth_area: input.growthArea,
+      question_snapshot: questionSnapshot,
+      portfolio_url: 'portfolioUrl' in input ? input.portfolioUrl || null : null,
+      project_summary: 'projectSummary' in input ? input.projectSummary : null,
+      work_links: 'workLinks' in input ? input.workLinks : [],
+      awards_status: 'awardsStatus' in input ? input.awardsStatus : null,
+      award_entries: 'awardEntries' in input ? input.awardEntries : null,
+      biggest_failure: 'biggestFailure' in input ? input.biggestFailure : null,
+      growth_area: 'growthArea' in input ? input.growthArea : null,
       application_questions_version: input.applicationQuestionsVersion,
       right_to_work: true,
       immigration_status: input.immigrationStatus,
@@ -78,6 +93,7 @@ export async function POST(request: Request) {
     if (insertError?.message === 'EDUCATION_NOT_ELIGIBLE') {
       return Response.json({ error: 'This role’s eligibility has changed. Check the role details or contact us to request a human review.', code: 'EDUCATION_NOT_ELIGIBLE' }, { status: 409 })
     }
+    if (insertError?.message === 'QUESTIONS_CHANGED') return Response.json({error:'The role’s questions have changed. Please review Section 3 before submitting.',code:'QUESTIONS_CHANGED'},{status:409})
     if (insertError) throw insertError
 
     after(async () => {

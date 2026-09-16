@@ -2,6 +2,7 @@ import { after } from 'next/server'
 
 import { sendSubmissionNotification } from '@/lib/notify'
 import { getCareerOpenings } from '@/lib/career-openings'
+import { isEducationEligible } from '@/lib/career-opening-types'
 import {
   applicationSchema,
   getRequestFingerprint,
@@ -31,6 +32,9 @@ export async function POST(request: Request) {
     const opening = openings.items.find((item) => input.openingId ? item.id === input.openingId : item.job_title === input.jobTitle)
     if (!opening?.is_open) {
       return Response.json({ error: 'Applications for this role have closed.', code: 'APPLICATION_CLOSED' }, { status: 409 })
+    }
+    if (!isEducationEligible(opening.education_eligibility, input.education.status)) {
+      return Response.json({ error: 'Your student or graduate status does not match this role’s current eligibility. Check the role details or contact us to request a human review.', code: 'EDUCATION_NOT_ELIGIBLE' }, { status: 409 })
     }
 
     const fingerprint = getRequestFingerprint(request)
@@ -70,6 +74,9 @@ export async function POST(request: Request) {
 
     if (insertError?.message === 'APPLICATION_CLOSED' || insertError?.message === 'APPLICATION_OPENING_UNAVAILABLE') {
       return Response.json({ error: 'Applications for this role have closed.', code: 'APPLICATION_CLOSED' }, { status: 409 })
+    }
+    if (insertError?.message === 'EDUCATION_NOT_ELIGIBLE') {
+      return Response.json({ error: 'This role’s eligibility has changed. Check the role details or contact us to request a human review.', code: 'EDUCATION_NOT_ELIGIBLE' }, { status: 409 })
     }
     if (insertError) throw insertError
 

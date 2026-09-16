@@ -3,7 +3,7 @@
 import { BriefcaseIcon, PlusIcon } from '@phosphor-icons/react'
 import type { Session } from '@supabase/supabase-js'
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
-import { EMPLOYMENT_TYPES, formatClosingDate, type CareerOpening, type OpeningsSnapshot } from '@/lib/career-opening-types'
+import { EDUCATION_ELIGIBILITY, EDUCATION_ELIGIBILITY_LABELS, EMPLOYMENT_TYPES, formatClosingDate, type CareerOpening, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import styles from './job-postings.module.css'
 
 async function savePosting(session: Session, method: string, body: unknown) {
@@ -39,6 +39,7 @@ function JobEditor({ opening, session, onSaved, onCancel }: {
         jobTitle: data.get('jobTitle'), location: data.get('location'), department: data.get('department'),
         employmentType: data.get('employmentType'), description: data.get('description'),
         acceptingApplications: data.get('acceptingApplications') === 'yes',
+        educationEligibility: data.get('educationEligibility'),
         closingDate: closingDate || null, startDate: startDate || null,
       })
       onSaved()
@@ -54,6 +55,7 @@ function JobEditor({ opening, session, onSaved, onCancel }: {
       <label>Location<input name="location" required minLength={2} maxLength={120} defaultValue={opening?.location || 'Edinburgh, UK'} /></label>
       <label>Department<input name="department" required minLength={2} maxLength={120} defaultValue={opening?.department} /></label>
       <label>Employment type<select name="employmentType" defaultValue={opening?.employment_type || 'Full-time'}>{EMPLOYMENT_TYPES.map((type) => <option key={type}>{type}</option>)}</select></label>
+      <label>Applicant eligibility<select name="educationEligibility" defaultValue={opening?.education_eligibility || 'all'}>{EDUCATION_ELIGIBILITY.map(value => <option value={value} key={value}>{EDUCATION_ELIGIBILITY_LABELS[value]}</option>)}</select><span className={styles.help}>Applies to new submissions only. Existing applications and UK work-permission checks are unchanged.</span></label>
       <label className={styles.wide}>Role description<textarea name="description" required minLength={10} maxLength={2000} rows={5} defaultValue={opening?.description} /><span className={styles.help}>A short, plain-text overview. Up to 2,000 characters.</span></label>
       <div><label htmlFor="job-closing-date">Application closing date</label><div className={styles.dateRow}><input id="job-closing-date" aria-describedby="job-closing-help" name="closingDate" type="date" min="2020-01-01" max="2099-12-31" value={closingDate} onInput={(event) => setClosingDate(event.currentTarget.value)} onChange={(event) => setClosingDate(event.target.value)} /><button aria-label="Clear closing date" type="button" disabled={!closingDate} onClick={() => setClosingDate('')}>Clear</button></div><p id="job-closing-help" className={styles.help}>Includes the full UK calendar day. Leave blank for no deadline.</p></div>
       <div><label htmlFor="job-start-date">Proposed start date</label><div className={styles.dateRow}><input id="job-start-date" aria-describedby="job-start-help" name="startDate" type="date" min="2020-01-01" max="2099-12-31" value={startDate} onInput={(event) => setStartDate(event.currentTarget.value)} onChange={(event) => setStartDate(event.target.value)} /><button aria-label="Clear start date" type="button" disabled={!startDate} onClick={() => setStartDate('')}>Clear</button></div><p id="job-start-help" className={styles.help}>Leave blank for “To be agreed”.</p></div>
@@ -118,6 +120,7 @@ export function JobPostings({ session }: { session: Session }) {
       <div className={styles.grid}>{openings?.map((opening) => <article key={opening.id} className={styles.card}>
         <div className={styles.cardHeading}><h3>{opening.job_title}</h3><span className={opening.is_open ? styles.open : styles.closed}>{opening.is_open ? 'Open' : 'Closed'}</span></div>
         <p className={styles.meta}>{opening.department} · {opening.location} · {opening.employment_type}</p>
+        <p className={styles.meta}>Eligible applicants: {EDUCATION_ELIGIBILITY_LABELS[opening.education_eligibility]}</p>
         <p className={styles.dates}>Closes: {opening.closing_date ? formatClosingDate(opening.closing_date) : 'No deadline'}<br />Starts: {opening.start_date ? formatClosingDate(opening.start_date) : 'To be agreed'}</p>
         {removing === opening.id ? <div className={styles.confirm} role="group" aria-label={`Confirm removal of ${opening.job_title}`}><strong>Remove this posting?</strong><p>It will disappear from the careers page and stop accepting applications. Applications already received will stay in your inbox until their usual deletion date.</p><div className={styles.actions}><button className={styles.danger} type="button" disabled={busy} onClick={() => void remove(opening)}>{busy ? 'Removing…' : 'Remove job'}</button><button disabled={busy} type="button" onClick={() => setRemoving(null)}>Cancel removal</button></div></div> : <div className={styles.actions}><button disabled={busy || loading || Boolean(error)} type="button" onClick={() => { setEditing(opening); setRemoving(null); setMessage('') }} aria-label={`Edit ${opening.job_title}`}>Edit posting</button><button disabled={busy || loading || Boolean(error)} type="button" className={styles.remove} onClick={() => { setRemoving(opening.id); setMessage('') }} aria-label={`Remove ${opening.job_title}`}>Remove</button></div>}
       </article>)}</div>

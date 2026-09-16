@@ -1,4 +1,12 @@
 export const EMPLOYMENT_TYPES = ['Full-time', 'Part-time', 'Fixed-term contract', 'Internship'] as const
+export const EDUCATION_ELIGIBILITY = ['all', 'student', 'graduate'] as const
+export type EducationEligibility = (typeof EDUCATION_ELIGIBILITY)[number]
+export const EDUCATION_ELIGIBILITY_LABELS: Record<EducationEligibility, string> = {
+  all: 'All — students and graduates', student: 'Current students only', graduate: 'Graduates only',
+}
+export function isEducationEligible(policy: unknown, status: unknown) {
+  return (status === 'student' || status === 'graduate') && (policy === 'all' || policy === status)
+}
 export type CareerOpening = {
   id: string
   job_title: string
@@ -7,6 +15,7 @@ export type CareerOpening = {
   employment_type: (typeof EMPLOYMENT_TYPES)[number]
   description: string
   accepting_applications: boolean
+  education_eligibility: EducationEligibility
   created_at: string
   updated_at: string
   closing_date: string | null

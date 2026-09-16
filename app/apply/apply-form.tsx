@@ -15,6 +15,7 @@ import { APPLICATION_QUESTIONS_VERSION } from '@/lib/application-questions'
 import type { RightToWorkDeclaration } from '@/lib/right-to-work'
 import { EligibilityCheck } from './eligibility-check'
 import { ApplicationQuestions } from './application-questions'
+import { EducationQuestions } from './education-questions'
 import styles from './apply-form.module.css'
 
 type Props = { requestedJob: string; requestedTitle: string; initialOpenings: OpeningsSnapshot | null }
@@ -103,6 +104,9 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
         body: JSON.stringify({
           openingId: opening!.id, jobTitle: opening!.job_title, name: formData.get('name'), email: formData.get('email'),
           linkedInUrl: formData.get('linkedInUrl'), portfolioUrl: formData.get('portfolioUrl'),
+          education: formData.get('educationStatus') === 'student'
+            ? { status: 'student', degree: formData.get('degree'), studyYear: formData.get('studyYear') }
+            : { status: formData.get('educationStatus'), graduationYear: formData.get('graduationYear') },
           projectSummary: formData.get('projectSummary'), ...eligibility,
           workLinks: formData.getAll('workLink').map(value => String(value).trim()).filter(Boolean),
           awardsStatus: formData.get('awardsStatus'), awardEntries: formData.getAll('awardEntry'),
@@ -183,6 +187,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                         field.setCustomValidity(!field.value.trim() || normalizeLinkedInProfileUrl(field.value.trim()) ? '' : LINKEDIN_PROFILE_ERROR)
                       }} />
                     </div>
+                    <EducationQuestions />
                   </div>
                 </fieldset>
                 <ApplicationQuestions disabled={!canApply || !eligibility || submitting} />

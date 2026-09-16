@@ -48,6 +48,7 @@ export async function POST(request: Request) {
       name: input.name,
       email: input.email.toLowerCase(),
       linkedin_url: input.linkedInUrl,
+      education: input.education,
       portfolio_url: input.portfolioUrl || null,
       project_summary: input.projectSummary,
       work_links: input.workLinks,

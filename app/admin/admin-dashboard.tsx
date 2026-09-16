@@ -29,6 +29,8 @@ import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
 import { RetentionNotice } from '@/app/admin/retention-notice'
 import { WorkLinkList } from '@/app/admin/work-link-list'
 import { SubmissionContact } from '@/app/admin/submission-contact'
+import { SubmissionEducation } from '@/app/admin/submission-education'
+import type { ApplicationEducation } from '@/lib/application-education'
 import styles from './admin-workspace.module.css'
 import { isWithinRetention } from '@/lib/privacy'
 import { ACTIVITY_DETAIL_QUESTION, AWARD_DETAIL_QUESTION, AWARDS_QUESTION, FAILURE_QUESTION, GROWTH_QUESTION, NO_AWARDS_LABEL, WORK_QUESTION } from '@/lib/application-questions'
@@ -47,6 +49,7 @@ type Submission = {
   email: string
   phone: string | null
   linkedin_url?: string | null
+  education?: ApplicationEducation | null
   status: string
   message?: string
   job_title?: string
@@ -481,6 +484,7 @@ export function AdminDashboard() {
                 )}
 
                 {kind === 'application' && <RightToWorkEvidence key={`${selectedItem.id}:${session.user.id}`} id={selectedItem.id} session={session} />}
+                {kind === 'application' && <SubmissionEducation education={selectedItem.education} />}
                 <article className="admin-message-body">
                   <p className="section-index">{kind === 'contact' ? 'Message' : selectedItem.application_questions_version ? WORK_QUESTION : 'Project highlight'}</p>
                   <p>{getSubmissionPreview(selectedItem)}</p>

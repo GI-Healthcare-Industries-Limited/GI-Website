@@ -132,6 +132,9 @@
 @media (prefers-reduced-motion: reduce) { .layout * { transition: none; } }
 .description { color: #68715f; font-size: 13px; line-height: 1.8; white-space: pre-line; overflow-wrap: anywhere; }
 .inputChoice { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; color: #526047; font-size: 12px; line-height: 1.6; }
+.educationGroup { min-width: 0; margin: 4px 0 0; padding: 0; border: 0; }
+.section .educationGroup legend { margin-bottom: 12px; font-size: 14px; line-height: 1.5; font-weight: 500; letter-spacing: 0; }
+.educationFields { display: grid; gap: 18px; margin-top: 20px; }
 .inputChoice input { width: 16px; height: 16px; margin: 2px 0 0; flex-shrink: 0; accent-color: #687658; }
 .awardsSection { border: 0; margin: 0; padding: 0 0 28px; min-width: 0; border-bottom: 1px solid #e8e9e4; }
 .section .awardsSection legend { font-size: 15px; line-height: 1.6; margin-bottom: 0; letter-spacing: 0; font-weight: 500; }

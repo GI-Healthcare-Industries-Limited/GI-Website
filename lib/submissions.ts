@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION, PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import { ANSWER_WORD_LIMITS, APPLICATION_QUESTIONS_VERSION, FAILURE_QUESTION, GROWTH_QUESTION, MAX_AWARDS, MAX_WORK_LINKS, WORK_QUESTION, countWords, isSafeWorkLink } from '@/lib/application-questions'
 import { rightToWorkSchema } from '@/lib/right-to-work'
+import { educationSchema } from '@/lib/application-education'
 import { LINKEDIN_PROFILE_ERROR, normalizeLinkedInProfileUrl } from '@/lib/linkedin'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
 
@@ -36,6 +37,7 @@ export const applicationSchema = z.object({
   linkedInUrl: z.string({ error: LINKEDIN_PROFILE_ERROR }).trim().min(1, LINKEDIN_PROFILE_ERROR).max(2048)
     .refine(value => normalizeLinkedInProfileUrl(value) !== null, LINKEDIN_PROFILE_ERROR)
     .transform(value => normalizeLinkedInProfileUrl(value)!),
+  education: educationSchema,
   portfolioUrl: z.string().trim().max(2048).refine((value) => {
     if (!value) return true
     try { return ['http:', 'https:'].includes(new URL(value).protocol) } catch { return false }

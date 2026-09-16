@@ -1,3 +1,20 @@
+# Outlined Reject button — 17 September 2026
+
+final result: passed
+
+## Evidence and comparison
+
+- Source visual truth: the approved white dock in `compliance/cookie-dock-desktop.png` (1280 × 720) and `compliance/cookie-dock-mobile.png` (390 × 844), with the user's explicit override to make Reject white and Accept dark.
+- Rendered implementation: `compliance/cookie-outlined-desktop.png` and `compliance/cookie-outlined-mobile.png`, matching CSS viewport/pixel dimensions, DPR 1, `/contact`, first visit and summary open. Source and implementation were opened together in one comparison input. The controls are readable without a separate enlarged crop.
+- Additional state: `compliance/cookie-outlined-manage-mobile.png`, `compliance/cookie-outlined-manage-desktop.png`, `compliance/cookie-outlined-home.png`. In-app browser also visually verified.
+- Typography, spacing, geometry, icons, imagery and copy are unchanged. Colours are the only intended visual difference: Reject is white with near-black text/border; Accept is near-black with white text. Both retain equal dimensions, readable labels and visible keyboard focus. Hover remains clearly distinguishable.
+- No actionable P0/P1/P2 findings on first visual comparison; no further visual corrections required. Mobile management actions remain visible without horizontal overflow.
+- 124 automated tests and production build passed. Browser measured 3012.9ms from load completion; Accept/Reject/Manage, persistence, withdrawal, Flutter readiness, all public routes and admin exclusion passed with no exceptions. Analytics requests intercepted; no submissions or database changes.
+- Test-maintenance correction: ordering assertion now examines summary HTML rather than finding the new Reject CSS selector before the buttons.
+- Implementation checklist: mirrored scripts updated, regression test added, desktop/mobile behaviour and visual comparison passed. Analytics redesign is separate and not implemented by this release.
+
+## Historical QA (preserved)
+
 # White cookie dock — 16 September 2026, evening revision
 
 final result: passed

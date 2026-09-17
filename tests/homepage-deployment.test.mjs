@@ -8,10 +8,10 @@ test('3D homepage owns Home while Space and Careers retain their existing app', 
   const module = { exports: {} }
   const code = ts.transpileModule(readFileSync('next.config.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
   new Function('module', 'exports', code)(module, module.exports)
-  assert.deepEqual(await module.exports.default.rewrites(), [
+  assert.deepEqual(await module.exports.default.rewrites(), { beforeFiles: [
     { source: '/', has: [{ type: 'query', key: 'page', value: '(?:space|careers)' }], destination: '/index.html' },
     { source: '/', destination: '/vision/index.html' },
-  ])
+  ] })
 })
 
 test('live bundle is namespaced, indexable, consent-aware and preserves all runtime assets', () => {

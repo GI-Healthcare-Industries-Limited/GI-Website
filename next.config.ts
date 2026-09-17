@@ -19,7 +19,16 @@ const nextConfig: NextConfig = {
     }]
   },
   async rewrites() {
-    return [{ source: '/', destination: '/index.html' }]
+    // Vercel resolves public/index.html at / before afterFiles rewrites. Route
+    // before the filesystem so Home cannot fall through to the legacy shell.
+    return { beforeFiles: [
+      {
+        source: '/',
+        has: [{ type: 'query', key: 'page', value: '(?:space|careers)' }],
+        destination: '/index.html',
+      },
+      { source: '/', destination: '/vision/index.html' },
+    ] }
   },
   async headers() {
     return [

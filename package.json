@@ -6,6 +6,7 @@
     "node": "24.x"
   },
   "scripts": {
+    "build:homepage": "node scripts/build-homepage.mjs",
     "prepare-public": "node scripts/prepare-public.mjs",
     "predev": "npm run prepare-public",
     "dev": "next dev",

@@ -1,0 +1,107 @@
+[
+  {
+    "file": "grass-colour.jpg",
+    "source": "https://polyhaven.com/a/aerial_grass_rock",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/aerial_grass_rock/aerial_grass_rock_diff_1k.jpg",
+    "license": "CC0",
+    "bytes": 666655
+  },
+  {
+    "file": "grass-normal.jpg",
+    "source": "https://polyhaven.com/a/aerial_grass_rock",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/aerial_grass_rock/aerial_grass_rock_nor_gl_1k.jpg",
+    "license": "CC0",
+    "bytes": 904956
+  },
+  {
+    "file": "concrete-colour.jpg",
+    "source": "https://polyhaven.com/a/concrete_wall_006",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_006/concrete_wall_006_diff_1k.jpg",
+    "license": "CC0",
+    "bytes": 769415
+  },
+  {
+    "file": "concrete-normal.jpg",
+    "source": "https://polyhaven.com/a/concrete_wall_006",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/concrete_wall_006/concrete_wall_006_nor_gl_1k.jpg",
+    "license": "CC0",
+    "bytes": 1195078
+  },
+  {
+    "file": "rock-colour.jpg",
+    "source": "https://polyhaven.com/a/coast_sand_rocks_02",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/coast_sand_rocks_02/coast_sand_rocks_02_diff_1k.jpg",
+    "license": "CC0",
+    "bytes": 839184
+  },
+  {
+    "file": "rock-normal.jpg",
+    "source": "https://polyhaven.com/a/coast_sand_rocks_02",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/coast_sand_rocks_02/coast_sand_rocks_02_nor_gl_1k.jpg",
+    "license": "CC0",
+    "bytes": 1265458
+  },
+  {
+    "file": "wood-colour.jpg",
+    "source": "https://polyhaven.com/a/wood_planks_dirt",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_planks_dirt/wood_planks_dirt_diff_1k.jpg",
+    "license": "CC0",
+    "bytes": 918123
+  },
+  {
+    "file": "wood-normal.jpg",
+    "source": "https://polyhaven.com/a/wood_planks_dirt",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_planks_dirt/wood_planks_dirt_nor_gl_1k.jpg",
+    "license": "CC0",
+    "bytes": 515002
+  },
+  {
+    "file": "oak-colour.jpg",
+    "source": "https://polyhaven.com/a/oak_veneer_01",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_veneer_01/oak_veneer_01_diff_1k.jpg",
+    "license": "CC0",
+    "bytes": 641756
+  },
+  {
+    "file": "oak-normal.jpg",
+    "source": "https://polyhaven.com/a/oak_veneer_01",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/oak_veneer_01/oak_veneer_01_nor_gl_1k.jpg",
+    "license": "CC0",
+    "bytes": 484844
+  },
+  {
+    "file": "leaves.png",
+    "source": "https://polyhaven.com/a/tree_small_02",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/tree_small_02/tree_small_02_leaves_diff_1k.png",
+    "license": "CC0",
+    "bytes": 2338424
+  },
+  {
+    "file": "leaves-alpha.png",
+    "source": "https://polyhaven.com/a/tree_small_02",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/tree_small_02/tree_small_02_leaves_alpha_1k.png",
+    "license": "CC0",
+    "bytes": 264711
+  },
+  {
+    "file": "daylight.hdr",
+    "source": "https://polyhaven.com/a/overcast_soil",
+    "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/overcast_soil_1k.hdr",
+    "license": "CC0",
+    "bytes": 1650749
+  },
+  {
+    "file": "moon-colour.jpg",
+    "source": "https://svs.gsfc.nasa.gov/4720",
+    "url": "https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_2k.jpg",
+    "license": "NASA SVS — credit required; see source media-use guidance",
+    "bytes": 457942
+  },
+  {
+    "file": "mars-colour.jpg",
+    "source": "https://www.solarsystemscope.com/textures/",
+    "url": "https://www.solarsystemscope.com/textures/download/2k_mars.jpg",
+    "license": "CC BY 4.0 — Solar System Scope / INOVE",
+    "bytes": 750547
+  }
+]

@@ -18,16 +18,22 @@
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/supabase-js": "2.112.4",
+    "d3-geo": "^3.1.1",
+    "echarts": "^6.1.0",
     "next": "16.3.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@types/d3-geo": "^3.1.1",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "i18n-iso-countries": "^7.14.0",
     "pg": "8.16.3",
-    "typescript": "^5.9.0"
+    "topojson-client": "^3.1.0",
+    "typescript": "^5.9.0",
+    "world-atlas": "^2.0.2"
   }
 }

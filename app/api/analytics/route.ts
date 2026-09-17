@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto'
 import { getSupabaseAdmin } from '@/lib/supabase/admin'
-import { analyticsConsent, analyticsEventSchema, coarseClient } from '@/lib/website-analytics'
+import { analyticsConsent, analyticsEventSchema, coarseClient, coarseLocation } from '@/lib/website-analytics'
 
 export const dynamic = 'force-dynamic'
 const headers = { 'Cache-Control': 'no-store' }
@@ -27,10 +27,8 @@ export async function POST(request: Request) {
     // IP is used transiently for abuse prevention only, never stored with analytics.
     const ip=request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'unknown'
     const fingerprint=createHmac('sha256',secret).update(`analytics:${Math.floor(Date.now()/3600000)}:${ip}`).digest('hex')
-    const location=process.env.VERCEL==='1'?request.headers.get('x-vercel-ip-country')||'ZZ':'ZZ'
-    const country=/^[A-Z]{2}$/.test(location)?location:'ZZ'
     const {error,data}=await getSupabaseAdmin().rpc('record_website_view',{
-      event: {...parsed.data,...coarseClient(ua),country}, bucket:fingerprint,
+      event: {...parsed.data,...coarseClient(ua),...coarseLocation(request.headers)}, bucket:fingerprint,
     }).abortSignal(AbortSignal.timeout(8000))
     if(error)throw new Error('Unavailable')
     return new Response(null,{status:data?204:429,headers})

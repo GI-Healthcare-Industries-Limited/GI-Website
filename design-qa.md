@@ -1,3 +1,39 @@
+# Analytics Page Explorer (option 1) — 17 September 2026
+
+final result: passed
+
+## Evidence and matched state
+
+- Source visual truth: `/Users/gihealthcareindustrieslimited/.codex/generated_images/019fb87f-090d-79b1-94ba-81092418c106/exec-425e9fc6-fe8c-4b90-a200-c3f3083dfdce.png`, 1487 × 1058 pixels. Selected option 1, Careers tab, populated dashboard.
+- Implementation: `compliance/page-explorer-desktop-final.png`, same 1487 × 1058 CSS/pixel viewport, DPR 1, localhost `/admin`, Careers selected, synthetic local records only. Both images opened together in the same comparison input after corrections, with original-density images. No browser frame or density mismatch.
+- Additional evidence: `compliance/page-explorer-390.png`, `page-explorer-768.png`, `page-explorer-1200.png` (matching width × 900, DPR 1); `page-explorer-detail.png`, `page-explorer-detail-mobile.png` (390 × 844), `page-explorer-breakdowns.png`, `page-explorer-empty.png`, `page-explorer-error.png`.
+- Full-view comparison includes clearly legible chart, navigation, metric and table typography at original resolution; no enlarged source crop was needed. Detail-dialog and breakdown screenshots separately inspect the dense information and wrapping added beyond the reference.
+
+## Comparison history and fixes
+
+1. Initial comparison: [P2] northern map polygons crossed the antimeridian as horizontal lines; fixed with the documented ECharts projection-stream interface and D3 Natural Earth projection, using real bundled Natural Earth geometry. [P2] closing a detail dialog did not always restore keyboard focus after an accessibility click; focus now explicitly returns to the row's real button.
+2. Responsive check: [P2] an absolutely positioned screen-reader table label escaped its horizontal scroll container at 390px. Added a positioned containing block. Darkened small location/footnote text for contrast. Rebuilt and recaptured the same desktop and mobile states.
+3. Post-fix combined source/render comparison: map boundaries are continuous, typography and table labels readable, desktop hierarchy follows the selected reference. Phone and tablet controls remain visible; page-level horizontal overflow is absent (the detailed table intentionally scrolls within its own labelled, keyboard-focusable region). Isolated browser checks confirm focus restoration and Escape dismissal. No actionable P0/P1/P2 findings remain.
+
+## Fidelity surfaces and intentional adaptations
+
+- Typography: existing Inter font confirmed loaded by computed styles; compact medium-weight headings, tabular metrics, normal-weight detail text. Existing admin shell's title/sidebar typography is preserved, rather than resizing the Messages/Applications/Job postings shell.
+- Layout: forest sidebar, off-white canvas, compact page tabs and inline KPIs, chart/map side by side, full-width page-view list below. Subtle borders and 10px surfaces. Additional accessible daily figures, country/city toggle and 20-row pagination intentionally make panels/table slightly taller than the four-row concept.
+- Colours: forest accents, muted geographic data, white surfaces and pale grey-green borders. Selected tabs and focus rings distinguish states. Cookie buttons remain dark Accept and white outlined Reject of equal size.
+- Assets: existing GI orbit wordmark and genuine Phosphor icons retained. Functional charts use Apache ECharts; map is actual Natural Earth data with D3 projection, not a fabricated illustration or remote tile service. Attribution/licenses bundled. No new decorative imagery.
+- Content: all figures derive from the same filtered report (the concept's inconsistent illustrative graph totals were not copied). Last 7/14/30 days replaces the static illustrative date. Added Privacy filter and refresh. Country bubbles are explicitly aggregates, cities are estimates, records are page views rather than people, and unknown historical fields are not invented. Detailed records are not described as guaranteed anonymous.
+
+## Verification and remaining limits
+
+- Production build, TypeScript and 131 automated tests passed; dependency audit found zero production vulnerabilities.
+- Local browser tests: filters, anchored previous/next pagination, period changes, country/city switch, device/browser/OS/source expansion, details, keyboard/Escape/focus, empty state, actual mocked HTTP 503 and retry, navigation back through Messages; no runtime exceptions. Synthetic data and mocked authentication only, never production form submissions or fake committed visits.
+- Agent-browser verified the initial server and most interactions; its driver stalled during a final navigation check. An isolated Chromium/Playwright run completed that same full test flow successfully. In-app tooling lacks the required response-mocking facility, so this follows the local browser-check permission already given.
+- Consent browser checks: 3004.5ms load delay, desktop/mobile, Accept/Reject/Manage, preference persistence, withdrawal, Flutter first-frame readiness, public routes and admin exclusion. All pass. Unit tests additionally verify old refusals stay valid and old acceptances cannot authorize v2 collection.
+- Database migration tested inside a rollback transaction, then applied with matching before/after record fingerprints. Recruitment/enquiry tables unchanged; legacy analytics retained. Synthetic database fixtures rolled back. New report tested through the real Supabase API without printing visitor records; service-role-only permissions, RLS and existing retention schedules verified.
+- No claim of a real owner-password sign-in or real visitor geolocation test: admin UI uses local auth fixtures; Vercel-derived cities/OS will appear only on new, consenting production visits. VPNs, missing headers and browser limitations may prevent city attribution.
+
+## Historical QA (preserved)
+
 # Outlined Reject button — 17 September 2026
 
 final result: passed

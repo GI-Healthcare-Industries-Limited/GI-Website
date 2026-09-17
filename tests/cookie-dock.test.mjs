@@ -19,7 +19,17 @@ function fixture({flutter=false, firstFrame=false, readyState='complete', cookie
   function tick(ms){const end=now+ms;while(true){const entry=[...timers.entries()].filter(([,t])=>t.at<=end).sort((a,b)=>a[1].at-b[1].at)[0];if(!entry)break;const[id,t]=entry;now=t.at;timers.delete(id);if(t.delay)timers.set(id,{...t,at:now+t.delay});t.fn()}now=end}
   return {document,window,root,location,requests,elements,tick,click:action=>root.events.click({target:{closest:()=>({dataset:{action}})}})}
 }
-const saved=analytics=>'gi_privacy='+encodeURIComponent(JSON.stringify({v:'gi-analytics-v1',at:999_000,analytics}))
+const saved=(analytics,v='gi-analytics-v2')=>'gi_privacy='+encodeURIComponent(JSON.stringify({v,at:999_000,analytics}))
+
+test('old refusal is honoured, while old acceptance asks afresh before expanded analytics',()=>{
+  const refused=fixture({cookie:saved(false,'gi-analytics-v1')});refused.tick(10000)
+  assert.equal(refused.elements.dialog.open,false);assert.equal(refused.requests.length,0)
+  const accepted=fixture({cookie:saved(true,'gi-analytics-v1')});accepted.tick(2999)
+  assert.equal(accepted.elements.dialog.open,false);assert.equal(accepted.requests.length,0)
+  accepted.tick(1);assert.equal(accepted.elements.dialog.open,true);assert.equal(accepted.elements['#analytics'].checked,false)
+  accepted.click('accept');assert.match(decodeURIComponent(accepted.document.cookie),/gi-analytics-v2/)
+  assert(accepted.requests.length>0)
+})
 
 test('dock waits until page load plus three seconds; no analytics before consent',()=>{
   const f=fixture({readyState:'loading'});f.tick(5000);assert.equal(f.elements.dialog.open,false)

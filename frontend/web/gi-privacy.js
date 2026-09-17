@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   if (window.GIPrivacy) return;
-  const VERSION='gi-analytics-v1', MAX_AGE=180*86400000;
+  const VERSION='gi-analytics-v2', MAX_AGE=180*86400000;
   let memoryChoice=null, view=null, seconds=0, clicks=0, lastTick=Date.now(), lastAction=Date.now(), stopped=false;
   let lastLocation=location.href, previousFocus=null, promptTimer=null, mounted=false;
   let loaded=document.readyState==='complete';
@@ -14,7 +14,8 @@
     try {
       const raw=document.cookie.split(';').map(s=>s.trim()).find(s=>s.startsWith('gi_privacy='));
       const c=raw?JSON.parse(decodeURIComponent(raw.slice(11))):memoryChoice;
-      return c && c.v===VERSION && typeof c.analytics==='boolean' && Number.isFinite(c.at) && c.at<=Date.now() && Date.now()-c.at<MAX_AGE?c:null;
+      // Honour prior refusals; prior acceptance does not authorise the new fields.
+      return c && (c.v===VERSION || c.v==='gi-analytics-v1' && c.analytics===false) && typeof c.analytics==='boolean' && Number.isFinite(c.at) && c.at<=Date.now() && Date.now()-c.at<MAX_AGE?c:null;
     } catch {return null;}
   }
   function pageName(url=location.href){
@@ -67,7 +68,7 @@
     <div class="manage" id="preferences" hidden>
       <h2 id="gi-preferences-title">Manage your privacy choices</h2><p>You decide whether to allow optional analytics. The website and application forms work either way.</p>
       <div class="category"><div><strong>Strictly necessary</strong><p>Security, essential administrator sign-in and remembering your privacy choice. These functions cannot be switched off here.</p></div><span class="badge">Always on</span></div>
-      <div class="category"><div><strong id="analytics-label">Website analytics</strong><p id="analytics-help">Page views, navigation clicks, approximate active time, country, device/browser category and referral category. No form answers, passwords, typing, recordings or precise location. Full IP addresses are not retained in our analytics database.</p></div><label><input aria-labelledby="analytics-label" aria-describedby="analytics-help" id="analytics" type="checkbox" role="switch"><span id="toggle-state">Off</span></label></div>
+      <div class="category"><div><strong id="analytics-label">Website analytics</strong><p id="analytics-help">Page views, navigation clicks, approximate active time, estimated country/region/city, device/browser/operating-system category and referral category. The owner can view these details for individual page views. No form answers, passwords, typing, recordings or precise location. Full IP addresses are not retained in our analytics database.</p></div><label><input aria-labelledby="analytics-label" aria-describedby="analytics-help" id="analytics" type="checkbox" role="switch"><span id="toggle-state">Off</span></label></div>
       <p class="fine">GI Healthcare operates these first-party analytics using Vercel and Supabase; Cloudflare provides domain/network services. Analytics records expire after 30 days. Your choice is remembered on this browser for 180 days. Service providers also process connection/security information, including IP addresses, as explained in our <a href="/privacy" target="_blank" rel="noopener">Privacy Notice</a>. No advertising trackers.</p>
       <div class="actions"><button type="button" data-action="back">Back</button><button type="button" class="choice" data-action="reject">Reject</button><button type="button" class="choice" data-action="save">Save choices</button></div>
     </div>

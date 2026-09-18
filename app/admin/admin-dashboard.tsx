@@ -37,6 +37,7 @@ import type { ApplicationEducation } from '@/lib/application-education'
 import styles from './admin-workspace.module.css'
 import { isWithinRetention } from '@/lib/privacy'
 import { ACTIVITY_DETAIL_QUESTION, AWARD_DETAIL_QUESTION, AWARDS_QUESTION, FAILURE_QUESTION, GROWTH_QUESTION, NO_AWARDS_LABEL, WORK_QUESTION } from '@/lib/application-questions'
+import { shouldResetAdminWorkspace } from '@/lib/admin-session-state'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
 
 type Kind = 'contact' | 'application'
@@ -130,9 +131,12 @@ export function AdminDashboard() {
   const loadRequest = useRef(0)
   const clockOffset = useRef(0)
   const locked = useRef(false)
+  const activeAdminUserId = useRef<string | null>(null)
+  const sessionRef = useRef<Session | null>(null)
 
   const endSession = useCallback(() => {
     locked.current = true
+    sessionRef.current = null
     loadRequest.current++
     setItems([]); setSelectedId(null); setSearchQuery(''); setSession(null)
     // Clear the UI and stored token even when the network is offline. Token
@@ -148,7 +152,11 @@ export function AdminDashboard() {
     }
 
     void supabase.auth.getSession().then(({ data, error: sessionError }) => {
-      if (!locked.current) setSession(data.session)
+      if (!locked.current) {
+        sessionRef.current = data.session
+        activeAdminUserId.current = data.session?.user.id ?? null
+        setSession(data.session)
+      }
       if (sessionError) setError('Your sign-in link may have expired. Please request a new password reset link or sign in again.')
       setCheckingSession(false)
     }).catch(() => {
@@ -159,25 +167,36 @@ export function AdminDashboard() {
     const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
       if (event === 'SIGNED_IN') locked.current = false
       if (locked.current && nextSession) return
+      const nextUserId = nextSession?.user.id ?? null
+      const resetWorkspace = shouldResetAdminWorkspace(activeAdminUserId.current, nextUserId)
+      activeAdminUserId.current = nextUserId
+      sessionRef.current = nextSession
       loadRequest.current++
       setSession(nextSession)
-      setItems([])
-      setSelectedId(null)
-      setSearchQuery('')
+      // Supabase may emit INITIAL_SESSION, SIGNED_IN or TOKEN_REFRESHED when a
+      // background tab becomes active. A fresh token for the same admin must
+      // not discard the candidate currently being reviewed.
+      if (resetWorkspace) {
+        setItems([])
+        setSelectedId(null)
+        setSearchQuery('')
+      }
       setCheckingSession(false)
     })
     return () => listener.subscription.unsubscribe()
   }, [supabase])
 
+  const sessionUserId = session?.user.id ?? null
   const loadSubmissions = useCallback(async () => {
-    if (!session) return
+    const activeSession = sessionRef.current
+    if (!activeSession) return
     const requestId = ++loadRequest.current
     setLoading(true)
     setError(null)
     try {
       const params = new URLSearchParams({ kind })
       if (statusFilter !== 'all') params.set('status', statusFilter)
-      const response = await authenticatedFetch(session, `/api/admin/submissions?${params}`)
+      const response = await authenticatedFetch(activeSession, `/api/admin/submissions?${params}`)
       const payload = (await response.json()) as { items?: Submission[]; error?: string; checkedAt?: string }
       if (requestId !== loadRequest.current) return
       if (response.status === 401) {
@@ -197,7 +216,10 @@ export function AdminDashboard() {
     } finally {
       if (requestId === loadRequest.current) setLoading(false)
     }
-  }, [kind, session, statusFilter, endSession])
+  // Depend on identity, not the short-lived token object. Supabase can replace
+  // the session on tab focus; the ref supplies the fresh token without
+  // remounting the inbox or collapsing its scroll position.
+  }, [kind, sessionUserId, statusFilter, endSession])
 
   useEffect(() => {
     setItems([])

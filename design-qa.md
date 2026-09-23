@@ -170,3 +170,24 @@ No remaining actionable P0/P1/P2 visual findings after the responsive correction
 
 - Optional P3: obtain a higher-density browser capture if pixel-level text antialiasing comparison is needed.
 - Account holder should test password-reset email receipt and complete the reset themselves if required.
+# Research page — approved product-led design
+
+final result: passed
+
+Source: `/Users/gihealthcareindustrieslimited/.codex/generated_images/019fb87f-090d-79b1-94ba-81092418c106/exec-6fa909b4-682d-43c3-8caf-80ab6f0e501c.png` (1003 × 1568).
+Implementation: `http://127.0.0.1:4174/research`.
+Evidence: `/tmp/gi-research-desktop-hero-final.png`, `/tmp/gi-research-desktop-bottom-final.png`, `/tmp/gi-research-mobile.png`, and paired `/tmp/gi-research-focused-comparison.png`.
+Desktop viewport 1003 × 720, mobile 390 × 844. Captures match CSS pixels; paired source/implementation regions are identically scaled. Full-page screenshot stitching produced white gaps, so the final comparison uses separate top and bottom viewport captures instead. The earlier full-view comparison established section order and proportions; focused captures verify readable content and imagery.
+
+Findings and iteration: initial desktop typography was smaller than the mock and numbered rows were too tall. Increased heading sizes and reduced row heights; recaptured the final desktop hero and lower section and compared with matching source regions. No remaining P0/P1/P2 findings.
+
+- Typography: existing Inter, restrained 450-weight headings, responsive line breaks, readable body copy. Approved headline and three principles retained.
+- Spacing: image-led hero, three open numbered rows, two-column lower section. Mobile stacks content with no horizontal overflow. Shared site header intentionally keeps existing dimensions.
+- Colours: existing red header, warm-white principles, charcoal copy, muted olive numerals.
+- Imagery: studio hero generated as a separate text-free asset; lunar photograph extracted losslessly from the approved revision, retaining the small countertop machine. Concept captions remain visible. Minor studio-lighting differences are P3; the lower image is pixel-exact source content.
+- Content: matches approved mock; user explicitly deferred wording revisions.
+- Interactions: research anchor lands below sticky header; Discuss our research and mobile Contact links navigate correctly; mobile menu works; Careers Research button opens /research; legacy Space query redirects to Research. No real form submissions made.
+- Browser console: no errors in the checked Research flow. Images loaded; mobile document has no width overflow.
+- Verification: 137 Node tests passed, TypeScript passed, Next production build passed, Flutter release rebuild passed after refreshing its local SDK package paths.
+
+Implementation checklist: complete. Follow-up: user-requested wording refinements after publication.

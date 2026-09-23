@@ -13,11 +13,12 @@ function constants(path) {
 test('contact navigation links match the public-site section allow-list', () => {
   const { SITE_NAVIGATION } = constants('lib/site-navigation.ts')
   assert.deepEqual(SITE_NAVIGATION, [
-    { label: 'Home', href: '/' }, { label: 'Space', href: '/?page=space' },
+    { label: 'Home', href: '/' }, { label: 'Research', href: '/research' },
     { label: 'Careers', href: '/?page=careers' }, { label: 'Contact us', href: '/contact' },
   ])
   const dart = readFileSync('frontend/lib/utils/site_routes.dart', 'utf8')
-  for (const item of SITE_NAVIGATION.slice(1, -1)) assert(dart.includes(`'${new URL(item.href, 'https://example.invalid').searchParams.get('page')}'`))
+  for (const item of SITE_NAVIGATION.filter(item => item.href.includes('?page='))) assert(dart.includes(`'${new URL(item.href, 'https://example.invalid').searchParams.get('page')}'`))
+  assert.match(readFileSync('frontend/lib/providers/navigation_provider.dart', 'utf8'), /_openContact\('\/research'\)/)
   const header = readFileSync('app/contact/site-header.tsx', 'utf8')
   assert.match(header, /<a key={item.href} href={item.href}/)
   assert.match(header, /aria-current=/)
@@ -65,7 +66,7 @@ test('all public pages use the new header, without changing the application or a
 test('removed public pages redirect Home and leave no navigation or success link behind', async () => {
   for (const name of ['about', 'military']) assert.equal(existsSync(`frontend/lib/pages/${name}_page.dart`), false)
   const config = constants('next.config.ts').default
-  assert.deepEqual(await config.redirects(), [{
+  assert.deepEqual((await config.redirects()).filter(route => route.destination === '/?page=home'), [{
     source: '/', has: [{ type: 'query', key: 'page', value: '(?:about|military)' }],
     destination: '/?page=home', permanent: true,
   }])

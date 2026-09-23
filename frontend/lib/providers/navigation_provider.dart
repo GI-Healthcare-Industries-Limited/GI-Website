@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/careers_page.dart';
 import 'package:frontend/pages/home_page.dart';
-import 'package:frontend/pages/space_page.dart';
 import 'package:frontend/utils/helpers.dart';
 import 'package:frontend/utils/site_location.dart' as location;
 import 'package:frontend/utils/site_routes.dart';
@@ -35,7 +34,7 @@ class NavigationProvider with ChangeNotifier {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const SpacePage(),
+    const SizedBox.shrink(), // Research is served by Next.js at /research.
     const CareersPage(),
   ];
 
@@ -47,6 +46,10 @@ class NavigationProvider with ChangeNotifier {
 
   // Function to update the current index and notify listeners
   void updateIndex(int newIndex) {
+    if (newIndex == 1) {
+      _openContact('/research');
+      return;
+    }
     if (newIndex == sitePageNames.length) {
       _openContact('/contact');
       return;

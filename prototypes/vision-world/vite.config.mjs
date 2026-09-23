@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => ({
     <script src="/gi-privacy.js" defer></script>
   </head>`)
         .replace('<div id="root"></div>', `<div id="root"></div>
-    <noscript><main><h1>Freshly cooked. Anywhere.</h1><p>GI Healthcare is developing autonomous cooking machines for everyday life, extreme environments and beyond planet Earth.</p><p>Enable JavaScript to explore our interactive world.</p><nav><a href="/?page=space">Space</a> · <a href="/?page=careers">Careers</a> · <a href="/contact">Contact us</a> · <a href="/privacy">Privacy notice</a></nav></main></noscript>`);
+    <noscript><main><h1>Freshly cooked. Anywhere.</h1><p>GI Healthcare is developing autonomous cooking machines for everyday life, extreme environments and beyond planet Earth.</p><p>Enable JavaScript to explore our interactive world.</p><nav><a href="/research">Research</a> · <a href="/?page=careers">Careers</a> · <a href="/contact">Contact us</a> · <a href="/privacy">Privacy notice</a></nav></main></noscript>`);
     },
   }],
 }));

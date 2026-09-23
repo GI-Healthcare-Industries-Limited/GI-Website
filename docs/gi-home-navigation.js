@@ -1,9 +1,14 @@
-// The legacy Flutter pages retain their native Space/Careers navigation. Home
+// The legacy Flutter app retains Careers navigation. Home and Research
 // now belongs to the independently built 3D experience, so cross that boundary
 // with a document navigation rather than rendering the retired Flutter home.
 (function () {
   function goHomeIfNeeded() {
     var url = new URL(window.location.href);
+    if ((url.pathname === '/' || url.pathname === '/index.html') &&
+        ['space', 'research'].includes(url.searchParams.get('page'))) {
+      window.location.replace('/research');
+      return;
+    }
     if ((url.pathname === '/' || url.pathname === '/index.html') &&
         (!url.searchParams.has('page') || url.searchParams.get('page') === 'home')) {
       window.location.replace('/');

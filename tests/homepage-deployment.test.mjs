@@ -4,12 +4,12 @@ import vm from 'node:vm'
 import test from 'node:test'
 import ts from 'typescript'
 
-test('3D homepage owns Home while Space and Careers retain their existing app', async () => {
+test('3D homepage owns Home while Careers retains its existing app', async () => {
   const module = { exports: {} }
   const code = ts.transpileModule(readFileSync('next.config.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
   new Function('module', 'exports', code)(module, module.exports)
   assert.deepEqual(await module.exports.default.rewrites(), { beforeFiles: [
-    { source: '/', has: [{ type: 'query', key: 'page', value: '(?:space|careers)' }], destination: '/index.html' },
+    { source: '/', has: [{ type: 'query', key: 'page', value: 'careers' }], destination: '/index.html' },
     { source: '/', destination: '/vision/index.html' },
   ] })
 })
@@ -45,7 +45,8 @@ function legacyPage(initial) {
 }
 
 test('legacy navigation keeps secondary pages native and crosses to the new Home without duplicate history entries', () => {
-  const page = legacyPage('/?page=space')
+  for (const route of ['/?page=space', '/index.html?page=space', '/?page=research']) assert.deepEqual(legacyPage(route).navigations, ['/research'])
+  const page = legacyPage('/?page=careers')
   assert.deepEqual(page.navigations, [])
   page.window.history.pushState(null, '', '/?page=careers')
   assert.deepEqual(page.navigations, [])

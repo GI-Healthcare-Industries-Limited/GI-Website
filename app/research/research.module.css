@@ -1,0 +1,49 @@
+.page { background: #fff; color: #292c29; font-weight: 400; -webkit-font-smoothing: antialiased; }
+.hero { position: relative; width: 100%; max-width: 1600px; margin: auto; aspect-ratio: 1.72; min-height: 560px; isolation: isolate; }
+.heroImage { object-fit: cover; z-index: -1; }
+.heroCopy { position: absolute; top: 18%; left: max(40px, calc((100% - 1240px) / 2)); width: 45%; }
+.eyebrow { margin: 0 0 30px; color: #b62b2e; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.hero h1 { margin: 0; font-size: clamp(44px, 6vw, 82px); font-weight: 450; line-height: 1.08; letter-spacing: -.055em; }
+.intro { margin: 32px 0 65px; color: #6b7066; font-size: clamp(17px, 2.2vw, 28px); line-height: 1.45; letter-spacing: -.025em; }
+.textLink { display: inline-flex; justify-content: space-between; align-items: center; gap: 30px; padding: 10px 0 12px; border-bottom: 1px solid #292c29; color: #292c29; font-size: 14px; line-height: 1.5; text-decoration: none; }
+.textLink:hover { color: #b62b2e; border-color: #b62b2e; }
+.textLink:focus-visible { outline: 2px solid #b62b2e; outline-offset: 6px; }
+.annotations { position: absolute; top: 14%; bottom: 25%; right: 3.5%; display: flex; flex-direction: column; justify-content: space-between; font-size: clamp(11px, 1.1vw, 16px); line-height: 1.4; }
+.annotations span { padding-left: 18px; border-left: 1px solid #7e8079; }
+.caption { position: absolute; bottom: 20px; right: 40px; font-size: 11px; color: #55594f; }
+.principles { background: #f6f6f2; border-block: 1px solid #e7e8e1; scroll-margin-top: 90px; }
+.principlesInner { max-width: 1320px; padding: 0 40px; margin: auto; }
+.principle { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 65px; align-items: center; padding: 30px 0; min-height: clamp(150px, 15vw, 195px); }
+.principle + .principle { border-top: 1px solid #d9ddd1; }
+.number { font-size: 88px; font-weight: 350; line-height: 1.15; letter-spacing: -.065em; color: #60664f; border-right: 1px solid #d9ddd1; }
+.principle h2 { margin: 0 0 10px; font-size: clamp(23px, 2.5vw, 34px); font-weight: 450; line-height: 1.2; letter-spacing: -.045em; }
+.principle p { margin: 0; color: #6b7066; font-size: 17px; line-height: 1.6; }
+.future { max-width: 1440px; margin: auto; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.1fr); gap: 54px; padding: 48px 40px 32px; align-items: center; }
+.futureCopy { padding-block: 22px; }
+.future h2 { margin: 0 0 30px; font-size: clamp(38px, 5.2vw, 68px); font-weight: 450; line-height: 1.08; letter-spacing: -.055em; }
+.futureCopy p { max-width: 440px; color: #6b7066; font-size: 17px; line-height: 1.65; margin: 0 0 48px; }
+.habitat { margin: 0; min-width: 0; }
+.habitat img { display: block; width: 100%; height: auto; border-radius: 12px; }
+.habitat figcaption { color: #6b7066; font-size: 10px; margin-top: 9px; text-align: right; }
+@media(min-width:1600px) { .heroCopy { left: 80px; } }
+@media(max-width:1050px) { .heroCopy { left: 32px; } .intro { margin-bottom: 40px; } .annotations { right: 2%; } .principle { grid-template-columns: 130px minmax(0, 1fr); gap: 42px; } .future { gap: 32px; padding-inline: 32px; } }
+@media(max-width:760px) {
+  .hero { aspect-ratio: auto; min-height: 0; padding-top: 38px; display: flex; flex-direction: column; }
+  .heroCopy { position: relative; top: auto; left: auto; width: auto; padding: 0 24px; order: -1; }
+  .eyebrow { margin-bottom: 22px; font-size: 11px; }
+  .hero h1 { font-size: clamp(40px, 9vw, 58px); }
+  .intro { margin: 24px 0 20px; font-size: 18px; }
+  .textLink { font-size: 13px; }
+  .heroImage { position: relative!important; inset: auto!important; height: auto!important; aspect-ratio: 1.25; object-fit: cover; object-position: right center; margin-top: 24px; }
+  .annotations { display: none; }
+  .caption { bottom: 12px; right: 20px; font-size: 10px; }
+  .principlesInner { padding-inline: 24px; }
+  .principle { grid-template-columns: 65px minmax(0, 1fr); gap: 20px; padding: 28px 0; min-height: 145px; }
+  .number { font-size: 48px; }
+  .principle h2 { font-size: 23px; }
+  .principle p { font-size: 14px; }
+  .future { display: flex; flex-direction: column; padding: 38px 24px 28px; gap: 30px; align-items: stretch; }
+  .futureCopy { padding: 0; }
+  .future h2 { font-size: 42px; margin-bottom: 22px; }
+  .futureCopy p { max-width: none; font-size: 15px; margin-bottom: 22px; }
+}

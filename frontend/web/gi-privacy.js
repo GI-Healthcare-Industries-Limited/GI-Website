@@ -21,6 +21,8 @@
   function pageName(url=location.href){
     try {const u=new URL(url,location.origin);if(u.origin!==location.origin)return null;
       if(u.pathname==='/'||u.pathname==='/index.html'){const p=u.searchParams.get('page')||'home';return ['home','space','careers'].includes(p)?p:null;}
+      // Keep the existing analytics bucket so historical Space views remain available.
+      if(u.pathname==='/research')return 'space';
       return ['/contact','/apply','/privacy'].includes(u.pathname)?u.pathname.slice(1):null;
     } catch{return null;}
   }

@@ -11,7 +11,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async redirects() {
-    return [{
+    return [{ source: '/', has: [{ type: 'query', key: 'page', value: '(?:space|research)' }], destination: '/research', permanent: true }, { source: '/space', destination: '/research', permanent: true }, {
       source: '/',
       has: [{ type: 'query', key: 'page', value: '(?:about|military)' }],
       destination: '/?page=home',
@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
     return { beforeFiles: [
       {
         source: '/',
-        has: [{ type: 'query', key: 'page', value: '(?:space|careers)' }],
+        has: [{ type: 'query', key: 'page', value: 'careers' }],
         destination: '/index.html',
       },
       { source: '/', destination: '/vision/index.html' },

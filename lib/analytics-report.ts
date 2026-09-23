@@ -1,4 +1,4 @@
-export const pageLabels = { all: 'All pages', home: 'Home', space: 'Space', careers: 'Careers', contact: 'Contact', apply: 'Application', privacy: 'Privacy' } as const
+export const pageLabels = { all: 'All pages', home: 'Home', space: 'Research', careers: 'Careers', contact: 'Contact', apply: 'Application', privacy: 'Privacy' } as const
 export type AnalyticsPage = keyof typeof pageLabels
 export type AnalyticsGroup = { label: string; views: number }
 export type AnalyticsCity = { city: string | null; region: string | null; country: string; views: number }

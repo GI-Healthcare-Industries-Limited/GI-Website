@@ -7,7 +7,8 @@ contact, careers and admin features.
 ## Routes
 
 - `/`: Home, containing the interactive machine map and supporters only
-- `/?page=space` and `/?page=careers`: the remaining Flutter sections;
+- `/research`: the Research page; legacy Space links redirect here;
+- `/?page=careers`: the remaining Flutter section;
   former About and Military URLs redirect Home
 - `/apply`: same-domain, portfolio-first career application form
 - `/contact`: responsive contact page with the main website navigation and footer;
@@ -92,7 +93,11 @@ version already served by Contact's Next.js image optimiser. Do not replace it
 with the original monitor-profiled PNG: Safari/CanvasKit can render its red
 background differently. The source logo remains unchanged for other surfaces.
 
-Public navigation contains only Home, Space, Careers and Contact us. The Home
+Public navigation contains only Home, Research, Careers and Contact us. Research
+reuses the Contact header and the approved product-led design. Its images live in
+`assets/research/`. Consent-based Research analytics retain the existing `space`
+storage key (displayed as Research), preserving historical views without a migration.
+The Home
 banner, problem/solution sections, About page and Military page are removed;
 their previous source remains recoverable through Git history. The original
 `assets/videos/bg_video.mp4` now appears under Careers → Where are we?, replacing

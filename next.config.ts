@@ -11,7 +11,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async redirects() {
-    return [{ source: '/', has: [{ type: 'query', key: 'page', value: '(?:space|research)' }], destination: '/research', permanent: true }, { source: '/space', destination: '/research', permanent: true }, {
+    return [{ source: '/', has: [{ type: 'query', key: 'page', value: 'careers' }], destination: '/careers', permanent: true }, { source: '/', has: [{ type: 'query', key: 'page', value: '(?:space|research)' }], destination: '/research', permanent: true }, { source: '/space', destination: '/research', permanent: true }, {
       source: '/',
       has: [{ type: 'query', key: 'page', value: '(?:about|military)' }],
       destination: '/?page=home',
@@ -22,11 +22,6 @@ const nextConfig: NextConfig = {
     // Vercel resolves public/index.html at / before afterFiles rewrites. Route
     // before the filesystem so Home cannot fall through to the legacy shell.
     return { beforeFiles: [
-      {
-        source: '/',
-        has: [{ type: 'query', key: 'page', value: 'careers' }],
-        destination: '/index.html',
-      },
       { source: '/', destination: '/vision/index.html' },
     ] }
   },
@@ -39,6 +34,10 @@ const nextConfig: NextConfig = {
       {
         source: '/api/:path*',
         headers: [{ key: 'Cache-Control', value: 'no-store' }],
+      },
+      {
+        source: '/book/:path*',
+        headers: [{ key: 'Cache-Control', value: 'private, no-store' }, { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' }],
       },
     ]
   },

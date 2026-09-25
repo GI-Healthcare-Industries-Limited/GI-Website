@@ -4,14 +4,15 @@ import vm from 'node:vm'
 import test from 'node:test'
 import ts from 'typescript'
 
-test('3D homepage owns Home while Careers retains its existing app', async () => {
+test('3D homepage owns Home and old Careers links redirect to indexable role listings', async () => {
   const module = { exports: {} }
   const code = ts.transpileModule(readFileSync('next.config.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
   new Function('module', 'exports', code)(module, module.exports)
   assert.deepEqual(await module.exports.default.rewrites(), { beforeFiles: [
-    { source: '/', has: [{ type: 'query', key: 'page', value: 'careers' }], destination: '/index.html' },
     { source: '/', destination: '/vision/index.html' },
   ] })
+  assert((await module.exports.default.redirects()).some(route => route.destination === '/careers' && route.has?.some(query => query.value === 'careers')))
+  assert(!(await module.exports.default.redirects()).some(route => route.source.startsWith('/apply')))
 })
 
 test('live bundle is namespaced, indexable, consent-aware and preserves all runtime assets', () => {

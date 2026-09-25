@@ -2,6 +2,6 @@
 export const SITE_NAVIGATION = [
   { label: 'Home', href: '/' },
   { label: 'Research', href: '/research' },
-  { label: 'Careers', href: '/?page=careers' },
+  { label: 'Careers', href: '/careers' },
   { label: 'Contact us', href: '/contact' },
 ] as const

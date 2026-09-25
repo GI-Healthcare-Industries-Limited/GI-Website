@@ -247,7 +247,7 @@ export function App() {
             Home
           </a>
           <a href={sitePath("/research")}>Research</a>
-          <a href={sitePath("/?page=careers")}>Careers</a>
+          <a href={sitePath("/careers")}>Careers</a>
           <a href={sitePath("/contact")}>Contact us</a>
         </nav>
         <button

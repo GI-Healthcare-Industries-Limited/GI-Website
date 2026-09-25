@@ -44,7 +44,7 @@ function fixture() {
     created_at: new Date().toISOString(), retention_expires_at: new Date(Date.now() + 86400000).toISOString(),
     message: `Synthetic enquiry ${index}`, privacy_notice_version: 'test-only',
   }))
-  const slots = [session, false, 'contact', false, false, items]
+  const slots = [session, false, 'contact', false, false, false, null, items]
   let cursor = 0
   let tree
   const calls = []
@@ -90,7 +90,7 @@ test('job postings have their own view without clearing the selected inbox or ma
   await f.click('Messages')
   assert.equal(f.text(f.find(n => n.type === 'h1')), 'Messages')
   assert.equal(f.calls.length, 0)
-  assert.equal(f.slots[5].length, 2)
+  assert.equal(f.slots[7].length, 2)
 })
 
 test('search is read-only and survives returning from job postings to the same inbox', async () => {
@@ -99,11 +99,11 @@ test('search is read-only and survives returning from job postings to the same i
   f.render()
   assert.equal(f.text(f.find(n => n.type === 'h2' && f.text(n) === 'Sam Taylor')), 'Sam Taylor')
   assert.equal(f.nodes().filter(n => n.type === 'button' && typeof n.props['aria-pressed'] === 'boolean').length, 1)
-  assert.equal(f.slots[5].length, 2)
+  assert.equal(f.slots[7].length, 2)
   assert.equal(f.calls.length, 0)
   await f.click('Job postings')
   await f.click('Messages')
-  assert.equal(f.slots[5].length, 2)
+  assert.equal(f.slots[7].length, 2)
   assert.equal(f.find(n => n.type === 'input' && n.props.type === 'search').props.value, 'Sam')
 })
 
@@ -116,14 +116,14 @@ test('status control preserves the authenticated, single-record update contract'
   assert.equal(f.calls[0].method, 'PATCH')
   assert.equal(f.calls[0].headers.Authorization, 'Bearer synthetic-token')
   assert.deepEqual(JSON.parse(f.calls[0].body), { kind: 'contact', id: 'synthetic-0', status: 'resolved' })
-  assert.equal(f.slots[5][1].status, 'new')
+  assert.equal(f.slots[7][1].status, 'new')
 })
 
 test('cancelled deletion cannot send a request or remove a record', async () => {
   const f = fixture()
   await f.click('Delete')
   assert.equal(f.calls.length, 0)
-  assert.equal(f.slots[5].length, 2)
+  assert.equal(f.slots[7].length, 2)
 })
 
 test('confirmed deletion retains its explicit warning and only removes the selected synthetic record', async () => {
@@ -135,7 +135,7 @@ test('confirmed deletion retains its explicit warning and only removes the selec
   assert.match(confirmation, /cannot be undone/i)
   assert.equal(f.calls[0].method, 'DELETE')
   assert.deepEqual(JSON.parse(f.calls[0].body), { kind: 'contact', id: 'synthetic-0' })
-  assert.deepEqual(f.slots[5].map(row => row.id), ['synthetic-1'])
+  assert.deepEqual(f.slots[7].map(row => row.id), ['synthetic-1'])
 })
 
 test('contact metadata separates labels and full values, including long email addresses', () => {

@@ -14,7 +14,7 @@ test('contact navigation links match the public-site section allow-list', () => 
   const { SITE_NAVIGATION } = constants('lib/site-navigation.ts')
   assert.deepEqual(SITE_NAVIGATION, [
     { label: 'Home', href: '/' }, { label: 'Research', href: '/research' },
-    { label: 'Careers', href: '/?page=careers' }, { label: 'Contact us', href: '/contact' },
+    { label: 'Careers', href: '/careers' }, { label: 'Contact us', href: '/contact' },
   ])
   const dart = readFileSync('frontend/lib/utils/site_routes.dart', 'utf8')
   for (const item of SITE_NAVIGATION.filter(item => item.href.includes('?page='))) assert(dart.includes(`'${new URL(item.href, 'https://example.invalid').searchParams.get('page')}'`))

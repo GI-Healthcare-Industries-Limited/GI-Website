@@ -9,7 +9,7 @@
   const flutterPage=Boolean(document.querySelector('script[src="flutter_bootstrap.js"]'));
   let rendered=!flutterPage||document.documentElement.dataset.giFlutterReady==='true';
   const PROMPT_DELAY=3000;
-  const isAdmin=()=>location.pathname.startsWith('/admin');
+  const isAdmin=()=>location.pathname.startsWith('/admin')||location.pathname.startsWith('/book/');
   function readChoice(){
     try {
       const raw=document.cookie.split(';').map(s=>s.trim()).find(s=>s.startsWith('gi_privacy='));
@@ -23,6 +23,7 @@
       if(u.pathname==='/'||u.pathname==='/index.html'){const p=u.searchParams.get('page')||'home';return ['home','space','careers'].includes(p)?p:null;}
       // Keep the existing analytics bucket so historical Space views remain available.
       if(u.pathname==='/research')return 'space';
+      if(u.pathname==='/careers'||u.pathname.startsWith('/careers/'))return 'careers';
       return ['/contact','/apply','/privacy'].includes(u.pathname)?u.pathname.slice(1):null;
     } catch{return null;}
   }

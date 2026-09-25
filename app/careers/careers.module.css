@@ -1,0 +1,249 @@
+.page {
+  max-width: 1240px;
+  margin: auto;
+  padding: 0 40px 70px;
+  color: #252b25;
+}
+.hero {
+  padding: 90px 0 76px;
+  border-bottom: 1px solid #dce1d8;
+}
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: #a13d31;
+  margin: 0 0 20px;
+}
+.hero h1 {
+  font-size: clamp(42px, 6vw, 76px);
+  line-height: 1.07;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  margin: 0 0 24px;
+}
+.hero > p:not(.eyebrow) {
+  color: #63705e;
+  font-size: 20px;
+  line-height: 1.7;
+}
+.primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 22px;
+  background: #263d2c;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 7px;
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 18px;
+}
+.primary:hover {
+  background: #38533f;
+}
+.sectionTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px 0 24px;
+}
+.sectionTitle h2,
+.location h2 {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+.sectionTitle span {
+  font-size: 13px;
+  color: #68715f;
+}
+.roles {
+  scroll-margin-top: 100px;
+}
+.job {
+  padding: 30px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid #dce1d8;
+  color: inherit;
+  text-decoration: none;
+}
+.job:hover h3 {
+  color: #a13d31;
+}
+.job .eyebrow {
+  margin-bottom: 10px;
+  font-size: 10px;
+}
+.job h3 {
+  font-size: clamp(21px, 2.5vw, 28px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+.job p {
+  color: #626d5e;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.job svg {
+  flex-shrink: 0;
+}
+.job .deadline {
+  font-size: 12px;
+  margin-bottom: 0;
+}
+.location {
+  padding: 80px 0 30px;
+}
+.location video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  margin-top: 30px;
+  border-radius: 14px;
+  background: #202923;
+}
+.location > p:last-child {
+  color: #626d5e;
+  line-height: 1.8;
+}
+.footer {
+  display: flex;
+  gap: 26px;
+  flex-wrap: wrap;
+  border-top: 1px solid #dce1d8;
+  padding-top: 30px;
+  font-size: 13px;
+}
+.footer a {
+  color: #40523d;
+}
+.back {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 46px;
+  color: #52614c;
+  font-size: 13px;
+  text-decoration: none;
+}
+.jobHero {
+  padding: 55px 0 48px;
+  border-bottom: 1px solid #dce1d8;
+}
+.jobHero h1 {
+  font-size: clamp(36px, 5vw, 62px);
+  max-width: 930px;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+  line-height: 1.12;
+  margin: 0 0 24px;
+}
+.jobHero > p:last-child {
+  color: #626d5e;
+}
+.detailGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 70px;
+  padding-top: 40px;
+  align-items: start;
+}
+.description h2 {
+  font-weight: 500;
+  font-size: 23px;
+  letter-spacing: -0.02em;
+  margin: 0 0 18px;
+}
+.description h2:not(:first-child) {
+  margin-top: 42px;
+}
+.description p,
+.prose {
+  font-size: 16px;
+  line-height: 1.85;
+  color: #56614f;
+  overflow-wrap: anywhere;
+}
+.prose {
+  white-space: pre-line;
+}
+.description a,
+.applyCard a:not(.primary) {
+  color: #3d573b;
+}
+.applyCard {
+  padding: 26px;
+  background: #f4f6f0;
+  border: 1px solid #e0e5d9;
+  border-radius: 12px;
+  position: sticky;
+  top: 110px;
+}
+.status {
+  font-size: 12px;
+  font-weight: 600;
+  color: #506846;
+}
+.applyCard dl {
+  margin: 28px 0 0;
+}
+.applyCard dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64725d;
+  margin-top: 22px;
+}
+.applyCard dd {
+  margin: 7px 0 0;
+  font-size: 15px;
+}
+.applyCard small {
+  display: block;
+  font-size: 11px;
+  color: #64725d;
+  margin-top: 6px;
+}
+.applyCard .primary {
+  width: 100%;
+  padding: 15px;
+}
+.applyCard > p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+.page :focus-visible {
+  outline: 2px solid #416044;
+  outline-offset: 5px;
+}
+@media (max-width: 760px) {
+  .page {
+    padding: 0 22px 50px;
+  }
+  .hero {
+    padding: 56px 0;
+  }
+  .hero > p:not(.eyebrow) {
+    font-size: 17px;
+  }
+  .detailGrid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .applyCard {
+    position: static;
+  }
+  .jobHero {
+    padding: 35px 0;
+  }
+}

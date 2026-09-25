@@ -12,11 +12,15 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.gihealthcare.co.uk'),
   title: {
     default: 'GI Healthcare',
     template: '%s | GI Healthcare',
   },
-  description: 'GI Healthcare Industries Limited',
+  description: 'GI Healthcare develops autonomous cooking machines for everyday life, extreme environments and space exploration.',
+  icons: { icon: [{ url: '/icons/gi-icon-96.png', type: 'image/png', sizes: '96x96' }], apple: '/icons/gi-icon-180.png' },
+  openGraph: { siteName: 'GI Healthcare', type: 'website', locale: 'en_GB', images: [{ url: '/icons/gi-icon-512.png', width: 512, height: 512, alt: 'GI Healthcare' }] },
+  twitter: { card: 'summary', images: ['/icons/gi-icon-512.png'] },
 }
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

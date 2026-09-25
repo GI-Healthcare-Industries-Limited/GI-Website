@@ -6,6 +6,7 @@ import {
   ArrowsClockwiseIcon,
   BriefcaseIcon,
   ChartBarIcon,
+  CalendarBlankIcon,
   CaretDownIcon,
   CheckCircleIcon,
   EnvelopeSimpleIcon,
@@ -28,6 +29,7 @@ import { clearStoredAdminSession, getSupabaseBrowserClient } from '@/lib/supabas
 import { AdminLogin } from '@/app/admin/admin-login'
 import { JobPostings } from '@/app/admin/job-postings'
 import { WebsiteAnalytics } from '@/app/admin/website-analytics'
+import { InterviewCalendar } from '@/app/admin/interview-calendar'
 import { RightToWorkEvidence } from '@/app/admin/right-to-work-evidence'
 import { RetentionNotice } from '@/app/admin/retention-notice'
 import { WorkLinkList } from '@/app/admin/work-link-list'
@@ -119,6 +121,9 @@ export function AdminDashboard() {
   const [kind, setKind] = useState<Kind>('contact')
   const [showJobs, setShowJobs] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(false)
+  const [showInterviews, setShowInterviews] = useState(false)
+  const [inviteCandidate, setInviteCandidate] = useState<{id:string;name:string;job_title:string}|null>(null)
+  const clearInviteCandidate = useCallback(() => setInviteCandidate(null), [])
   const [items, setItems] = useState<Submission[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState('all')
@@ -138,7 +143,7 @@ export function AdminDashboard() {
     locked.current = true
     sessionRef.current = null
     loadRequest.current++
-    setItems([]); setSelectedId(null); setSearchQuery(''); setSession(null)
+    setItems([]); setSelectedId(null); setSearchQuery(''); setInviteCandidate(null); setShowInterviews(false); setSession(null)
     // Clear the UI and stored token even when the network is offline. Token
     // revocation is best-effort; issued access tokens still have their own TTL.
     void supabase?.auth.signOut({ scope: 'local' }).catch(() => {}).finally(clearStoredAdminSession)
@@ -278,6 +283,7 @@ export function AdminDashboard() {
   const selectedItem = filteredItems.find((item) => item.id === selectedId) ?? filteredItems[0] ?? null
 
   function changeKind(nextKind: Kind) {
+    setShowInterviews(false)
     setShowJobs(false)
     setShowAnalytics(false)
     if (nextKind === kind) return
@@ -307,7 +313,7 @@ export function AdminDashboard() {
     if (!session) return
 
     const itemLabel = kind === 'contact' ? 'message' : 'application'
-    if (!window.confirm(`Permanently delete this ${itemLabel} from ${item.name}? This cannot be undone.`)) return
+    if (!window.confirm(`Permanently delete this ${itemLabel} from ${item.name}? This cannot be undone.${kind === 'application' ? ' Linked interview invitations and bookings will also be deleted. Notify the candidate and update any downloaded calendar events first.' : ''}`)) return
 
     setDeletingId(item.id)
     setError(null)
@@ -387,16 +393,17 @@ export function AdminDashboard() {
 
         <nav aria-label="Admin navigation">
           <p>Workspace</p>
-          <button aria-current={!showJobs && !showAnalytics && kind === 'contact' ? 'page' : undefined} onClick={() => changeKind('contact')} type="button">
+          <button aria-current={!showJobs && !showAnalytics && !showInterviews && kind === 'contact' ? 'page' : undefined} onClick={() => changeKind('contact')} type="button">
             <EnvelopeSimpleIcon aria-hidden size={21} /> Messages
           </button>
-          <button aria-current={!showJobs && !showAnalytics && kind === 'application' ? 'page' : undefined} onClick={() => changeKind('application')} type="button">
+          <button aria-current={!showJobs && !showAnalytics && !showInterviews && kind === 'application' ? 'page' : undefined} onClick={() => changeKind('application')} type="button">
             <UsersThreeIcon aria-hidden size={21} /> Applications
           </button>
-          <button aria-current={showJobs ? 'page' : undefined} onClick={() => {setShowJobs(true);setShowAnalytics(false)}} type="button">
+          <button aria-current={showJobs ? 'page' : undefined} onClick={() => {setShowJobs(true);setShowAnalytics(false);setShowInterviews(false)}} type="button">
             <BriefcaseIcon aria-hidden size={21} /> Job postings
           </button>
-          <button aria-current={showAnalytics ? 'page' : undefined} onClick={() => {setShowAnalytics(true);setShowJobs(false)}} type="button"><ChartBarIcon aria-hidden size={21}/> Website analytics</button>
+          <button aria-current={showAnalytics ? 'page' : undefined} onClick={() => {setShowAnalytics(true);setShowJobs(false);setShowInterviews(false)}} type="button"><ChartBarIcon aria-hidden size={21}/> Website analytics</button>
+          <button aria-current={showInterviews ? 'page' : undefined} onClick={() => {setShowInterviews(true);setShowJobs(false);setShowAnalytics(false)}} type="button"><CalendarBlankIcon aria-hidden size={21}/> Interviews</button>
         </nav>
 
         <Link className={styles.websiteLink} href="/" target="_blank" rel="noreferrer">View website <ArrowSquareOutIcon aria-hidden size={16} /></Link>
@@ -412,10 +419,10 @@ export function AdminDashboard() {
         <header className="admin-main-header">
           <div>
             <p className="section-index">GI Healthcare / Workspace</p>
-            <h1>{showAnalytics ? 'Website analytics' : showJobs ? 'Job postings' : kind === 'contact' ? 'Messages' : 'Applications'}</h1>
-            <p>{showAnalytics ? 'A clearer picture of how your website is used.' : showJobs ? 'Manage open roles, closing dates and start dates.' : kind === 'contact' ? 'Every conversation, thoughtfully organised.' : 'Get to know the people behind the applications.'}</p>
+            <h1>{showInterviews ? 'Interviews' : showAnalytics ? 'Website analytics' : showJobs ? 'Job postings' : kind === 'contact' ? 'Messages' : 'Applications'}</h1>
+            <p>{showInterviews ? 'Good conversations, thoughtfully scheduled.' : showAnalytics ? 'A clearer picture of how your website is used.' : showJobs ? 'Manage open roles, closing dates and start dates.' : kind === 'contact' ? 'Every conversation, thoughtfully organised.' : 'Get to know the people behind the applications.'}</p>
           </div>
-          {!showJobs && !showAnalytics && <button aria-label="Refresh submissions" className="admin-refresh-button" disabled={loading} onClick={() => void loadSubmissions()} type="button">
+          {!showJobs && !showAnalytics && !showInterviews && <button aria-label="Refresh submissions" className="admin-refresh-button" disabled={loading} onClick={() => void loadSubmissions()} type="button">
             <ArrowsClockwiseIcon aria-hidden size={19} /> {loading ? 'Refreshing…' : 'Refresh'}
           </button>}
         </header>
@@ -425,7 +432,8 @@ export function AdminDashboard() {
         {/* Keep the editor mounted while navigating so unsaved posting edits survive. */}
         <div hidden={!showJobs}><JobPostings session={session} /></div>
         {showAnalytics && <WebsiteAnalytics session={session}/>}
-        <div hidden={showJobs || showAnalytics}>
+        {showInterviews && <InterviewCalendar key={session.user.id} session={session} inviteCandidate={inviteCandidate} onInviteHandled={clearInviteCandidate} />}
+        <div hidden={showJobs || showAnalytics || showInterviews}>
         <RetentionNotice session={session} />
 
         <div className="admin-inbox">
@@ -506,6 +514,8 @@ export function AdminDashboard() {
                 </header>
 
                 <SubmissionContact kind={kind} email={selectedItem.email} phone={selectedItem.phone} linkedInUrl={selectedItem.linkedin_url} received={formatDate(selectedItem.created_at)} expires={formatDate(selectedItem.retention_expires_at)} />
+
+                {kind === 'application' && <button className="admin-refresh-button" type="button" onClick={() => {setInviteCandidate({id:selectedItem.id,name:selectedItem.name,job_title:selectedItem.job_title||'Candidate'});setShowInterviews(true);setShowJobs(false);setShowAnalytics(false)}}><CalendarBlankIcon size={18} aria-hidden/> Invite to interview</button>}
 
                 {kind === 'application' && (
                   <div className="admin-application-facts">

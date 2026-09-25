@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Apply',
   description: 'Apply for a role at GI Healthcare.',
+  robots: { index: false, follow: true },
 }
 
 export default async function ApplyPage({

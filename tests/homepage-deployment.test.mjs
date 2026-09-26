@@ -30,7 +30,9 @@ test('live bundle is namespaced, indexable, consent-aware and preserves all runt
   assert.match(css, /\/vision\/assets\/Inter.ttf/)
   const app = readdirSync('docs/vision/assets').filter(name => name.startsWith('index-') && name.endsWith('.js')).map(name => readFileSync(`docs/vision/assets/${name}`, 'utf8')).join('')
   assert.doesNotMatch(app, /Local concept preview|No visitor analytics or form submissions/)
-  assert.match(app, /Privacy notice & cookie choices/)
+  assert.match(app, /Privacy notice/)
+  assert.match(app, /Cookie choices/)
+  assert.match(app, /data-gi-privacy-open/)
 })
 
 function legacyPage(initial) {

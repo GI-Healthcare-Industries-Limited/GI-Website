@@ -15,6 +15,7 @@ import {
 } from "./destinations";
 import { Icon } from "./Icons";
 import { assetPath, liveSite, sitePath } from "./site-paths";
+import footerStyles from "../../../app/_components/site-footer.module.css";
 const World = lazy(() => import("./World"));
 const SUPPORTERS = [
   ["uksa", "UK Space Agency"],
@@ -519,16 +520,18 @@ export function App() {
             ))}
           </div>
         </section>
-        <footer className="prototype-note">
-          {liveSite ? <>
-            <span>GI Healthcare · A world of possibilities</span>
-            <a href="/privacy">Privacy notice & cookie choices</a>
-          </> : <>
+        {liveSite ? <footer className={footerStyles.footer}>
+          <div className={footerStyles.top}>
+            <a href="/" aria-label="GI Healthcare home"><img src={assetPath('assets/logo.webp')} alt="GI Healthcare" width="180" height="52" /></a>
+            <nav aria-label="Footer navigation"><a href="/">Home</a><a href="/research">Research</a><a href="/careers">Careers</a><a href="/contact">Contact us</a></nav>
+            <div className={footerStyles.invitation}><p>Let’s build a healthier,<br />more sustainable future.</p><a href="/contact">Contact us <Icon name="arrowRight" size={17} /></a></div>
+          </div>
+          <div className={footerStyles.bottom}><small>© {new Date().getFullYear()} GI Healthcare Industries Limited</small><div><a href="/privacy">Privacy notice</a><a href="/privacy#cookie-choices" data-gi-privacy-open>Cookie choices</a><a href={assetPath("asset-credits.html")} target="_blank" rel="noreferrer">Asset credits</a></div></div>
+        </footer> : <footer className="prototype-note">
             <span>Local concept preview · Not the live website</span>
             <span>No visitor analytics or form submissions in this prototype.</span>
-          </>}
           <a href={assetPath("asset-credits.html")} target="_blank" rel="noreferrer">Asset credits</a>
-        </footer>
+        </footer>}
       </main>
       {listOpen && (
         <div

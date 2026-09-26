@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { SiteHeader } from "@/app/contact/site-header";
+import { SiteFooter } from "@/app/_components/site-footer";
 import { getCareerOpenings } from "@/lib/career-openings";
 import { formatClosingDate } from "@/lib/career-opening-types";
 import { jobIsOpen, jobPath } from "@/lib/job-discovery";
@@ -93,12 +94,8 @@ export default async function CareersPage() {
             prototypes become working systems.
           </p>
         </section>
-        <footer className={styles.footer}>
-          <a href="/research">Explore our research</a>
-          <a href="/contact">Contact us</a>
-          <a href="/privacy">Privacy notice</a>
-        </footer>
       </main>
+      <SiteFooter />
     </>
   );
 }

@@ -9,7 +9,7 @@
   const flutterPage=Boolean(document.querySelector('script[src="flutter_bootstrap.js"]'));
   let rendered=!flutterPage||document.documentElement.dataset.giFlutterReady==='true';
   const PROMPT_DELAY=3000;
-  const isAdmin=()=>location.pathname.startsWith('/admin')||location.pathname.startsWith('/book/');
+  const isAdmin=()=>location.pathname.startsWith('/admin')||location.pathname==='/book'||location.pathname.startsWith('/book/');
   function readChoice(){
     try {
       const raw=document.cookie.split(';').map(s=>s.trim()).find(s=>s.startsWith('gi_privacy='));

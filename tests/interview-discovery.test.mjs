@@ -12,6 +12,7 @@ function loader(overrides={}) {
     const code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText
     new Function('require','module','exports',code)(name=>{
       if(name in overrides)return overrides[name]
+      if(name==='next/server')return {after:()=>{}}
       if(name==='server-only')return {}
       if(name.startsWith('@/'))return load(`${name.slice(2)}.ts`)
       return require(name)
@@ -128,4 +129,57 @@ test('private booking responses are non-cacheable, non-indexable and invalid inv
   assert.equal(response.status,404);assert.match(response.headers.get('X-Robots-Tag'),/noindex/)
   assert.equal(response.headers.get('Referrer-Policy'),'no-referrer')
   for(const file of ['docs/gi-privacy.js','frontend/web/gi-privacy.js'])assert.match(readFileSync(file,'utf8'),/\/book\//)
+})
+test('calendar month geometry handles leap years, Monday starts and year navigation',()=>{
+  const {monthDays,shiftMonth}=load('lib/booking-dates.ts')
+  assert.equal(monthDays('2028-02').filter(Boolean).length,29)
+  assert.equal(monthDays('2026-09')[0],null)
+  assert.equal(monthDays('2026-09')[1],'2026-09-01')
+  assert.equal(monthDays('2026-06')[0],'2026-06-01')
+  assert.equal(shiftMonth('2026-12',1),'2027-01')
+  assert.equal(shiftMonth('2026-01',-1),'2025-12')
+})
+test('email calendar invitations and cancellations use stable identifiers and real scheduling methods',()=>{
+  const {bookingEmailPayload}=load('lib/interview-email.ts')
+  const b={id:'test',invitation_id:'test',title:'Meet with GI Healthcare',name:'Test',email:'person@example.invalid',starts_at:'2026-10-26T09:00:00Z',ends_at:'2026-10-26T09:30:00Z',teams_url:'https://teams.microsoft.com/l/meetup-join/test',created_at:'2026-09-26T09:00:00Z',cancelled_at:null}
+  const email=bookingEmailPayload(b,'meetings@example.invalid','owner@example.invalid')
+  assert.deepEqual(email.to,['person@example.invalid']);assert.deepEqual(email.bcc,['owner@example.invalid'])
+  const calendar=Buffer.from(email.attachments[0].content,'base64').toString().replace(/\r\n /g,'')
+  assert.match(calendar,/METHOD:REQUEST/);assert.match(calendar,/ORGANIZER;CN=GI Healthcare:mailto:meetings@example.invalid/)
+  assert.match(calendar,/ATTENDEE;RSVP=TRUE;ROLE=REQ-PARTICIPANT:mailto:person@example.invalid/)
+  assert.match(calendar,/DTSTART:20261026T090000Z/)
+  const cancel=bookingEmailPayload({...b,cancelled_at:'2026-09-26T10:00:00Z'},'meetings@example.invalid','owner@example.invalid')
+  const cancelIcs=Buffer.from(cancel.attachments[0].content,'base64').toString()
+  assert.match(cancelIcs,/METHOD:CANCEL/);assert.match(cancelIcs,/SEQUENCE:1/)
+  assert.equal(calendar.match(/UID:.*/)[0],cancelIcs.match(/UID:.*/)[0])
+  assert.throws(()=>interviewCalendar(b,{organizer:'evil\r\nATTENDEE:bad',attendee:b.email}))
+})
+test('Resend remains disabled without separate processing approval and never sends from an unconfigured worker',async()=>{
+  const names=['INTERVIEW_EMAIL_PROCESSING_APPROVED','RESEND_API_KEY','INTERVIEW_FROM_EMAIL','INTERVIEW_HOST_EMAIL'];const old=Object.fromEntries(names.map(n=>[n,process.env[n]]))
+  try {
+    process.env.RESEND_API_KEY='synthetic';process.env.INTERVIEW_FROM_EMAIL='meeting@example.invalid';process.env.INTERVIEW_HOST_EMAIL='owner@example.invalid';delete process.env.INTERVIEW_EMAIL_PROCESSING_APPROVED
+    const mod=loader({'@/lib/supabase/admin':{getSupabaseAdmin(){throw new Error('Must not access database')}}})('lib/interview-email.ts')
+    assert.equal(mod.interviewEmailReady(),false);await mod.flushInterviewEmails()
+    process.env.INTERVIEW_EMAIL_PROCESSING_APPROVED='true';assert.equal(mod.interviewEmailReady(),true)
+    process.env.INTERVIEW_FROM_EMAIL='bad\r\naddress';assert.equal(mod.interviewEmailReady(),false)
+  } finally {for(const n of names){if(old[n]===undefined)delete process.env[n];else process.env[n]=old[n]}}
+})
+test('shared booking enforces validation, hashes the private capability and masks slot conflicts',async()=>{
+  const calls=[]
+  let rpcError=null
+  const module=loader({'@/lib/supabase/admin':{getSupabaseAdmin:()=>({rpc:async(...a)=>{calls.push(a);return {error:rpcError}}})},'@/lib/submissions':{...load('lib/submissions.ts'),getRequestFingerprint:()=> 'e'.repeat(64)},'@/lib/interviews':{...load('lib/interviews.ts'),getPublicInterview:async()=>({booking:{id:'synthetic'}})}})('app/api/interviews/route.ts')
+  const input={...body,bookingToken:'b'.repeat(64)}
+  assert.equal((await module.POST(request('POST',input,'https://evil.invalid'))).status,403)
+  assert.equal((await module.POST(request('POST',{...input,bookingToken:'bad'}))).status,400)
+  assert.equal((await module.POST(request('POST',{...input,privacyAcknowledged:false}))).status,400)
+  assert.equal(calls.length,0)
+  assert.equal((await module.POST(request('POST',input))).status,201)
+  assert.equal(calls[0][0],'book_shared_interview');assert.equal(calls[0][1].invitation_hash,tokenHash(input.bookingToken))
+  rpcError={message:'SLOT_UNAVAILABLE private internal detail'}
+  const conflict=await module.POST(request('POST',input));assert.equal(conflict.status,409);assert(!JSON.stringify(await conflict.json()).includes('internal'))
+  rpcError={message:'BOOKING_LIMIT'};assert.equal((await module.POST(request('POST',input))).status,429)
+})
+test('shared booking is excluded from analytics along with private booking paths',()=>{
+  for(const file of ['docs/gi-privacy.js','frontend/web/gi-privacy.js'])assert.match(readFileSync(file,'utf8'),/location.pathname==='\/book'/)
+  assert.match(readFileSync('app/book/page.tsx','utf8'),/index: false/)
 })

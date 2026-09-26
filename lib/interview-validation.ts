@@ -23,6 +23,7 @@ export const settingsSchema = z
     action: z.literal("settings"),
     expectedUpdatedAt: z.iso.datetime({ offset: true }),
     enabled: z.boolean(),
+    emailEnabled: z.boolean().optional(),
     teamsUrl: z
       .string()
       .trim()

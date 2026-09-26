@@ -12,6 +12,11 @@ import {
 import { londonDate } from "@/lib/interview-types";
 import { SITE_URL } from "@/lib/job-discovery";
 import { interviewCalendar } from "@/lib/interview-calendar";
+import { after } from "next/server";
+import {
+  flushInterviewEmails,
+  interviewEmailReady,
+} from "@/lib/interview-email";
 
 const headers = { ...PRIVATE_HEADERS, Vary: "Authorization" };
 const reply = (body: unknown, status = 200) =>
@@ -49,7 +54,7 @@ export async function GET(request: Request) {
       db
         .from("interview_settings")
         .select(
-          "enabled,teams_url,duration_minutes,buffer_minutes,notice_hours,updated_at",
+          "enabled,email_enabled,teams_url,duration_minutes,buffer_minutes,notice_hours,updated_at",
         )
         .single(),
       db
@@ -100,7 +105,15 @@ export async function GET(request: Request) {
         },
       );
     }
+    const pending = await db
+      .from("interview_email_outbox")
+      .select("id", { count: "exact", head: true })
+      .is("sent_at", null)
+      .is("skipped_at", null);
+    if (pending.error) throw pending.error;
     return reply({
+      emailReady: interviewEmailReady(),
+      pendingEmails: pending.count || 0,
       settings: settings.data,
       availability: availability.data,
       invitations,
@@ -130,10 +143,21 @@ export async function POST(request: Request) {
         : null;
     if (action === "settings") {
       const v = settingsSchema.parse(input);
+      if (v.emailEnabled && !interviewEmailReady())
+        return reply(
+          {
+            error:
+              "Complete Resend configuration and approve email processing before enabling confirmations.",
+          },
+          400,
+        );
       const { data, error } = await db
         .from("interview_settings")
         .update({
           enabled: v.enabled,
+          ...(v.emailEnabled !== undefined
+            ? { email_enabled: v.emailEnabled }
+            : {}),
           teams_url: v.teamsUrl,
           duration_minutes: v.duration,
           buffer_minutes: v.buffer,
@@ -150,6 +174,10 @@ export async function POST(request: Request) {
           { error: "Settings changed in another tab. Refresh before saving." },
           409,
         );
+    } else if (action === "retry-emails") {
+      if (!interviewEmailReady())
+        return reply({ error: "Email sending is not configured." }, 400);
+      await flushInterviewEmails();
     } else if (action === "availability") {
       const v = availabilitySchema.parse(input),
         today = londonDate(new Date()),
@@ -220,17 +248,15 @@ export async function POST(request: Request) {
           400,
         );
       const token = randomBytes(32).toString("hex");
-      const { error } = await db
-        .from("interview_invitations")
-        .insert({
-          token_hash: tokenHash(token),
-          application_id: v.applicationId,
-          title: v.title,
-          duration_minutes: settings.duration_minutes,
-          buffer_minutes: settings.buffer_minutes,
-          expires_at: expiry,
-          retention_expires_at: retentionExpiry,
-        });
+      const { error } = await db.from("interview_invitations").insert({
+        token_hash: tokenHash(token),
+        application_id: v.applicationId,
+        title: v.title,
+        duration_minutes: settings.duration_minutes,
+        buffer_minutes: settings.buffer_minutes,
+        expires_at: expiry,
+        retention_expires_at: retentionExpiry,
+      });
       if (error) throw error;
       return reply({ ok: true, url: `${SITE_URL}/book/${token}` }, 201);
     } else {
@@ -261,6 +287,7 @@ export async function POST(request: Request) {
           .eq("id", v.id)
           .is("cancelled_at", null);
         if (error) throw error;
+        after(flushInterviewEmails);
       }
     }
     return reply({ ok: true });

@@ -23,6 +23,8 @@ import {
   type InterviewSnapshot,
 } from "@/lib/interview-types";
 import styles from "./interview-calendar.module.css";
+import { MonthPicker } from "@/app/book/month-picker";
+import { dateLabel } from "@/lib/booking-dates";
 
 type Candidate = { id: string; name: string; job_title: string };
 export function InterviewCalendar({
@@ -40,7 +42,7 @@ export function InterviewCalendar({
     [busy, setBusy] = useState(false),
     [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"calendar" | "availability" | "settings">(
-      "calendar",
+      "availability",
     ),
     [selectedDay, setSelectedDay] = useState(() => londonDate(new Date())),
     [month, setMonth] = useState(() => londonDate(new Date()).slice(0, 7));
@@ -48,6 +50,10 @@ export function InterviewCalendar({
     [candidate, setCandidate] = useState(""),
     [createdLink, setCreatedLink] = useState(""),
     [copied, setCopied] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const availableDates = Array.from({ length: 61 }, (_, i) =>
+    londonDate(new Date(Date.now() + i * 86400000)),
+  );
   const [confirm, setConfirm] = useState<{ action: string; id: string } | null>(
     null,
   );
@@ -187,21 +193,66 @@ export function InterviewCalendar({
   }
   return (
     <section className={styles.workspace} aria-label="Interview scheduling">
+      <div className={styles.shareHeader}>
+        <div>
+          <h2>Your booking page</h2>
+          <p>
+            Set your hours, then share one link. Booked times disappear
+            automatically.
+          </p>
+        </div>
+        <div className={styles.shareActions}>
+          <a href="/book" target="_blank" rel="noreferrer">
+            Preview page
+          </a>
+          <button
+            className={styles.primary}
+            disabled={!data?.settings.enabled}
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(
+                  `${window.location.origin}/book`,
+                );
+                setShareCopied(true);
+              } catch {
+                setError("Could not copy. Your booking link is shown below.");
+              }
+            }}
+          >
+            {shareCopied ? <CheckIcon size={17} /> : <CopyIcon size={17} />}
+            {shareCopied ? "Copied" : "Copy booking link"}
+          </button>
+        </div>
+        <div className={styles.shareAddress}>
+          <span
+            className={data?.settings.enabled ? styles.live : styles.paused}
+          >
+            {data?.settings.enabled ? "Live" : "Paused"}
+          </span>
+          <code>www.gihealthcare.co.uk/book</code>
+        </div>
+      </div>
       <div className={styles.toolbar}>
         <div className={styles.tabs} role="group" aria-label="Scheduling view">
-          {(["calendar", "availability", "settings"] as const).map((t) => (
+          {(["availability", "calendar", "settings"] as const).map((t) => (
             <button
               type="button"
               aria-pressed={tab === t}
               key={t}
               onClick={() => setTab(t)}
             >
-              {t[0].toUpperCase() + t.slice(1)}
+              {
+                {
+                  availability: "Availability",
+                  calendar: "Bookings",
+                  settings: "Meeting settings",
+                }[t]
+              }
             </button>
           ))}
         </div>
         <button
-          className={styles.primary}
+          className={styles.quiet}
           disabled={!data || busy}
           onClick={() => {
             setInviting(true);
@@ -210,7 +261,7 @@ export function InterviewCalendar({
           }}
         >
           <PlusIcon size={17} aria-hidden />
-          Create invitation
+          Private candidate link
         </button>
       </div>
       {error && (
@@ -589,106 +640,122 @@ export function InterviewCalendar({
           )}
           {tab === "availability" && (
             <div className={styles.availabilityLayout}>
-              <form
-                className={styles.editor}
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const form = e.currentTarget,
-                    values = new FormData(form);
-                  if (
+              <section className={styles.dateEditor}>
+                <h2>When are you available?</h2>
+                <p className={styles.help}>
+                  Pick a date to add or change your hours.
+                </p>
+                <MonthPicker
+                  month={month}
+                  onMonth={setMonth}
+                  selected={selectedDay}
+                  onSelect={setSelectedDay}
+                  available={availableDates}
+                  marked={data.availability.map((w) => w.day)}
+                  minMonth={availableDates[0].slice(0, 7)}
+                  maxMonth={availableDates.at(-1)!.slice(0, 7)}
+                  disabled={busy}
+                />
+                <p className={styles.help}>
+                  ● Hours saved · All times are UK local time
+                </p>
+              </section>
+              <div>
+                <form
+                  className={styles.editor}
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const form = e.currentTarget,
+                      values = new FormData(form);
                     await mutate({
                       action: "availability",
                       day: values.get("day"),
                       start: values.get("start"),
                       end: values.get("end"),
-                    })
-                  )
-                    form.reset();
-                }}
-              >
-                <h2>Make room for a conversation.</h2>
-                <p className={styles.help}>
-                  Add specific dates and times you are free. Times are UK local
-                  time, including daylight-saving changes. Booked interviews are
-                  automatically removed from availability.
-                </p>
-                <fieldset disabled={busy}>
-                  <label>
-                    Date
-                    <input
-                      type="date"
-                      name="day"
-                      required
-                      min={londonDate(new Date())}
-                      max={londonDate(new Date(Date.now() + 60 * 86400000))}
-                    />
-                  </label>
-                  <div className={styles.twoColumns}>
-                    <label>
-                      From
-                      <input
-                        type="time"
-                        name="start"
-                        required
-                        min="06:00"
-                        max="21:59"
-                        defaultValue="09:00"
-                      />
-                    </label>
-                    <label>
-                      Until
-                      <input
-                        type="time"
-                        name="end"
-                        required
-                        min="06:01"
-                        max="22:00"
-                        defaultValue="17:00"
-                      />
-                    </label>
-                  </div>
-                  <button className={styles.primary}>Add availability</button>
-                </fieldset>
-              </form>
-              <section className={styles.editor}>
-                <h2>Available windows</h2>
-                {data.availability.length ? (
-                  data.availability.map((w) => (
-                    <div className={styles.window} key={w.id}>
-                      <div>
-                        <strong>
-                          {new Intl.DateTimeFormat("en-GB", {
-                            dateStyle: "medium",
-                            timeZone: "UTC",
-                          }).format(new Date(`${w.day}T12:00Z`))}
-                        </strong>
-                        <small>
-                          {w.start_time.slice(0, 5)}–{w.end_time.slice(0, 5)} ·
-                          UK
-                        </small>
-                      </div>
-                      <button
-                        disabled={busy}
-                        onClick={() =>
-                          void mutate({
-                            action: "remove-availability",
-                            id: w.id,
-                          })
-                        }
-                      >
-                        Remove
-                      </button>
+                    });
+                  }}
+                >
+                  <h2>{dateLabel(selectedDay)}</h2>
+                  <p className={styles.help}>
+                    Add the hours you’re free. Candidates choose from{" "}
+                    {data.settings.duration_minutes}-minute meetings within
+                    these hours.
+                  </p>
+                  <fieldset disabled={busy}>
+                    <input type="hidden" name="day" value={selectedDay} />
+                    <div className={styles.twoColumns}>
+                      <label>
+                        From
+                        <input
+                          type="time"
+                          name="start"
+                          required
+                          min="06:00"
+                          max="21:59"
+                          defaultValue="09:00"
+                        />
+                      </label>
+                      <label>
+                        Until
+                        <input
+                          type="time"
+                          name="end"
+                          required
+                          min="06:01"
+                          max="22:00"
+                          defaultValue="17:00"
+                        />
+                      </label>
                     </div>
-                  ))
-                ) : (
-                  <p className={styles.help}>No availability yet.</p>
-                )}
-                <p className={styles.help}>
-                  Removing a window doesn’t cancel interviews already booked.
-                  Availability does not read your personal calendar; add only
-                  times you know are free.
-                </p>
-              </section>
+                    <button
+                      className={styles.primary}
+                      disabled={!availableDates.includes(selectedDay)}
+                    >
+                      Save hours
+                    </button>
+                  </fieldset>
+                </form>
+                <section className={styles.editor}>
+                  <h2>Hours for this date</h2>
+                  {data.availability.some((w) => w.day === selectedDay) ? (
+                    data.availability
+                      .filter((w) => w.day === selectedDay)
+                      .map((w) => (
+                        <div className={styles.window} key={w.id}>
+                          <div>
+                            <strong>
+                              {new Intl.DateTimeFormat("en-GB", {
+                                dateStyle: "medium",
+                                timeZone: "UTC",
+                              }).format(new Date(`${w.day}T12:00Z`))}
+                            </strong>
+                            <small>
+                              {w.start_time.slice(0, 5)}–
+                              {w.end_time.slice(0, 5)} · UK
+                            </small>
+                          </div>
+                          <button
+                            disabled={busy}
+                            onClick={() =>
+                              void mutate({
+                                action: "remove-availability",
+                                id: w.id,
+                              })
+                            }
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))
+                  ) : (
+                    <p className={styles.help}>No availability yet.</p>
+                  )}
+                  <p className={styles.help}>
+                    Removing hours won’t cancel existing bookings. Your personal
+                    calendar is not connected.
+                  </p>
+                </section>
+              </div>
             </div>
           )}
           {tab === "settings" && (
@@ -702,6 +769,7 @@ export function InterviewCalendar({
                   action: "settings",
                   expectedUpdatedAt: data.settings.updated_at,
                   enabled: v.get("enabled") === "on",
+                  emailEnabled: v.get("emailEnabled") === "on",
                   teamsUrl: v.get("teamsUrl"),
                   duration: Number(v.get("duration")),
                   buffer: Number(v.get("buffer")),
@@ -783,10 +851,45 @@ export function InterviewCalendar({
                   Duration and buffer are fixed when an invitation is created.
                   Existing meetings are not changed by these settings.
                   Candidates receive the Teams link and a calendar download on
-                  their confirmation page. No email is sent and there is no
-                  automatic Apple/Outlook calendar sync.
+                  their confirmation page. There is no automatic personal
+                  calendar sync.
+                </p>
+                <label className={styles.check}>
+                  <input
+                    type="checkbox"
+                    name="emailEnabled"
+                    defaultChecked={data.settings.email_enabled}
+                    disabled={!data.emailReady}
+                  />
+                  <span>Email calendar invitations and cancellations</span>
+                </label>
+                <p className={styles.help}>
+                  {data.emailReady
+                    ? "Send the candidate a Teams link and calendar invitation, with a copy to you. Resend processes these emails outside the UK."
+                    : "Resend setup required. Candidate emails remain off until the sending domain, server API key and processing approval are configured."}
                 </p>
                 <button className={styles.primary}>Save preferences</button>
+                {!!data.pendingEmails && (
+                  <div className={styles.setup}>
+                    <div>
+                      <strong>
+                        {data.pendingEmails} email(s) need checking
+                      </strong>
+                      <p>
+                        Sending is not confirmed. Check Resend before contacting
+                        the candidate. Automatic retries stop after 23 hours to
+                        prevent duplicates.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={busy || !data.emailReady}
+                      onClick={() => void mutate({ action: "retry-emails" })}
+                    >
+                      Retry emails
+                    </button>
+                  </div>
+                )}
               </fieldset>
             </form>
           )}
@@ -815,7 +918,7 @@ export function InterviewCalendar({
         </h2>
         <p>
           {confirm?.action === "cancel-booking"
-            ? "The time will become available again. No email is sent: please tell the candidate and update your calendar. The candidate can see the cancellation through their private link."
+            ? `The time will become available again. ${data?.settings.email_enabled && data?.emailReady ? "A cancellation email will be queued." : "Email is off: please tell the candidate."} Update your calendar too.`
             : "This unused link will stop accepting bookings."}
         </p>
         <div className={styles.actions}>

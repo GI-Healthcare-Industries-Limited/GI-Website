@@ -12,6 +12,8 @@ import {
   submissionErrorResponse,
 } from "@/lib/submissions";
 import { interviewCalendar } from "@/lib/interview-calendar";
+import { after } from "next/server";
+import { flushInterviewEmails } from "@/lib/interview-email";
 type Context = { params: Promise<{ token: string }> };
 const reply = (data: unknown, status = 200) =>
   Response.json(data, { status, headers: PRIVATE_HEADERS });
@@ -84,6 +86,7 @@ export async function POST(request: Request, { params }: Context) {
         if (error.message.includes(code)) return reply({ error: message }, 409);
       throw error;
     }
+    after(flushInterviewEmails);
     return reply(await getPublicInterview(token), 201);
   } catch (error) {
     const response = submissionErrorResponse(error);
@@ -104,6 +107,7 @@ export async function DELETE(request: Request, { params }: Context) {
       .eq("invitation_id", invitation.id)
       .is("cancelled_at", null);
     if (error) throw error;
+    after(flushInterviewEmails);
     return reply({ ok: true });
   } catch {
     return reply(

@@ -37,13 +37,23 @@ function fold(line: string) {
   }
   return [...rows, row].join("\r\n");
 }
-export function interviewCalendar(meeting: CalendarMeeting) {
+export function interviewCalendar(
+  meeting: CalendarMeeting,
+  invitation?: { organizer: string; attendee: string },
+) {
+  if (
+    invitation &&
+    ![invitation.organizer, invitation.attendee].every((email) =>
+      /^[^\s<>:;,"\\]+@[^\s<>:;,"\\]+\.[^\s<>:;,"\\]+$/.test(email),
+    )
+  )
+    throw new Error("Invalid calendar address");
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "PRODID:-//GI Healthcare//Interview booking//EN",
     "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
+    `METHOD:${invitation ? (meeting.cancelled_at ? "CANCEL" : "REQUEST") : "PUBLISH"}`,
     "BEGIN:VEVENT",
     `UID:${meeting.id}@gihealthcare.co.uk`,
     `DTSTAMP:${stamp(meeting.cancelled_at || meeting.created_at)}`,
@@ -54,6 +64,12 @@ export function interviewCalendar(meeting: CalendarMeeting) {
     `LOCATION:${text(meeting.teams_url)}`,
     `STATUS:${meeting.cancelled_at ? "CANCELLED" : "CONFIRMED"}`,
     `SEQUENCE:${meeting.cancelled_at ? 1 : 0}`,
+    ...(invitation
+      ? [
+          `ORGANIZER;CN=GI Healthcare:mailto:${invitation.organizer}`,
+          `ATTENDEE;RSVP=TRUE;ROLE=REQ-PARTICIPANT:mailto:${invitation.attendee}`,
+        ]
+      : []),
     "END:VEVENT",
     "END:VCALENDAR",
     "",

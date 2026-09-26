@@ -1,5 +1,6 @@
-export const INTERVIEW_NOTICE_VERSION = "2026-09-25-interviews-v1";
+export const INTERVIEW_NOTICE_VERSION = "2026-09-26-interviews-v2";
 export type InterviewSettings = {
+  email_enabled?: boolean;
   enabled: boolean;
   teams_url: string;
   duration_minutes: number;
@@ -35,6 +36,8 @@ export type InterviewInvitation = {
   revoked: boolean;
 };
 export type InterviewSnapshot = {
+  emailReady?: boolean;
+  pendingEmails?: number;
   settings: InterviewSettings;
   availability: AvailabilityWindow[];
   invitations: InterviewInvitation[];
@@ -48,6 +51,7 @@ export type InterviewSnapshot = {
   checkedAt: string;
 };
 export type PublicInterview = {
+  emailEnabled?: boolean;
   title: string;
   duration: number;
   expiresAt: string;

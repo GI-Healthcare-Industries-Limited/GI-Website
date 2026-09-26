@@ -191,3 +191,23 @@ Findings and iteration: initial desktop typography was smaller than the mock and
 - Verification: 137 Node tests passed, TypeScript passed, Next production build passed, Flutter release rebuild passed after refreshing its local SDK package paths.
 
 Implementation checklist: complete. Follow-up: user-requested wording refinements after publication.
+
+## Booking flow — Calendly-style simplification, 26 September 2026
+
+final result: passed
+
+Reference: user screenshots `Screenshot 2026-09-26 at 00.56.27.png` and `Screenshot 2026-09-26 at 00.56.42.png`. The approved direction is the meeting-summary/calendar/time-column hierarchy, adapted to GI's existing Inter, red logo and muted green controls rather than Calendly branding.
+
+Implementation: local synthetic-data preview at `http://localhost:4174/qa-booking`; admin preview at `http://localhost:4174/qa-booking?view=admin`. These fixtures are excluded from Git and Vercel. No real applications or bookings were submitted during browser testing.
+
+Evidence: `.design-qa-booking-desktop.png` (1280 × 720), `.design-qa-booking-mobile.png` (390 × 844), `.design-qa-booking-admin.png`. Compared reference and desktop captures together at proportional display scale; verified mobile separately. Full-page capture produced a provider scaling artefact, so final judgments use normal viewport captures, not that artefact.
+
+- Hierarchy: meeting information left, month calendar centre, time choices right only after a date is selected; details are a separate next step. Clean white surfaces and restrained typography.
+- Owner flow: Availability is the default view; choose a date, enter From/Until and save hours. One reusable link is primary; private links remain secondary. Bookings and meeting settings are separate tabs.
+- Iteration: fixed calendar button specificity against inherited admin styles, reduced private-link prominence, moved Save preferences below all settings, and made selected mobile dates bring available times into view.
+- Responsive checks: desktop and 390px candidate/admin layouts inspected; no horizontal overflow. Mobile calendar and slots stack with usable touch targets. Temporary viewport reset afterward.
+- Interaction checks: date/time/Next, details and acknowledgement, synthetic confirmation and calendar/Teams links, admin save-hours, and retained private-link route. Browser errors: none in the checked flow.
+- Safety: transaction rehearsal verifies record fingerprints unchanged, double-book prevention, reusable-link multiple bookings, idempotent retries, private-table permissions and transactional email queue. All synthetic SQL fixtures roll back.
+- Automated verification: 154 tests, TypeScript and production Next build passed. Resend delivery is deliberately not represented as tested: sending remains disabled pending setup and explicit non-UK processing approval.
+
+No remaining P0/P1/P2 visual findings. Email activation is a configuration/privacy follow-up, not a layout blocker.

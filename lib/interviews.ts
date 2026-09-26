@@ -2,6 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type { PublicInterview } from "@/lib/interview-types";
+import { interviewEmailReady } from "@/lib/interview-email";
 export const PRIVATE_HEADERS = {
   "Cache-Control": "private, no-store",
   "X-Robots-Tag": "noindex, nofollow, noarchive",
@@ -45,7 +46,13 @@ export async function getPublicInterview(
         invitation_hash: tokenHash(token),
       });
   if (slotError) throw slotError;
+  const { data: settings, error: settingsError } = await db
+    .from("interview_settings")
+    .select("email_enabled")
+    .single();
+  if (settingsError) throw settingsError;
   return {
+    emailEnabled: Boolean(settings.email_enabled && interviewEmailReady()),
     title: invitation.title,
     duration: invitation.duration_minutes,
     expiresAt: invitation.expires_at,

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { SiteHeader } from '@/app/contact/site-header'
+import { SiteFooter } from '@/app/_components/site-footer'
 import { APPLICATION_PRIVACY_NOTICE_VERSION, WEBSITE_PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import styles from './privacy.module.css'
 
@@ -88,6 +89,5 @@ export default function PrivacyPage() {
       </section>
       <section><h2>Children, external links and changes</h2><p>This business website is not directed at children under 16. Please contact us if you believe a child has provided information that needs to be removed. Links to work examples, social networks and other external websites lead to services with their own privacy practices.</p><p>We will update this notice when our processing changes and show the latest date above. Historical form and consent versions remain identifiable in the records they accompanied. New optional purposes will require fresh consent where applicable; accepting this notice is not blanket permission for future tracking.</p></section>
     </article>
-    <footer><Link href="/apply">Careers</Link><Link href="/contact">Contact us</Link></footer>
-  </main></>
+  </main><SiteFooter /></>
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
-import Link from 'next/link'
+import { SiteFooter } from '@/app/_components/site-footer'
 import fieldKitchen from '@/assets/contact/field-kitchen.webp'
 import { ContactForm } from './contact-form'
 import { SiteHeader } from './site-header'
@@ -39,9 +39,6 @@ export default function ContactPage() {
         </div>
       </section>
     </main>
-    <footer className={styles.siteFooter}>
-      <div><a href="/" className={styles.footerBrand}>GI Healthcare</a><p>GI Healthcare Industries Limited</p></div>
-      <nav aria-label="Footer navigation"><a href="/?page=careers">Careers</a><Link href="/privacy">Privacy notice</Link><a href="https://www.linkedin.com/company/gihil/" target="_blank" rel="noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></nav>
-    </footer>
+    <SiteFooter />
   </div>
 }

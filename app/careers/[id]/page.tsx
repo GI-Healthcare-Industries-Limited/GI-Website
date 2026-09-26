@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteFooter } from "@/app/_components/site-footer";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import {
@@ -127,6 +128,7 @@ export default async function JobPage({ params }: Props) {
           </aside>
         </div>
       </main>
+      <SiteFooter />
     </>
   );
 }

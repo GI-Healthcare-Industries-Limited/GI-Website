@@ -1,0 +1,15 @@
+.footer { background:#e82127; color:#fff; padding:42px max(24px,calc((100vw - 1240px)/2)) 26px; font-weight:400; }
+.top { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:48px; padding-bottom:38px; }
+.top img { width:180px; height:auto; display:block; }
+.top nav { display:flex; gap:24px; flex-wrap:wrap; }
+.footer a { text-decoration:none; font-size:13px; }
+.footer a:hover { text-decoration:underline; text-underline-offset:5px; }
+.footer a:focus-visible { outline:2px solid #fff; outline-offset:6px; }
+.invitation { border-left:1px solid #ffffff59; padding-left:28px; display:flex; align-items:center; gap:22px; justify-self:end; }
+.invitation p { font-size:13px; line-height:1.6; margin:0; }
+.invitation a { border:1px solid #ffffff9c; padding:12px 16px; display:inline-flex; align-items:center; gap:16px; white-space:nowrap; }
+.bottom { display:flex; justify-content:space-between; gap:24px; padding-top:24px; border-top:1px solid #ffffff36; }
+.bottom small,.bottom a { font-size:11px; line-height:1.6; }
+.bottom>div { display:flex; gap:24px; }
+@media(max-width:1050px) { .top { grid-template-columns:1fr auto; gap:30px; } .invitation { grid-column:1/-1; justify-self:stretch; border-left:0; border-top:1px solid #ffffff36; padding:24px 0 0; justify-content:space-between; } }
+@media(max-width:550px) { .top { grid-template-columns:1fr; gap:25px; padding-bottom:25px; } .top nav { gap:22px; } .bottom { flex-direction:column; gap:16px; } .invitation p { font-size:12px; } }

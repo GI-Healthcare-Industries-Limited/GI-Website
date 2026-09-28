@@ -18,7 +18,7 @@ test('research has all selected sections, real local assets and honest concept l
   const page = readFileSync('app/research/page.tsx', 'utf8')
   for (const component of ['ProductViewer', 'Principles', 'EarthSpace', 'Supporters', 'ResearchNotes', 'SiteFooter']) assert(page.includes(`<${component}`))
   for (const file of ['machine-poster.webp', 'modularity-concept.webp', 'earth-field-concept.webp', 'lunar-habitat.webp']) assert(existsSync(`assets/research/${file}`))
-  assert.match(readFileSync('app/research/principles.tsx','utf8'), /Dimensions to be confirmed/)
+  assert.doesNotMatch(readFileSync('app/research/principles.tsx','utf8'), /<figcaption|Illustrative proportions|Dimensions to be confirmed|not certified performance claims/)
   assert.match(readFileSync('app/research/research-notes.tsx','utf8'), /Not peer-reviewed papers or test results/)
 })
 
@@ -33,6 +33,17 @@ test('research motion has reduced-motion, pause, visibility and static fallback 
   assert.doesNotMatch(renderer, /setAnimationLoop|requestAnimationFrame/)
   assert.match(renderer, /renderer.dispose\(\)/)
   assert.match(renderer, /texture.dispose\(\)/)
+})
+
+test('principles use dedicated approved-style illustrations and accessible resource details', () => {
+  const source = readFileSync('app/research/principles.tsx', 'utf8')
+  for (const file of ['principle-compact-v3.webp', 'principle-resources-v3.webp']) {
+    assert(existsSync(`assets/research/${file}`))
+    assert(source.includes(file))
+  }
+  assert.doesNotMatch(source, /machine-poster|styles\.dimensions|styles\.resourceIcons/)
+  assert.match(source, /src: modularity/)
+  for (const text of ['Resource research priorities', 'Efficient cooking and thermal management', 'Resource-conscious cooking and cleaning', 'Thoughtful portions and ingredient use']) assert(source.includes(text))
 })
 
 test('shared public footer never changes recruitment, booking or admin flows', () => {

@@ -38,13 +38,17 @@
 .principleVisual { min-width:0; margin:0; animation:slideIn .6s ease both; }
 .principleImage { position:relative; height:405px; }
 .principleImage img { object-fit:contain; mix-blend-mode:multiply; }
-.principleVisual figcaption { text-align:center; font-size:10px; color:#686e62; margin-top:12px; line-height:1.5; }
-.dimensions { position:absolute; inset:0; font-size:12px; color:#4e554b; pointer-events:none; }
-.heightDimension { position:absolute; left:10%; top:16%; height:68%; border-left:1px solid #7f857d; padding-left:6px; display:flex; align-items:center; }
-.widthDimension { position:absolute; left:28%; bottom:2%; width:40%; border-bottom:1px solid #7f857d; text-align:center; }
-.depthDimension { position:absolute; right:11%; bottom:9%; width:16%; border-bottom:1px solid #7f857d; text-align:center; transform:rotate(-28deg); }
-.resourceIcons { display:flex; gap:22px; justify-content:center; margin-top:-5px; }
-.resourceIcons span { display:flex; align-items:center; gap:6px; font-size:11px; color:#59674c; }
+.refinedPanel { min-height:590px; grid-template-columns:1.35fr 1fr; gap:28px; }
+.refinedPanel .principleImage { height:550px; background:#f7f7f4; }
+.refinedPanel .miniLabel { display:none; }
+.refinedPanel .principleCopy h3 { font-size:clamp(28px,3vw,42px); font-weight:450; margin-top:0; letter-spacing:-.045em; }
+.refinedPanel .principleDetail { border-top:0; padding-top:0; margin-top:30px!important; }
+.refinedPanel .principleDetail::before { content:''; display:block; width:42px; border-top:2px solid #ed1c24; margin-bottom:24px; }
+.resourceDetails { list-style:none; padding:0; margin:24px 0 0; border-bottom:1px solid #daddd3; }
+.resourceDetails li { display:grid; grid-template-columns:44px minmax(0,1fr); gap:16px; align-items:start; padding:18px 0; border-top:1px solid #daddd3; }
+.resourceSymbol { width:42px; height:42px; display:grid; place-items:center; border:1px solid #69785e; border-radius:50%; color:#69785e; }
+.resourceDetails h4 { margin:0 0 5px; font-size:16px; font-weight:500; letter-spacing:-.02em; }
+.resourceDetails li p { font-size:13px; line-height:1.45; }
 .principleCopy { padding:24px 0 24px 28px; border-left:1px solid #dedfd8; animation:slideIn .55s ease both; }
 .miniLabel { font-size:10px; letter-spacing:.07em; text-transform:uppercase; color:#6e7567; }
 .principleCopy h3 { font-size:clamp(26px,2.8vw,37px); font-weight:450; letter-spacing:-.045em; line-height:1.15; margin:16px 0 22px; }
@@ -118,6 +122,10 @@
 @media(min-width:1600px) { .productStage { height:560px; } }
 @media(max-width:1050px) { .hero { padding-inline:32px; min-height:540px; } .hero h1 { font-size:46px; } .productStage { height:440px; } .sectionInner { padding:50px 32px; } .principleLayout { grid-template-columns:155px 1fr; } .principleTabs { padding-right:12px; } .principlePanel { gap:16px; grid-template-columns:1fr .8fr; } .principleCopy { padding-left:18px; } .principleImage { height:340px; } .principleCopy h3 { font-size:28px; } .principleCopy p { font-size:13px; } .supportersHeading { padding-inline:32px; } .supporterControls { padding-inline:32px; } }
 @media(max-width:760px) {
+  .refinedPanel .principleImage { height:370px; }
+  .refinedPanel .principleCopy h3 { font-size:29px; }
+  .refinedPanel .principleDetail { margin-top:22px!important; }
+  .resourceDetails li { padding:16px 0; }
   .hero { display:flex; flex-direction:column; padding:40px 24px 30px; gap:0; align-items:stretch; }
   .heroCopy { padding:0; } .hero h1 { font-size:clamp(38px,8.3vw,56px); } .eyebrow { margin-bottom:24px; font-size:10px; } .intro { font-size:17px; margin:22px 0 25px; }
   .heroActions { gap:12px 20px; } .scrollCue { display:none; } .productStage { height:390px; } .viewerControls { gap:20px; } .productViewer { margin-top:16px; }

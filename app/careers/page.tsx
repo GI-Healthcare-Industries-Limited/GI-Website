@@ -27,21 +27,9 @@ export default async function CareersPage() {
     <>
       <SiteHeader activePath="/careers" contentId="careers-main" />
       <main id="careers-main" className={styles.page}>
-        <header className={styles.hero}>
-          <p className={styles.eyebrow}>Careers at GI Healthcare</p>
-          <h1>
-            Build something
-            <br />
-            that matters.
-          </h1>
-          <p>Autonomous cooking. Real machines. A world of possibilities.</p>
-          <a href="#open-roles" className={styles.primary}>
-            Explore open roles <ArrowUpRightIcon size={20} aria-hidden />
-          </a>
-        </header>
-        <section id="open-roles" className={styles.roles}>
+        <section id="open-roles" className={styles.roles} aria-labelledby="open-roles-title">
           <div className={styles.sectionTitle}>
-            <h2>Open opportunities</h2>
+            <h1 id="open-roles-title">Open opportunities</h1>
             <span>
               {open.length} {open.length === 1 ? "role" : "roles"}
             </span>
@@ -51,7 +39,7 @@ export default async function CareersPage() {
               <a className={styles.job} href={jobPath(job.id)} key={job.id}>
                 <div>
                   <p className={styles.eyebrow}>{job.department}</p>
-                  <h3>{job.job_title}</h3>
+                  <h2>{job.job_title}</h2>
                   <p>
                     {job.location} · {job.employment_type}
                   </p>

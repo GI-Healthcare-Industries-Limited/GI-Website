@@ -92,11 +92,12 @@
 .supportersHeading p { color:#6d7368; font-size:12px; margin:0; }
 .supporterTrack { display:flex; overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:thin; scrollbar-color:#cfd2c9 transparent; margin:32px 0 0; padding:10px 0 16px; }
 .supporterSet { display:flex; flex-shrink:0; align-items:center; gap:40px; padding:0 20px; }
-.supporterSet a { flex:0 0 155px; width:155px; height:76px; display:flex; align-items:center; justify-content:center; text-decoration:none; }
-.supporterSet img { display:block; width:auto; max-width:155px; height:auto; max-height:64px; object-fit:contain; }
+.supporterSet a { flex:0 0 180px; width:180px; height:88px; display:flex; align-items:center; justify-content:center; text-decoration:none; }
+.supporterArtwork { position:relative; display:block; width:100%; height:72px; }
+.supporterSet img { object-fit:contain; }
+.supporterSet .wideLogo { flex-basis:280px; width:280px; }
 .supporterSet .darkLogo { background:#222923; padding:16px; }
-.supporterSet .darkLogo img { width:100%; }
-.supporterName { font-size:15px; font-weight:550; text-align:center; color:#40473b; }
+.supporterSet .darkLogo .supporterArtwork { height:56px; }
 .supporterControls { display:flex; justify-content:flex-end; align-items:center; gap:10px; padding:22px 60px 0; max-width:1440px; margin:auto; }
 .supporterControls>span { font-size:11px; color:#757d6e; margin-right:14px; }
 .notes { background:#202723; color:#f4f6ef; }

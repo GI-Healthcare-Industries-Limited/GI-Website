@@ -52,3 +52,17 @@ test('shared public footer never changes recruitment, booking or admin flows', (
   assert.match(footer, /data-gi-privacy-open/)
   assert.doesNotMatch(footer, /mailto:|tel:|<form/)
 })
+
+test('research supporters use real local artwork and include the Edinburgh office', () => {
+  const source = readFileSync('app/research/supporters.tsx', 'utf8')
+  const files = [...source.matchAll(/file: '([^']+)'/g)].map(match => match[1])
+  assert.equal(files.length, 15)
+  for (const file of files) assert(existsSync(`docs/research/supporters/${file}`), file)
+  for (const file of ['intellectual-property-office.png', 'microsoft-startups-logo.png', 'nvidia-inception-logo.png', 'barclays-eagle-labs.png', 'business-gateway.svg']) assert(files.includes(file))
+  assert.doesNotMatch(source, /file: ''|file: 'barclays\.svg'|file: 'microsoft-startups\.png'/)
+  assert.match(source, /https:\/\/www\.bgateway\.com\/local-offices\/edinburgh\//)
+  assert.match(source, /inert=\{copy === 1/)
+  assert.match(source, /rel="noopener noreferrer"/)
+  const gateway = readFileSync('docs/research/supporters/business-gateway.svg', 'utf8')
+  assert.doesNotMatch(gateway, /<script|<foreignObject|onload=|javascript:/i)
+})

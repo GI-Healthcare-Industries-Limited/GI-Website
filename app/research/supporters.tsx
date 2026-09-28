@@ -1,19 +1,21 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { ArrowLeftIcon, ArrowRightIcon, PauseIcon, PlayIcon } from '@phosphor-icons/react'
 import { useReducedMotion } from './use-motion'
 import styles from './research.module.css'
 
-// Source artwork is preserved. Restricted marks await supplied approved assets.
+// Keep original logo colours and proportions; asset provenance is recorded with the files.
 const supporters = [
   { name: 'Ministry of Defence', file: 'mod.webp', url: 'https://www.gov.uk/government/organisations/ministry-of-defence' },
   { name: 'Dstl', file: 'dstl.png', url: 'https://www.gov.uk/government/organisations/defence-science-and-technology-laboratory' },
   { name: 'Innovate UK', file: 'innovate-uk.png', url: 'https://www.ukri.org/councils/innovate-uk/' },
   { name: 'Science and Technology Facilities Council', file: 'stfc.png', url: 'https://www.ukri.org/councils/stfc/' },
-  { name: 'Intellectual Property Office', file: '', url: 'https://www.gov.uk/government/organisations/intellectual-property-office' },
-  { name: 'Microsoft for Startups', file: 'microsoft-startups.png', url: 'https://www.microsoft.com/startups' },
-  { name: 'NVIDIA Inception', file: '', url: 'https://www.nvidia.com/en-us/startups/' },
-  { name: 'Barclays Eagle Labs', file: 'barclays.svg', url: 'https://labs.uk.barclays/' },
+  { name: 'Intellectual Property Office', file: 'intellectual-property-office.png', url: 'https://www.gov.uk/government/organisations/intellectual-property-office', wide: true },
+  { name: 'Microsoft for Startups', file: 'microsoft-startups-logo.png', url: 'https://www.microsoft.com/startups' },
+  { name: 'NVIDIA Inception', file: 'nvidia-inception-logo.png', url: 'https://www.nvidia.com/en-us/startups/' },
+  { name: 'Barclays Eagle Labs', file: 'barclays-eagle-labs.png', url: 'https://labs.uk.barclays/', wide: true },
+  { name: 'Business Gateway Edinburgh', file: 'business-gateway.svg', url: 'https://www.bgateway.com/local-offices/edinburgh/', dark: true },
   { name: 'UK Space Agency Accelerator', file: 'uk-space-accelerator.png', url: 'https://www.ukspaceaccelerator.co.uk/', dark: true },
   { name: 'University of Bristol', file: 'bristol.svg', url: 'https://www.bristol.ac.uk/' },
   { name: 'Heriot-Watt University', file: 'hwu.webp', url: 'https://www.hw.ac.uk/' },
@@ -51,7 +53,11 @@ export function Supporters() {
   return <section className={styles.supporters} aria-labelledby="supporters-title">
     <div className={styles.supportersHeading}><h2 className={styles.eyebrow} id="supporters-title">Supported by</h2><p>People, programmes and organisations supporting our journey.</p></div>
     <div ref={track} className={styles.supporterTrack} tabIndex={0} role="region" aria-label="Supporters. Scroll horizontally to explore." onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onFocusCapture={() => setFocused(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) }} onWheel={() => setPaused(true)} onTouchStart={() => setPaused(true)}>
-      {[0, 1].map(copy => <div className={styles.supporterSet} key={copy} aria-hidden={copy === 1 ? true : undefined} inert={copy === 1 ? true : undefined}>{supporters.map(supporter => <a key={supporter.name} href={supporter.url} target="_blank" rel="noopener noreferrer" className={supporter.dark ? styles.darkLogo : undefined} tabIndex={copy === 1 ? -1 : undefined}>{supporter.file ? <img src={`/research/supporters/${supporter.file}`} alt={supporter.name} width="180" height="70" loading="lazy" draggable="false" /> : <span className={styles.supporterName}>{supporter.name}</span>}</a>)}</div>)}
+      {[0, 1].map(copy => <div className={styles.supporterSet} key={copy} aria-hidden={copy === 1 ? true : undefined} inert={copy === 1 ? true : undefined}>
+        {supporters.map(supporter => <a key={supporter.name} href={supporter.url} target="_blank" rel="noopener noreferrer" className={[supporter.dark && styles.darkLogo, supporter.wide && styles.wideLogo].filter(Boolean).join(' ')} tabIndex={copy === 1 ? -1 : undefined}>
+          <span className={styles.supporterArtwork}><Image src={`/research/supporters/${supporter.file}`} alt={supporter.name} fill unoptimized loading="lazy" draggable={false} /></span>
+        </a>)}
+      </div>)}
     </div>
     <div className={styles.supporterControls}><span>Scroll to explore</span><button type="button" onClick={() => scroll(-1)} aria-label="Previous supporters"><ArrowLeftIcon size={18} /></button><button type="button" disabled={reduced} onClick={() => setPaused(value => !value)} aria-label={paused || reduced ? 'Play supporter scrolling' : 'Pause supporter scrolling'}>{paused || reduced ? <PlayIcon size={18} /> : <PauseIcon size={18} />}</button><button type="button" onClick={() => scroll(1)} aria-label="Next supporters"><ArrowRightIcon size={18} /></button></div>
   </section>

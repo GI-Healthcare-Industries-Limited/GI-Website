@@ -6,6 +6,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { destinations, getDestination, inCategory } from "./destinations";
 import { Icon } from "./Icons";
 import { assetPath } from "./site-paths";
+import { CloudBank } from "./CloudBank";
 
 const OVERVIEW = [38, 30, 43, 0, 4, 0];
 // Bundle the current decoder locally: no CDN or third-party runtime requests.
@@ -177,49 +178,6 @@ function Ocean({ paused, inside = false }) {
     >
       <planeGeometry args={[600, 600, 128, 128]} />
     </mesh>
-  );
-}
-
-function CloudBank({ paused, visible = true }) {
-  const ref = useRef();
-  const invalidate = useThree((s) => s.invalidate);
-  const clouds = useMemo(
-    () => [
-      [-19, 8, -17, 2.2],
-      [16, 10, -21, 2],
-      [-20, 4, 6, 1.5],
-      [22, 6, 11, 1.7],
-      [4, 9, 21, 1.6],
-      [-3, 7, -21, 1.4],
-    ],
-    [],
-  );
-  useFrame((state) => {
-    if (ref.current && !paused && visible) {
-      ref.current.position.x = Math.sin(state.clock.elapsedTime * 0.08) * 0.7;
-      invalidate();
-    }
-  });
-  return (
-    <group ref={ref} visible={visible}>
-      {clouds.map(([x, y, z, s], i) => (
-        <mesh key={i} position={[x, y, z]} scale={[s*2.7,s*.55,s*1.5]}>
-          <sphereGeometry args={[1, 32, 20]} />
-          <shaderMaterial transparent depthWrite={false}
-            uniforms={{ tint: {value: new THREE.Color('#f4f8f7')} }}
-            vertexShader={`varying vec3 vP; varying vec3 vN; varying vec3 vV;
-              void main(){vP=position;vec4 view=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-view.xyz);gl_Position=projectionMatrix*view;}`}
-            fragmentShader={`varying vec3 vP; varying vec3 vN; varying vec3 vV; uniform vec3 tint;
-              void main(){float edge=pow(max(0.,dot(normalize(vN),normalize(vV))),3.);
-              float wisps=.5+.5*sin(vP.x*15.+sin(vP.z*13.)*2.)*cos(vP.y*18.+vP.x*8.);
-              gl_FragColor=vec4(tint,edge*mix(.035,.18,wisps));
-              #include <tonemapping_fragment>
-              #include <colorspace_fragment>
-              }`}
-          />
-        </mesh>
-      ))}
-    </group>
   );
 }
 
@@ -420,7 +378,7 @@ function Scene({
         )}
       </Suspense>
       {!isSpace && <Ocean paused={paused} inside={inside} />}
-      {!inside && <CloudBank paused={paused} />}
+      {!inside && <CloudBank paused={paused} selected={selected} />}
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, inside ? -3.8 : -1.8, 0]}

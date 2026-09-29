@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, statSync } from "node:fs";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+import { CLOUDS, advanceCloudTime, cloudOffset } from '../src/cloud-motion.js';
 import {
   categories,
   destinations,
@@ -12,6 +13,22 @@ import {
 } from "../src/destinations.js";
 
 const assets = new URL("../public/assets/", import.meta.url);
+test('clouds drift independently, stay peripheral and freeze without a resume jump', () => {
+  assert.equal(CLOUDS.length, 6);
+  for (const [x,y,z,,,phase] of CLOUDS) {
+    assert(Math.hypot(x,z)>24);
+    assert(y>0);
+    const a=cloudOffset(0,phase), b=cloudOffset(30,phase);
+    assert.notDeepEqual(a,b);
+    assert(b.every(Number.isFinite));
+  }
+  assert.equal(advanceCloudTime(12,100,true),12);
+  assert.equal(advanceCloudTime(12,100,false),12.05);
+  const cloud=readFileSync(new URL('../src/CloudBank.jsx',import.meta.url),'utf8');
+  assert.match(cloud,/raycast=\{ignoreRaycast\}/);
+  assert.match(cloud,/narrow \? 4 : 6/);
+  assert.match(cloud,/if \(!paused\) invalidate\(\)/);
+});
 await MeshoptDecoder.ready;
 function glb(name) {
   const bytes = readFileSync(new URL(name + ".glb", assets));

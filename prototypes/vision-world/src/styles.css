@@ -439,6 +439,26 @@ a svg {
   gap: 6px;
   margin-top: 23px;
 }
+.panel-research {
+  margin-top: 14px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #4d635c;
+}
+.panel-research a {
+  color: #294e40;
+  text-decoration: underline;
+  text-decoration-color: #78978a;
+  text-underline-offset: 3px;
+}
+.panel-research a:hover {
+  text-decoration-color: currentColor;
+}
+.panel-research a:focus-visible {
+  outline: 2px solid #294e40;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
 .tags span {
   border: 1px solid #cbd8cf;
   border-radius: 20px;
@@ -639,32 +659,6 @@ a svg {
   margin-top: 26px;
   padding-top: 14px;
   border-top: 1px solid #dce4d7;
-}
-.supporters {
-  text-align: center;
-  border-top: 1px solid #e9eee8;
-  padding: 40px 7vw 55px;
-}
-.supporters > .eyebrow {
-  display: block;
-  color: #728374;
-  font-size: 9px;
-}
-.supporters > div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 28px;
-  flex-wrap: wrap;
-  max-width: 1300px;
-  margin: 30px auto 0;
-}
-.supporters img {
-  width: 100px;
-  max-height: 57px;
-  object-fit: contain;
-  filter: grayscale(1);
-  opacity: 0.65;
 }
 .prototype-note {
   padding: 20px 4.5%;
@@ -1100,16 +1094,6 @@ a svg {
   }
   .path-link {
     margin-top: 18px;
-  }
-  .supporters {
-    padding: 32px 24px;
-  }
-  .supporters > div {
-    gap: 23px;
-  }
-  .supporters img {
-    width: 77px;
-    max-height: 43px;
   }
   .prototype-note {
     font-size: 8px;

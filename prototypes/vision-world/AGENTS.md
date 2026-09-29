@@ -14,10 +14,11 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - The existing source checkout was verified against the live deployment before this prototype began. Do not overwrite it with a fresh scaffold.
 - Reference: `/Users/gihealthcareindustrieslimited/Downloads/colour copy.png`. Build a real miniature 3D world, not a flat image with parallax.
 - GI develops autonomous cooking machines, not medical devices. Use the updated orbital GI logo and existing Inter typeface.
-- Preserve the four-item navigation and supporters. The homepage is the interactive world plus supporters.
+- Preserve the four-item navigation. The homepage is the interactive world followed directly by the shared footer; supporter logos belong on Research only (29 September feedback).
 - There are 21 destinations. The first iteration includes cutaway cooking spaces for schools, offshore platforms, and space stations.
 - Use the user's installed `/Applications/Blender.app` (5.2.2 at build time). Do not download another Blender or open extra GUI windows. Background export must not touch the user's open scene.
 - Generated geometry source is `scripts/build-world.py`; editable native world is `models/gi-vision-world.blend`.
 - 17 September feedback: preserve the current palette and interface, but replace the toy-like elementary geometry with a more realistic architectural-visualisation treatment: fine foliage, textured materials, detailed facades, natural lighting and credible machinery.
 - 17 September: the user approved deploying this version to the existing GI Healthcare site. Build production assets with `npm run build:homepage` at the repository root; this publishes a namespaced static bundle into `docs/vision/`. Normal prototype development remains local, with analytics disabled. Keep the existing Next.js APIs, data, privacy controls and secondary pages unchanged.
 - 29 September: clouds should be sparse, very subtle grey-white wisps with slow independent drift around the island, not bright white fog. Preserve clickable destinations, pause/reduced-motion behavior and mobile performance.
+- 29 September follow-up: clouds must still be visibly recognisable against the pale sky. Use soft shading and restrained opacity, not invisible haze. Each environment card should link contextually to the relevant Research section.

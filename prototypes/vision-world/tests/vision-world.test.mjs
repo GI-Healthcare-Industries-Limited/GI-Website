@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, statSync } from "node:fs";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { CLOUDS, advanceCloudTime, cloudOffset } from '../src/cloud-motion.js';
+import { destinationResearch } from '../src/destination-research.js';
 import {
   categories,
   destinations,
@@ -13,6 +14,21 @@ import {
 } from "../src/destinations.js";
 
 const assets = new URL("../public/assets/", import.meta.url);
+test('every environment has a contextual link to an existing Research section', () => {
+  assert.deepEqual(Object.keys(destinationResearch).sort(), destinations.map(d=>d.id).sort());
+  for (const destination of destinations) {
+    const {href,topic,context}=destinationResearch[destination.id];
+    assert(topic.length>10 && context.length>10);
+    assert.equal(href,destination.category==='space'?'/research#future-title':'/research#principles');
+  }
+  const app=readFileSync(new URL('../src/App.jsx',import.meta.url),'utf8');
+  assert.match(app,/href=\{sitePath\(research.href\)\}/);
+});
+test('homepage goes directly from the world to the shared footer without old supporters', () => {
+  const app=readFileSync(new URL('../src/App.jsx',import.meta.url),'utf8');
+  assert.doesNotMatch(app,/SUPPORTERS|className="supporters"/);
+  assert.match(app,/<footer className=\{footerStyles.footer\}/);
+});
 test('clouds drift independently, stay peripheral and freeze without a resume jump', () => {
   assert.equal(CLOUDS.length, 6);
   for (const [x,y,z,,,phase] of CLOUDS) {

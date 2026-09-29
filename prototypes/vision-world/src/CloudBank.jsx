@@ -18,6 +18,7 @@ const vertexShader = `
 `;
 const fragmentShader = `
   uniform vec3 tint;
+  uniform vec3 shade;
   uniform float time;
   uniform float softness;
   varying vec2 vUv;
@@ -38,11 +39,13 @@ const fragmentShader = `
       +lobe(p,vec2(.72,.44),vec2(.27,.25));
     float edge=smoothstep(0.,.15,p.x)*smoothstep(0.,.15,1.-p.x)
       *smoothstep(0.,.18,p.y)*smoothstep(0.,.18,1.-p.y);
-    float alpha=min(shape,1.)*mix(.45,1.,n)*edge*.34*softness;
+    // A readable cloud body with feathered edges, rather than near-invisible fog.
+    float density=smoothstep(.06,.95,shape+(n-.5)*.22);
+    float alpha=density*edge*.66*softness;
     // Never fill the view with a cloud when zooming close to a destination.
     alpha*=smoothstep(8.,22.,vDistance);
-    gl_FragColor=vec4(tint,alpha);
-    #include <tonemapping_fragment>
+    vec3 colour=mix(shade,tint,smoothstep(.2,.72,p.y)*.8+n*.2);
+    gl_FragColor=vec4(colour,alpha);
     #include <colorspace_fragment>
   }
 `;
@@ -53,7 +56,8 @@ export function CloudBank({ paused, selected }) {
   const narrow = useThree(s => s.size.width < 760);
   const invalidate = useThree(s => s.invalidate);
   const uniforms = useMemo(() => ({
-    tint: { value: new THREE.Color('#e2e7e5') },
+    tint: { value: new THREE.Color('#eff3f1') },
+    shade: { value: new THREE.Color('#bdcdd0') },
     time: { value: 0 },
     softness: { value: 1 },
   }), []);
@@ -72,7 +76,7 @@ export function CloudBank({ paused, selected }) {
     {CLOUDS.slice(0, narrow ? 4 : 6).map(([x,y,z,w,h], i) =>
       <mesh key={i} position={[x,y,z]} scale={[w,h,1]} raycast={ignoreRaycast} frustumCulled={false} renderOrder={3}>
         <planeGeometry args={[1,1]} />
-        <shaderMaterial transparent depthWrite={false} uniforms={uniforms} vertexShader={vertexShader} fragmentShader={fragmentShader} />
+        <shaderMaterial transparent toneMapped={false} depthWrite={false} uniforms={uniforms} vertexShader={vertexShader} fragmentShader={fragmentShader} />
       </mesh>)}
   </group>;
 }

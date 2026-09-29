@@ -14,20 +14,10 @@ import {
   inCategory,
 } from "./destinations";
 import { Icon } from "./Icons";
+import { destinationResearch } from "./destination-research";
 import { assetPath, liveSite, sitePath } from "./site-paths";
 import footerStyles from "../../../app/_components/site-footer.module.css";
 const World = lazy(() => import("./World"));
-const SUPPORTERS = [
-  ["uksa", "UK Space Agency"],
-  ["innovate_uk", "Innovate UK"],
-  ["nr", "The National Robotarium"],
-  ["hwu", "Heriot-Watt University"],
-  ["eagle_labs", "Barclays Eagle Labs"],
-  ["uwe", "UWE Bristol"],
-  ["uob", "University of Bristol"],
-  ["santander", "Santander Universities"],
-  ["mod", "Ministry of Defence"],
-];
 function initialView() {
   const [id, mode] = window.location.hash.slice(1).split("/");
   const item = getDestination(id);
@@ -103,6 +93,7 @@ export function App() {
     listTrigger = useRef(),
     selectTrigger = useRef();
   const item = getDestination(selected);
+  const research = item ? destinationResearch[item.id] : null;
   const onReady = useCallback(() => setReady(true), []);
   const onTravel = useCallback((v) => setTravelling(v), []);
   const onArrive = useCallback(() => setTravelling(false), []);
@@ -451,6 +442,11 @@ export function App() {
               <p className="panel-description">
                 {inside ? item.detail : item.description}
               </p>
+              <p className="panel-research">
+                Explore our research into{" "}
+                <a href={sitePath(research.href)}>{research.topic}</a>
+                {" "}{research.context}.
+              </p>
               <div className="tags">
                 {item.tags.map((tag) => (
                   <span key={tag}>{tag}</span>
@@ -504,21 +500,6 @@ export function App() {
                 ? `Exploring ${item.name}`
                 : "World overview"}
           </span>
-        </section>
-        <section className="supporters" aria-labelledby="supporters-title">
-          <p className="eyebrow" id="supporters-title">
-            OUR SUPPORTERS
-          </p>
-          <div>
-            {SUPPORTERS.map(([src, name]) => (
-              <img
-                key={src}
-                src={assetPath(`assets/${src}.webp`)}
-                alt={name}
-                loading="lazy"
-              />
-            ))}
-          </div>
         </section>
         {liveSite ? <footer className={footerStyles.footer}>
           <div className={footerStyles.top}>

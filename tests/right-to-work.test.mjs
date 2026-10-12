@@ -97,13 +97,23 @@ test('LinkedIn is required and invalid or non-profile links never reach storage'
   }
 })
 
-test('LinkedIn is normalised, saved separately from phone and kept out of notifications', async () => {
+test('phone is required, bounded and must contain at least seven digits', async () => {
+  for (const phone of [undefined, null, '', '   ', '12345', 'not-a-phone-number', '1'.repeat(51)]) {
+    const f = harness()
+    const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, phone }))
+    assert.equal(response.status, 400, String(phone))
+    assert.equal(f.writes.length, 0)
+    assert.equal(f.emails.length, 0)
+  }
+})
+
+test('LinkedIn and phone are normalised or trimmed, stored separately and kept out of notifications', async () => {
   for (const linkedInUrl of [' https://uk.linkedin.com/in/synthetic-test/?trk=example#about ', 'https://linkedin.com/in/synthetic-test', 'https://www.linkedin.com/in/synthetic-test/']) {
     const f = harness()
-    const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, linkedInUrl, phone: '+440000000000' }))
+    const response = await f.load('app/api/applications/route.ts').POST(request({ ...base, ...visa, linkedInUrl, phone: ' +44 0000 000000 ' }))
     assert.equal(response.status, 201)
     assert.equal(f.writes[0].linkedin_url, 'https://www.linkedin.com/in/synthetic-test/')
-    assert.equal(f.writes[0].phone, undefined)
+    assert.equal(f.writes[0].phone, '+44 0000 000000')
     assert.doesNotMatch(JSON.stringify(f.emails), /linkedin|440000/)
   }
 })

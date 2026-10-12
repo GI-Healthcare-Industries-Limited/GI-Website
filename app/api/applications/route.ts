@@ -65,6 +65,7 @@ export async function POST(request: Request) {
       job_title: opening.job_title,
       name: input.name,
       email: input.email.toLowerCase(),
+      phone: input.phone,
       linkedin_url: input.linkedInUrl,
       education: input.education,
       question_snapshot: questionSnapshot,

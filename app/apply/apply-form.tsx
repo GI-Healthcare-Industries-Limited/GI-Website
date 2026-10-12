@@ -9,7 +9,7 @@ import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
 
 import cookingStudio from '@/assets/admin/cooking-studio.webp'
 import logo from '@/assets/brand/gi-healthcare-logo.png'
-import { EDUCATION_ELIGIBILITY_LABELS, formatClosingDate, isEducationEligible, type OpeningsSnapshot } from '@/lib/career-opening-types'
+import { EDUCATION_ELIGIBILITY_LABELS, formatClosingDate, getOpenCareerOpenings, isEducationEligible, selectOpenCareerOpeningId, type OpeningsSnapshot } from '@/lib/career-opening-types'
 import { APPLICATION_DATA_SHARING_STATEMENT, APPLICATION_DATA_SHARING_VERSION, APPLICATION_PRIVACY_NOTICE_VERSION } from '@/lib/privacy'
 import { APPLICATION_QUESTIONS_VERSION } from '@/lib/application-questions'
 import type { RightToWorkDeclaration } from '@/lib/right-to-work'
@@ -22,7 +22,8 @@ import styles from './apply-form.module.css'
 type Props = { requestedJob: string; requestedTitle: string; initialOpenings: OpeningsSnapshot | null }
 
 export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Props) {
-  const [selectedId, setSelectedId] = useState(requestedJob || (requestedTitle ? initialOpenings?.items.find((item) => item.job_title === requestedTitle)?.id : initialOpenings?.items[0]?.id) || '')
+  const initialNow = initialOpenings ? Date.parse(initialOpenings.checkedAt) : 0
+  const [selectedId, setSelectedId] = useState(() => selectOpenCareerOpeningId(initialOpenings?.items ?? [], initialNow, requestedJob, requestedTitle))
   const [submittedTitle, setSubmittedTitle] = useState('')
   const [eligibility, setEligibility] = useState<RightToWorkDeclaration | null>(null)
   const [educationStatus, setEducationStatus] = useState('')
@@ -52,7 +53,12 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
       clockOffset.current = Date.parse(data.checkedAt) - Date.now()
       setNow(Date.parse(data.checkedAt))
       setOpenings(data)
-      setSelectedId((previous) => previous || (requestedJob || (requestedTitle ? data.items.find((item) => item.job_title === requestedTitle)?.id : data.items[0]?.id) || ''))
+      setSelectedId((previous) => {
+        const openItems = getOpenCareerOpenings(data.items, Date.parse(data.checkedAt))
+        return openItems.some((item) => item.id === previous)
+          ? previous
+          : selectOpenCareerOpeningId(data.items, Date.parse(data.checkedAt), requestedJob, requestedTitle)
+      })
       setAvailabilityError(false)
     } catch {
       if (requestId === refreshRequest.current) setAvailabilityError(true)
@@ -78,10 +84,21 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
   useEffect(() => { if (submitted) resultRef.current?.focus() }, [submitted])
   useEffect(() => { if (eligibility) detailsRef.current?.focus() }, [eligibility])
 
-  const opening = openings?.items.find((item) => item.id === selectedId)
-  const closed = Boolean(opening && (!opening.is_open || (opening.closes_at && now >= Date.parse(opening.closes_at))))
+  const openItems = getOpenCareerOpenings(openings?.items ?? [], now)
+  const effectiveSelectedId = openItems.some((item) => item.id === selectedId) ? selectedId : ''
+  const firstOpenId = openItems[0]?.id || ''
+  const opening = openItems.find((item) => item.id === effectiveSelectedId)
+  useEffect(() => {
+    const nextId = effectiveSelectedId || firstOpenId
+    if (nextId === selectedId) return
+    setSelectedId(nextId)
+    setEligibility(null)
+    setEducationStatus('')
+    setDataSharingAcknowledged(false)
+    setError(null)
+  }, [effectiveSelectedId, firstOpenId, selectedId])
   const unavailable = availabilityError || !opening
-  const canApply = !closed && !unavailable
+  const canApply = !unavailable
   const educationMismatch = Boolean(educationStatus && !isEducationEligible(opening?.education_eligibility, educationStatus))
 
   async function submitApplication(event: FormEvent<HTMLFormElement>) {
@@ -89,8 +106,8 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
     if (submittingRef.current) return
     setError(null)
     if (!canApply || !eligibility || educationMismatch) {
-      setError(closed ? 'Applications for this role have closed.' : unavailable
-        ? 'Please check availability before submitting.' : educationMismatch ? 'Your education status does not match this role’s eligibility. Contact us if you need a human review.' : 'Please confirm your right to work in the UK.')
+      setError(unavailable ? 'Please choose an open role before submitting.'
+        : educationMismatch ? 'Your education status does not match this role’s eligibility. Contact us if you need a human review.' : 'Please confirm your right to work in the UK.')
       return
     }
     const formData = new FormData(event.currentTarget)
@@ -106,7 +123,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           openingId: opening!.id, jobTitle: opening!.job_title, name: formData.get('name'), email: formData.get('email'),
-          linkedInUrl: formData.get('linkedInUrl'),
+          phone: formData.get('phone'), linkedInUrl: formData.get('linkedInUrl'),
           education: formData.get('educationStatus') === 'student'
             ? { status: 'student', degree: formData.get('degree'), studyYear: formData.get('studyYear') }
             : { status: formData.get('educationStatus'), graduationYear: formData.get('graduationYear') },
@@ -162,23 +179,22 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                 <p>Help us build autonomous cooking for extreme environments. Start by sharing a little of what you do.</p>
               </div>
               <div className={styles.role}>
-                <fieldset className={styles.roleOptions} disabled={submitting}>
+                {openItems.length > 0 && <fieldset className={styles.roleOptions} disabled={submitting}>
                   <legend>I’m applying for</legend>
                   <div className={styles.roleCards}>
-                    {openings?.items.map((item) => <label key={item.id} className={selectedId === item.id ? styles.activeRole : ''}>
-                      <input type="radio" name="jobTitle" value={item.id} checked={selectedId === item.id} onChange={() => { setSelectedId(item.id); setEligibility(null); setDataSharingAcknowledged(false); setError(null) }} />
-                      <span className={styles.roleCardTop}><BriefcaseIcon size={23} aria-hidden weight="light" />{selectedId === item.id ? <CheckCircleIcon size={18} aria-hidden weight="fill" /> : <CircleIcon size={18} aria-hidden />}</span>
-                      <strong>{item.job_title}</strong><small>{item.department}{!item.is_open && ' · Closed'}</small>
+                    {openItems.map((item) => <label key={item.id} className={effectiveSelectedId === item.id ? styles.activeRole : ''}>
+                      <input type="radio" name="jobTitle" value={item.id} checked={effectiveSelectedId === item.id} onChange={() => { setSelectedId(item.id); setEligibility(null); setDataSharingAcknowledged(false); setError(null) }} />
+                      <span className={styles.roleCardTop}><BriefcaseIcon size={23} aria-hidden weight="light" />{effectiveSelectedId === item.id ? <CheckCircleIcon size={18} aria-hidden weight="fill" /> : <CircleIcon size={18} aria-hidden />}</span>
+                      <strong>{item.job_title}</strong><small>{item.department}</small>
                     </label>)}
                   </div>
-                </fieldset>
+                </fieldset>}
                 {opening && <><div className={styles.roleMeta}><span><MapPinIcon aria-hidden size={15} />{opening.location}</span><span>{opening.employment_type}</span></div><p className={styles.description}>{opening.description}</p></>}
                 {!unavailable && opening && <p className={styles.deadline}><CalendarBlankIcon aria-hidden size={16} /><span>Proposed start: {opening.start_date ? formatClosingDate(opening.start_date) : 'To be agreed'}</span></p>}
                 {!unavailable && opening && <p className={styles.help}>Eligible applicants: {EDUCATION_ELIGIBILITY_LABELS[opening.education_eligibility]}</p>}
-                {!unavailable && opening && <p className={`${styles.deadline} ${closed ? styles.closedLabel : ''}`}><CalendarBlankIcon aria-hidden size={16} />{closed ? 'Applications closed' : opening.closing_date ? <span>{opening.extended_closing_date ? 'Deadline extended to' : 'Apply by'} {formatClosingDate(opening.closing_date)} · 11:59 pm UK time</span> : 'Applications open · No closing date'}</p>}
+                {!unavailable && opening && <p className={styles.deadline}><CalendarBlankIcon aria-hidden size={16} />{opening.closing_date ? <span>{opening.extended_closing_date ? 'Deadline extended to' : 'Apply by'} {formatClosingDate(opening.closing_date)} · 11:59 pm UK time</span> : 'Applications open · No closing date'}</p>}
               </div>
-              {unavailable && <div role="status" className={styles.notice}><p>{availabilityError ? 'We’re unable to check application availability right now. Please try again shortly.' : openings?.items.length ? 'This job is no longer available. Please choose another posting above.' : 'There are no job postings at the moment. Please check back later.'}</p><button disabled={checking} type="button" onClick={() => void refreshOpenings()}>{checking ? 'Checking…' : 'Check again'}</button></div>}
-              {closed && <div role="status" className={styles.notice}><strong>Applications for this role are closed.</strong><p>You can select another role above to check its availability.</p></div>}
+              {unavailable && <div role="status" className={styles.notice}><p>{availabilityError ? 'We’re unable to check application availability right now. Please try again shortly.' : 'There are no open roles at the moment. Please check back later.'}</p><button disabled={checking} type="button" onClick={() => void refreshOpenings()}>{checking ? 'Checking…' : 'Check again'}</button></div>}
               <p className={styles.help}>Your information is used for recruitment and deleted within three months. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy notice</Link>.</p>
               {canApply && <EligibilityCheck key={selectedId} disabled={submitting} completed={eligibility} onComplete={setEligibility} />}
               <form onSubmit={submitApplication} aria-busy={submitting} hidden={!eligibility}>
@@ -187,6 +203,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                   <div className={styles.fields}>
                     <div className={styles.field}><label htmlFor="name">Full name</label><input ref={detailsRef} autoComplete="name" id="name" name="name" minLength={2} maxLength={120} required /></div>
                     <div className={styles.field}><label htmlFor="email">Email address</label><input autoComplete="email" id="email" name="email" maxLength={254} required type="email" /></div>
+                    <div className={`${styles.field} ${styles.full}`}><label htmlFor="phone">Phone number</label><input autoComplete="tel" id="phone" inputMode="tel" minLength={7} maxLength={50} name="phone" placeholder="e.g. +44 7123 456789" required type="tel" /></div>
                     <div className={`${styles.field} ${styles.full}`}>
                       <label htmlFor="linkedInUrl">LinkedIn profile <span>Required</span></label>
                       <input id="linkedInUrl" name="linkedInUrl" maxLength={2048} type="url" required autoComplete="url" autoCapitalize="none" spellCheck={false} placeholder="https://www.linkedin.com/in/your-name" onInput={event => {
@@ -205,7 +222,7 @@ export function ApplyForm({ requestedJob, requestedTitle, initialOpenings }: Pro
                 </label>
                 <p className={styles.help} id="data-sharing-help"><Link href="/privacy" target="_blank" rel="noreferrer">Read the privacy notice</Link></p>
                 {error && <p role="alert" className={styles.error}>{error}</p>}
-                <button className={styles.submit} disabled={submitting || !canApply || !eligibility || educationMismatch} type="submit">{submitting ? 'Sending application…' : closed ? 'Applications closed' : 'Send application'}<ArrowRightIcon aria-hidden size={20} /></button>
+                <button className={styles.submit} disabled={submitting || !canApply || !eligibility || educationMismatch} type="submit">{submitting ? 'Sending application…' : 'Send application'}<ArrowRightIcon aria-hidden size={20} /></button>
                 <p className={styles.privacy}><ShieldCheckIcon aria-hidden size={17} /><span>No marketing or talent-pool enrolment. <Link href="/privacy" target="_blank" rel="noreferrer">Privacy & your rights</Link></span></p>
               </form>
               <footer className={styles.footer}>Have a question? <Link href="/contact">Let’s talk <ArrowUpRightIcon aria-hidden size={14} /></Link></footer>

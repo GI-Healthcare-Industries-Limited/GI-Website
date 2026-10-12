@@ -149,14 +149,16 @@ test('contact metadata separates labels and full values, including long email ad
   assert.equal(markup.includes('tel:'), false)
 })
 
-test('applications show a safe LinkedIn link; legacy phone details remain available', () => {
+test('applications show safe LinkedIn and phone details while identifying legacy omissions', () => {
   const render = props => renderToStaticMarkup(React.createElement(loadContact(), { kind: 'application', email: 'qa@example.invalid', phone: null, received: 'Today', expires: 'Later', ...props }))
   const markup = render({ linkedInUrl: 'https://uk.linkedin.com/in/qa-test?tracking=test' })
   assert.match(markup, /href="https:\/\/www.linkedin.com\/in\/qa-test\/" target="_blank" rel="noopener noreferrer"/)
-  assert.doesNotMatch(markup, /Phone number|tel:|tracking/)
+  assert.match(markup, /Phone number/)
+  assert.match(markup, /Not collected on the earlier form/)
+  assert.doesNotMatch(markup, /tel:|tracking/)
   const legacy = render({ phone: '+440000000000' })
-  assert.match(legacy, /Not collected on the earlier form/)
-  assert.match(legacy, /Phone number \(earlier application\)/)
+  assert.match(legacy, /Phone number/)
+  assert.doesNotMatch(legacy, /Phone number \(earlier application\)/)
   assert.match(legacy, /tel:\+440000000000/)
   for (const linkedInUrl of ['javascript:alert(1)', 'https://linkedin.com.evil.invalid/in/test', 'https://www.linkedin.com/company/test']) {
     assert.doesNotMatch(render({ linkedInUrl }), /href="(?:javascript|https)/)

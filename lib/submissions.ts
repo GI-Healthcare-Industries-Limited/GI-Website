@@ -35,6 +35,8 @@ const applicationFields = z.object({
   openingId: z.uuid().optional(),
   name: z.string().trim().min(2, 'Please enter your name.').max(120),
   email: z.string().trim().email('Please enter a valid email address.').max(254),
+  phone: z.string({ error: 'Please enter your phone number.' }).trim().min(7, 'Please enter a valid phone number.').max(50)
+    .refine((value) => (value.match(/\d/g) ?? []).length >= 7, 'Please enter a valid phone number.'),
   linkedInUrl: z.string({ error: LINKEDIN_PROFILE_ERROR }).trim().min(1, LINKEDIN_PROFILE_ERROR).max(2048)
     .refine(value => normalizeLinkedInProfileUrl(value) !== null, LINKEDIN_PROFILE_ERROR)
     .transform(value => normalizeLinkedInProfileUrl(value)!),

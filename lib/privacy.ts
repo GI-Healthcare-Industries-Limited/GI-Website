@@ -2,9 +2,9 @@
 // of information, not consent, agreement to processing, or proof it was read.
 export const PRIVACY_NOTICE_VERSION = '2026-09-14'
 // Website-wide notice, including optional analytics; historical form versions stay immutable.
-export const WEBSITE_PRIVACY_NOTICE_VERSION = '2026-09-26-website-v4'
+export const WEBSITE_PRIVACY_NOTICE_VERSION = '2026-10-12-website-v5'
 // Recruitment-specific addendum. Contact clients keep the base notice version.
-export const APPLICATION_PRIVACY_NOTICE_VERSION = '2026-09-16-applications-v7'
+export const APPLICATION_PRIVACY_NOTICE_VERSION = '2026-10-12-applications-v8'
 
 // Separate from the notice version and the processing bases in that notice.
 // Keep each statement version immutable so recorded confirmations are traceable.

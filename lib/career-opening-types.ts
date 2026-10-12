@@ -28,6 +28,30 @@ export type CareerOpening = {
 }
 export type OpeningsSnapshot = { items: CareerOpening[]; checkedAt: string }
 
+export function isCareerOpeningOpenAt(opening: CareerOpening, now: number) {
+  if (!opening.is_open) return false
+  if (!opening.closes_at) return true
+  const closesAt = Date.parse(opening.closes_at)
+  return Number.isFinite(closesAt) && now < closesAt
+}
+
+export function getOpenCareerOpenings(items: CareerOpening[], now: number) {
+  return items.filter((opening) => isCareerOpeningOpenAt(opening, now))
+}
+
+export function selectOpenCareerOpeningId(
+  items: CareerOpening[],
+  now: number,
+  requestedJob = '',
+  requestedTitle = '',
+) {
+  const openItems = getOpenCareerOpenings(items, now)
+  return openItems.find((item) => item.id === requestedJob)?.id
+    || openItems.find((item) => item.job_title === requestedTitle)?.id
+    || openItems[0]?.id
+    || ''
+}
+
 export function formatClosingDate(date: string) {
   return new Intl.DateTimeFormat('en-GB', {
     day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/London',
